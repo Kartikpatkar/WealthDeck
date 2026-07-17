@@ -12,12 +12,12 @@ Checklist for project completion based on architecture, roadmap, smart features,
 ## Checklist
 
 ### Phase 1: Foundation & Storage
-- [ ] Scaffold project structure (HTML, CSS, JS).
-- [ ] Setup Web App Manifest (manifest.json).
-- [ ] Setup Service Worker for offline-first caching.
-- [ ] Create base CSS design system (Mobile-first, Glassmorphism, CSS variables).
-- [ ] Implement IndexedDB local database service.
-- [ ] Build simple router for client-side navigation.
+- [x] Scaffold project structure (HTML, CSS, JS).
+- [x] Setup Web App Manifest (manifest.json).
+- [x] Setup Service Worker for offline-first caching.
+- [x] Create base CSS design system (Mobile-first, Glassmorphism, CSS variables).
+- [x] Implement IndexedDB local database service.
+- [x] Build simple router for client-side navigation.
 
 ### Phase 2: Core Modules (MVP)
 - [ ] Accounts: Create schema, UI, balance calculation.

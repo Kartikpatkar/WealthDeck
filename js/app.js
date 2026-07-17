@@ -1,0 +1,35 @@
+import { initDB } from './db/database.js';
+import { initRouter } from './router.js';
+
+async function bootstrap() {
+  try {
+    // 1. Initialize IndexedDB
+    await initDB();
+    console.log('Database initialized');
+
+    // 2. Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('SW registered!', reg))
+        .catch(err => console.error('SW registration failed', err));
+    }
+
+    // 3. Initialize Router
+    initRouter();
+  } catch (err) {
+    console.error('Failed to bootstrap app:', err);
+    document.getElementById('main-content').innerHTML = `
+      <div style="padding: 20px; color: red;">
+        <h2>Initialization Error</h2>
+        <p>${err.message}</p>
+      </div>
+    `;
+  }
+}
+
+// Start app when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootstrap);
+} else {
+  bootstrap();
+}
