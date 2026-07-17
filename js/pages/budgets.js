@@ -1,12 +1,13 @@
-import { getAllBudgets, saveBudget } from '../services/budgetService.js';
+import { getBudgetsWithSpent, saveBudget } from '../services/budgetService.js';
 import { getAllCategories } from '../services/categoryService.js';
+import { formatCurrency } from '../utils/format.js';
 
 export async function renderBudgets() {
   const main = document.getElementById('main-content');
   main.innerHTML = `<div class="loading">Loading Budgets...</div>`;
   
   try {
-    const budgets = await getAllBudgets();
+    const budgets = await getBudgetsWithSpent();
     
     let listHTML = '';
     if (budgets.length === 0) {
@@ -15,8 +16,8 @@ export async function renderBudgets() {
       listHTML = budgets.map(b => `
         <div class="card" style="margin-bottom: var(--spacing-sm);">
           <div style="display: flex; justify-content: space-between;">
-            <strong>Category #${b.categoryId} (Month: ${b.month})</strong>
-            <div class="mono">$${(b.spent || 0).toFixed(2)} / $${b.amount.toFixed(2)}</div>
+            <strong>${b.categoryName || 'Category #' + b.categoryId} (Month: ${b.month})</strong>
+            <div class="mono">${formatCurrency(b.spent || 0)} / ${formatCurrency(b.amount)}</div>
           </div>
           <div style="background: var(--bg-primary); border-radius: 4px; height: 8px; margin-top: 8px; overflow: hidden;">
             <div style="width: ${Math.min(((b.spent||0) / b.amount) * 100, 100)}%; height: 100%; background: ${((b.spent||0) > b.amount) ? 'var(--color-expense)' : 'var(--color-primary)'};"></div>
@@ -37,9 +38,9 @@ export async function renderBudgets() {
         <div class="card" style="max-width: 400px; margin: 20vh auto;">
           <h2>Set Budget</h2>
           <form id="add-budget-form" style="display:flex; flex-direction:column; gap:var(--spacing-md); margin-top:var(--spacing-md);">
-            <select id="budget-category" required style="padding:var(--spacing-sm); border-radius:var(--radius-sm); border:1px solid var(--border-light); background:var(--bg-primary); color:white;"></select>
-            <input type="number" step="0.01" id="budget-amount" placeholder="Limit Amount" required style="padding:var(--spacing-sm); border-radius:var(--radius-sm); border:1px solid var(--border-light); background:var(--bg-primary); color:white;">
-            <input type="month" id="budget-month" required style="padding:var(--spacing-sm); border-radius:var(--radius-sm); border:1px solid var(--border-light); background:var(--bg-primary); color:white;">
+            <select id="budget-category" required class="input"></select>
+            <input type="number" step="0.01" id="budget-amount" placeholder="Limit Amount" required class="input">
+            <input type="month" id="budget-month" required class="input">
             <div style="display:flex; justify-content:flex-end; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
               <button type="button" id="close-budget-btn" class="btn">Cancel</button>
               <button type="submit" class="btn btn--primary">Save</button>

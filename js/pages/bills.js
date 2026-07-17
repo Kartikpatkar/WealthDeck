@@ -1,5 +1,6 @@
 import { getAllBills, saveBill } from '../services/billService.js';
 import { getAllCategories } from '../services/categoryService.js';
+import { formatCurrency } from '../utils/format.js';
 
 export async function renderBills() {
   const main = document.getElementById('main-content');
@@ -19,7 +20,7 @@ export async function renderBills() {
             <div style="font-size: 0.8em; color: var(--text-secondary);">Due: ${new Date(b.nextDueDate).toLocaleDateString()}</div>
           </div>
           <div class="mono" style="font-weight: bold; color: var(--color-expense);">
-            $${b.amount.toFixed(2)}
+            ${formatCurrency(b.amount)}
           </div>
         </div>
       `).join('');
@@ -48,11 +49,6 @@ export async function renderBills() {
         </div>
       </div>
     `;
-
-    // Basic styles since we don't have .input class globally yet
-    const style = document.createElement('style');
-    style.innerHTML = `.input { padding:var(--spacing-sm); border-radius:var(--radius-sm); border:1px solid var(--border-light); background:var(--bg-primary); color:white; }`;
-    main.appendChild(style);
 
     const modal = document.getElementById('add-bill-modal');
     document.getElementById('add-bill-btn').addEventListener('click', async () => {

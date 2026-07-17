@@ -1,8 +1,9 @@
 import { getAllTransactions, saveTransaction } from '../services/transactionService.js';
 import { getAllAccounts } from '../services/accountService.js';
 import { getAllCategories, seedDefaultCategories } from '../services/categoryService.js';
+import { formatCurrency } from '../utils/format.js';
 
-export async function renderTransactions() {
+export async function renderTransactions(params = {}) {
   const main = document.getElementById('main-content');
   main.innerHTML = `<div class="loading">Loading Transactions...</div>`;
   
@@ -20,7 +21,7 @@ export async function renderTransactions() {
             <div style="font-size: 0.8em; color: var(--text-secondary);">${new Date(t.date).toLocaleDateString()}</div>
           </div>
           <div class="mono" style="color: ${t.type === 'income' ? 'var(--color-income)' : 'var(--color-expense)'}; font-weight: bold;">
-            ${t.type === 'income' ? '+' : '-'}$${t.amount.toFixed(2)}
+            ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount)}
           </div>
         </div>
       `).join('');
@@ -59,11 +60,6 @@ export async function renderTransactions() {
       </div>
     `;
     
-    // Add basic styles for the inputs since we didn't define .input class yet
-    const style = document.createElement('style');
-    style.innerHTML = `.input { padding:var(--spacing-sm); border-radius:var(--radius-sm); border:1px solid var(--border-light); background:var(--bg-primary); color:white; }`;
-    main.appendChild(style);
-
     // Setup modal & form
     const modal = document.getElementById('add-txn-modal');
     document.getElementById('add-txn-btn').addEventListener('click', async () => {
@@ -77,9 +73,12 @@ export async function renderTransactions() {
       const catSelect = document.getElementById('txn-category');
       catSelect.innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
       
-      document.getElementById('txn-date').valueAsDate = new Date();
-      modal.style.display = 'block';
-    });
+    if (params.openModal) {
+      document.getElementById('add-txn-btn').click();
+      window.location.hash = '#/transactions'; // Reset hash so back button works
+    }
+
+  } catch (err) {
     
     document.getElementById('close-txn-modal').addEventListener('click', () => modal.style.display = 'none');
     

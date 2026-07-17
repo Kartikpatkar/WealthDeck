@@ -1,4 +1,5 @@
 import { exportDataJSON, importDataJSON } from '../services/exportService.js';
+import { showToast } from '../components/toast.js';
 
 export async function renderImportExport() {
   const main = document.getElementById('main-content');
@@ -23,15 +24,15 @@ export async function renderImportExport() {
   document.getElementById('export-json-btn').addEventListener('click', async () => {
     try {
       await exportDataJSON();
-      alert('Export complete');
+      showToast('Export complete', 'success');
     } catch (err) {
-      alert('Export failed: ' + err.message);
+      showToast('Export failed: ' + err.message, 'error');
     }
   });
 
   document.getElementById('import-json-btn').addEventListener('click', async () => {
     const file = document.getElementById('import-json-file').files[0];
-    if (!file) return alert('Select a file first');
+    if (!file) return showToast('Select a file first', 'error');
     
     if (!confirm('Are you sure? This will delete current data.')) return;
 
@@ -39,10 +40,10 @@ export async function renderImportExport() {
     reader.onload = async (e) => {
       try {
         await importDataJSON(e.target.result);
-        alert('Restore successful! App will reload.');
-        window.location.reload();
+        showToast('Restore successful! App will reload.', 'success');
+        setTimeout(() => window.location.reload(), 1500);
       } catch (err) {
-        alert('Restore failed: ' + err.message);
+        showToast('Restore failed: ' + err.message, 'error');
       }
     };
     reader.readAsText(file);

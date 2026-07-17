@@ -1,4 +1,5 @@
 import { getAllAccounts, saveAccount } from '../services/accountService.js';
+import { formatCurrency } from '../utils/format.js';
 
 export async function renderAccounts() {
   const main = document.getElementById('main-content');
@@ -17,7 +18,7 @@ export async function renderAccounts() {
             <strong>${a.name}</strong>
             <div style="font-size: 0.8em; color: var(--text-secondary);">${a.type}</div>
           </div>
-          <div class="mono" style="font-weight: bold;">$${(a.balance || 0).toFixed(2)}</div>
+          <div class="mono" style="font-weight: bold;">${formatCurrency(a.balance || 0)}</div>
         </div>
       `).join('');
     }
@@ -37,13 +38,13 @@ export async function renderAccounts() {
         <div class="card" style="max-width: 400px; margin: 20vh auto;">
           <h2>New Account</h2>
           <form id="add-account-form" style="display:flex; flex-direction:column; gap:var(--spacing-md); margin-top:var(--spacing-md);">
-            <input type="text" id="acc-name" placeholder="Account Name (e.g. Wallet)" required style="padding:var(--spacing-sm); border-radius:var(--radius-sm); border:1px solid var(--border-light); background:var(--bg-primary); color:white;">
-            <select id="acc-type" required style="padding:var(--spacing-sm); border-radius:var(--radius-sm); border:1px solid var(--border-light); background:var(--bg-primary); color:white;">
+            <input type="text" id="acc-name" placeholder="Account Name (e.g. Wallet)" required class="input">
+            <select id="acc-type" required class="input">
               <option value="cash">Cash</option>
               <option value="bank">Bank</option>
               <option value="wallet">Wallet</option>
             </select>
-            <input type="number" step="0.01" id="acc-balance" placeholder="Initial Balance" style="padding:var(--spacing-sm); border-radius:var(--radius-sm); border:1px solid var(--border-light); background:var(--bg-primary); color:white;">
+            <input type="number" step="0.01" id="acc-balance" placeholder="Initial Balance" class="input">
             <div style="display:flex; justify-content:flex-end; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
               <button type="button" id="close-modal-btn" class="btn">Cancel</button>
               <button type="submit" class="btn btn--primary">Save</button>

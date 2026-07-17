@@ -1,7 +1,9 @@
-import { parseCSV, detectColumns, processTransactions } from '../services/importService.js';
+import { parseCSV, detectColumns, processTransactions, getMerchantRule } from '../services/importService.js';
 import { getAllAccounts } from '../services/accountService.js';
 import { saveTransaction } from '../services/transactionService.js';
 import { getAllCategories, seedDefaultCategories } from '../services/categoryService.js';
+import { formatCurrency } from '../utils/format.js';
+import { showToast } from '../components/toast.js';
 
 export async function renderImport() {
   const main = document.getElementById('main-content');
@@ -37,20 +39,12 @@ export async function renderImport() {
     </div>
   `;
 
-  // Provide inputs generic class
-  if (!document.querySelector('style#input-style')) {
-    const style = document.createElement('style');
-    style.id = 'input-style';
-    style.innerHTML = `.input { padding:var(--spacing-sm); border-radius:var(--radius-sm); border:1px solid var(--border-light); background:var(--bg-primary); color:white; margin-bottom:var(--spacing-sm); }`;
-    main.appendChild(style);
-  }
-
   let rawData = [];
   let processedData = [];
 
   document.getElementById('parse-btn').addEventListener('click', async () => {
     const file = document.getElementById('csv-file').files[0];
-    if (!file) return alert('Select CSV');
+    if (!file) return showToast('Please select a CSV file', 'error');
     
     try {
       rawData = await parseCSV(file);
@@ -76,7 +70,7 @@ export async function renderImport() {
       
       document.getElementById('import-wizard').style.display = 'block';
     } catch (e) {
-      alert('Error parsing CSV: ' + e.message);
+      showToast('Error parsing CSV: ' + e.message, 'error');
     }
   });
 
@@ -96,7 +90,7 @@ export async function renderImport() {
           <small>${new Date(t.date).toLocaleDateString()}</small>
         </div>
         <div class="mono" style="color: ${t.type === 'income' ? 'var(--color-income)' : 'var(--color-expense)'}">
-          $${t.amount.toFixed(2)}
+          ${formatCurrency(t.amount)}
         </div>
       </div>
     `).join('');
@@ -115,18 +109,22 @@ export async function renderImport() {
     for (const t of processedData) {
       if (!t.amount || isNaN(new Date(t.date).getTime())) continue; // Skip invalid
       
+      const rule = await getMerchantRule(t.merchant);
+      const catId = rule ? rule.categoryId : defaultCatId;
+      
       await saveTransaction({
         type: t.type,
         amount: t.amount,
-        merchant: t.merchant,
+        merchant: rule ? rule.merchantName : t.merchant,
         date: t.date,
         accountId: accountId,
-        categoryId: defaultCatId // In a full app, apply merchantRules here
+        categoryId: catId,
+        importSource: 'csv'
       });
       count++;
     }
     
-    alert(\`Successfully imported \${count} transactions!\`);
+    showToast(\`Successfully imported \${count} transactions!\`, 'success');
     window.location.hash = '#/transactions';
   });
 }

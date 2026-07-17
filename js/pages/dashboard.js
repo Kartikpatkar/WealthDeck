@@ -1,5 +1,6 @@
 import { getAllTransactions } from '../services/transactionService.js';
 import { getAllAccounts } from '../services/accountService.js';
+import { getAllCategories } from '../services/categoryService.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
 
 export async function renderDashboard() {
@@ -9,6 +10,7 @@ export async function renderDashboard() {
   try {
     const accounts = await getAllAccounts();
     const transactions = await getAllTransactions();
+    const categories = await getAllCategories();
     
     const totalBalance = accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0);
     
@@ -49,14 +51,14 @@ export async function renderDashboard() {
       </div>
     `;
     
-    initChart(transactions);
+    initChart(transactions, categories);
 
   } catch (err) {
     main.innerHTML = `<p style="color: red;">Error loading dashboard: ${err.message}</p>`;
   }
 }
 
-function initChart(transactions) {
+function initChart(transactions, categories) {
   const ctx = document.getElementById('dashboard-chart');
   if (!ctx || !window.Chart) return;
 
@@ -67,9 +69,10 @@ function initChart(transactions) {
     grouped[e.categoryId] = (grouped[e.categoryId] || 0) + e.amount;
   });
   
-  // Fallback labels until category join is implemented
+  const catMap = categories.reduce((acc, c) => ({...acc, [c.id]: c.name}), {});
+  
   const data = Object.values(grouped);
-  const labels = Object.keys(grouped).map(id => `Cat ${id}`);
+  const labels = Object.keys(grouped).map(id => catMap[id] || `Cat ${id}`);
 
   new Chart(ctx, {
     type: 'doughnut',

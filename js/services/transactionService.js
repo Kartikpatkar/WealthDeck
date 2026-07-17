@@ -1,5 +1,4 @@
 import { getDB } from '../db/database.js';
-import { getAccountById, saveAccount } from './accountService.js';
 
 export async function getAllTransactions() {
   const db = getDB();

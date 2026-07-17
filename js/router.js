@@ -14,6 +14,7 @@ const routes = {
   '/': renderDashboard,
   '/dashboard': renderDashboard,
   '/transactions': renderTransactions,
+  '/transaction/new': () => renderTransactions({ openModal: true }),
   '/accounts': renderAccounts,
   '/categories': renderCategories,
   '/budgets': renderBudgets,
@@ -77,7 +78,7 @@ function renderBottomNav() {
   nav.innerHTML = `
     <a href="#/dashboard" class="nav-item active">📊 Dash</a>
     <a href="#/transactions" class="nav-item">📋 Txns</a>
-    <a href="#/transactions" onclick="setTimeout(()=>document.getElementById('add-txn-btn')?.click(), 100)" class="nav-item btn btn--primary" style="border-radius: 50%; width: 40px; height: 40px; margin-top: -20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">➕</a>
+    <a href="#/transaction/new" class="nav-item btn btn--primary" style="border-radius: 50%; width: 40px; height: 40px; margin-top: -20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; text-decoration: none;">➕</a>
     <a href="#/budgets" class="nav-item">📦 Budget</a>
     <a href="#/more" class="nav-item">☰ More</a>
   `;

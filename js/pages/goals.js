@@ -13,12 +13,12 @@ export async function renderGoals() {
       listHTML = `<p>No savings goals. Create your first goal below.</p>`;
     } else {
       listHTML = goals.map(g => {
-        const percent = Math.min(((g.currentAmount || 0) / g.targetAmount) * 100, 100);
+        const percent = Math.min(((g.savedAmount || 0) / g.targetAmount) * 100, 100);
         return `
         <div class="card" style="margin-bottom: var(--spacing-sm);">
           <h3>${g.name}</h3>
           <div style="display: flex; justify-content: space-between; margin: var(--spacing-sm) 0;">
-            <span>${formatCurrency(g.currentAmount || 0)}</span>
+            <span>${formatCurrency(g.savedAmount || 0)}</span>
             <span>Target: ${formatCurrency(g.targetAmount)} by ${formatDate(g.targetDate)}</span>
           </div>
           <div style="background: var(--bg-primary); border-radius: 4px; height: 12px; overflow: hidden;">
@@ -65,7 +65,7 @@ export async function renderGoals() {
       await saveGoal({
         name: document.getElementById('goal-name').value,
         targetAmount: parseFloat(document.getElementById('goal-target').value),
-        currentAmount: parseFloat(document.getElementById('goal-current').value) || 0,
+        savedAmount: parseFloat(document.getElementById('goal-current').value) || 0,
         targetDate: document.getElementById('goal-date').value,
         isCompleted: false
       });
