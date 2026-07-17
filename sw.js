@@ -32,10 +32,29 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Cache First Strategy for static assets
+  // Cache First Strategy for static assets, network fallback
   e.respondWith(
-    caches.match(e.request).then((response) => {
-      return response || fetch(e.request);
+    caches.match(e.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      
+      return fetch(e.request).then((networkResponse) => {
+        // Dynamically cache requested files (like JS modules)
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
+        }
+        
+        // Don't cache API requests or external CDNs unless desired
+        if (e.request.url.startsWith(self.location.origin)) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, responseToCache);
+          });
+        }
+        
+        return networkResponse;
+      });
     })
   );
 });

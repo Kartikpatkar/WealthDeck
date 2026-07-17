@@ -1,5 +1,6 @@
 import { getAllTransactions } from '../services/transactionService.js';
 import { getAllAccounts } from '../services/accountService.js';
+import { formatCurrency, formatDate } from '../utils/format.js';
 
 export async function renderDashboard() {
   const main = document.getElementById('main-content');
@@ -15,10 +16,10 @@ export async function renderDashboard() {
       <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-light);">
         <div>
           <strong>${t.merchant || 'Transaction'}</strong>
-          <div style="color: var(--text-secondary); font-size: 0.8em;">${new Date(t.date).toLocaleDateString()}</div>
+          <div style="color: var(--text-secondary); font-size: 0.8em;">${formatDate(t.date)}</div>
         </div>
         <div style="color: ${t.type === 'income' ? 'var(--color-income)' : 'var(--color-expense)'}">
-          ${t.type === 'income' ? '+' : '-'}$${t.amount.toFixed(2)}
+          ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount)}
         </div>
       </div>
     `).join('') || '<p>No recent transactions.</p>';
@@ -28,7 +29,7 @@ export async function renderDashboard() {
       
       <div class="card" style="margin-bottom: var(--spacing-lg);">
         <h3 style="color: var(--text-secondary); font-weight: 500;">Total Balance</h3>
-        <div class="mono" style="font-size: 2em; font-weight: 700;">$${totalBalance.toFixed(2)}</div>
+        <div class="mono" style="font-size: 2em; font-weight: 700;">${formatCurrency(totalBalance)}</div>
       </div>
       
       <div style="display: grid; grid-template-columns: 1fr; gap: var(--spacing-md);">

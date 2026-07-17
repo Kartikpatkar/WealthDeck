@@ -77,7 +77,7 @@ function renderBottomNav() {
   nav.innerHTML = `
     <a href="#/dashboard" class="nav-item active">📊 Dash</a>
     <a href="#/transactions" class="nav-item">📋 Txns</a>
-    <a href="#/transaction/new" class="nav-item btn btn--primary">➕</a>
+    <a href="#/transactions" onclick="setTimeout(()=>document.getElementById('add-txn-btn')?.click(), 100)" class="nav-item btn btn--primary" style="border-radius: 50%; width: 40px; height: 40px; margin-top: -20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">➕</a>
     <a href="#/budgets" class="nav-item">📦 Budget</a>
     <a href="#/more" class="nav-item">☰ More</a>
   `;
@@ -86,11 +86,19 @@ function renderBottomNav() {
 function renderSidebar() {
   const nav = document.getElementById('sidebar-nav');
   nav.innerHTML = `
-    <a href="#/dashboard" class="nav-item active">Dashboard</a>
-    <a href="#/transactions" class="nav-item">Transactions</a>
-    <a href="#/accounts" class="nav-item">Accounts</a>
-    <a href="#/categories" class="nav-item">Categories</a>
-    <a href="#/budgets" class="nav-item">Budgets</a>
+    <a href="#/dashboard" class="nav-item active">📊 Dashboard</a>
+    <a href="#/transactions" class="nav-item">📋 Transactions</a>
+    <a href="#/accounts" class="nav-item">🏦 Accounts</a>
+    <a href="#/categories" class="nav-item">🏷️ Categories</a>
+    <a href="#/budgets" class="nav-item">📦 Budgets</a>
+    <a href="#/bills" class="nav-item">📅 Bills</a>
+    <a href="#/goals" class="nav-item">🎯 Goals</a>
+    <a href="#/reports" class="nav-item">📈 Reports</a>
+    <a href="#/timeline" class="nav-item">⏳ Timeline</a>
+    <a href="#/replay" class="nav-item">⏪ Replay</a>
+    <a href="#/analyzers" class="nav-item">💡 Analyzers</a>
+    <a href="#/import" class="nav-item">🤖 Smart Import</a>
+    <a href="#/import-export" class="nav-item">🔄 Backup</a>
   `;
 }
 
