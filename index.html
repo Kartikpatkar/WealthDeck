@@ -24,6 +24,7 @@
   
   <!-- Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   
   <!-- JS -->
   <script type="module" src="./js/app.js"></script>
@@ -33,7 +34,12 @@
     <!-- Desktop Sidebar (Hidden on mobile) -->
     <aside id="sidebar" class="sidebar">
       <div class="sidebar__brand">WealthDeck</div>
-      <nav id="sidebar-nav" class="sidebar__nav"></nav>
+      <nav id="sidebar-nav" class="sidebar__nav">
+        <a href="#/goals" class="card" style="text-decoration:none; color:inherit;">🎯 Savings Goals</a>
+        <a href="#/reports" class="card" style="text-decoration:none; color:inherit;">📈 Reports</a>
+        <a href="#/import" class="card" style="text-decoration:none; color:inherit;">🤖 Smart CSV Import</a>
+        <a href="#/import-export" class="card" style="text-decoration:none; color:inherit;">🔄 Backup & Restore</a>
+      </nav>
     </aside>
 
     <!-- Main Content Area -->

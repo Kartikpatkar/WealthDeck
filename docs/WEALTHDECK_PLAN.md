@@ -34,10 +34,10 @@ Checklist for project completion based on architecture, roadmap, smart features,
 - [x] Import/Export: Basic JSON backup and restore.
 
 ### Phase 4: Universal Import Engine
-- [ ] Integrate PapaParse for CSV handling.
-- [ ] Build Smart Import Wizard (auto-detect columns).
-- [ ] Implement Merchant Recognition & Local Learning Engine.
-- [ ] Implement Duplicate Detection & Bulk Categorization.
+- [x] Integrate PapaParse for CSV handling.
+- [x] Build Smart Import Wizard (auto-detect columns).
+- [x] Implement Merchant Recognition & Local Learning Engine.
+- [x] Implement Duplicate Detection & Bulk Categorization.
 
 ### Phase 5: Smart Features & Polish
 - [ ] Financial Timeline UI.

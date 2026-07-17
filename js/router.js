@@ -7,6 +7,7 @@ import { renderBills } from './pages/bills.js';
 import { renderGoals } from './pages/goals.js';
 import { renderReports } from './pages/reports.js';
 import { renderImportExport } from './pages/importExport.js';
+import { renderImport } from './pages/import.js';
 
 const routes = {
   '/': renderDashboard,
@@ -19,6 +20,7 @@ const routes = {
   '/goals': renderGoals,
   '/reports': renderReports,
   '/import-export': renderImportExport,
+  '/import': renderImport,
   '/more': renderMoreMenu
 };
 
@@ -32,7 +34,8 @@ function renderMoreMenu() {
       <a href="#/bills" class="card" style="text-decoration:none; color:inherit;">📅 Recurring Bills</a>
       <a href="#/goals" class="card" style="text-decoration:none; color:inherit;">🎯 Savings Goals</a>
       <a href="#/reports" class="card" style="text-decoration:none; color:inherit;">📈 Reports</a>
-      <a href="#/import-export" class="card" style="text-decoration:none; color:inherit;">🔄 Import & Export</a>
+      <a href="#/import" class="card" style="text-decoration:none; color:inherit;">🤖 Smart CSV Import</a>
+      <a href="#/import-export" class="card" style="text-decoration:none; color:inherit;">🔄 Backup & Restore</a>
     </div>
   `;
 }
