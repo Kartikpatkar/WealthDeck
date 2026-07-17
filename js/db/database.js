@@ -1,5 +1,5 @@
 const DB_NAME = 'wealthdeck';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let dbInstance = null;
 
@@ -47,6 +47,39 @@ export function initDB() {
 
       if (!db.objectStoreNames.contains('settings')) {
         db.createObjectStore('settings', { keyPath: 'key' });
+      }
+
+      if (!db.objectStoreNames.contains('budgets')) {
+        const store = db.createObjectStore('budgets', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('categoryId', 'categoryId', { unique: false });
+        store.createIndex('month', 'month', { unique: false });
+      }
+
+      if (!db.objectStoreNames.contains('bills')) {
+        const store = db.createObjectStore('bills', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('nextDueDate', 'nextDueDate', { unique: false });
+        store.createIndex('isActive', 'isActive', { unique: false });
+      }
+
+      if (!db.objectStoreNames.contains('goals')) {
+        const store = db.createObjectStore('goals', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('targetDate', 'targetDate', { unique: false });
+        store.createIndex('isCompleted', 'isCompleted', { unique: false });
+      }
+
+      // Add Phase 4 stores now to avoid another migration later
+      if (!db.objectStoreNames.contains('merchantRules')) {
+        const store = db.createObjectStore('merchantRules', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('pattern', 'pattern', { unique: false });
+      }
+
+      if (!db.objectStoreNames.contains('importHistory')) {
+        db.createObjectStore('importHistory', { keyPath: 'id', autoIncrement: true });
+      }
+
+      if (!db.objectStoreNames.contains('receipts')) {
+        const store = db.createObjectStore('receipts', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('transactionId', 'transactionId', { unique: false });
       }
     };
   });

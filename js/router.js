@@ -2,6 +2,11 @@ import { renderDashboard } from './pages/dashboard.js';
 import { renderAccounts } from './pages/accounts.js';
 import { renderCategories } from './pages/categories.js';
 import { renderTransactions } from './pages/transactions.js';
+import { renderBudgets } from './pages/budgets.js';
+import { renderBills } from './pages/bills.js';
+import { renderGoals } from './pages/goals.js';
+import { renderReports } from './pages/reports.js';
+import { renderImportExport } from './pages/importExport.js';
 
 const routes = {
   '/': renderDashboard,
@@ -9,14 +14,27 @@ const routes = {
   '/transactions': renderTransactions,
   '/accounts': renderAccounts,
   '/categories': renderCategories,
-  '/budgets': () => renderPlaceholder('Budgets'),
-  '/more': () => renderPlaceholder('More Menu')
+  '/budgets': renderBudgets,
+  '/bills': renderBills,
+  '/goals': renderGoals,
+  '/reports': renderReports,
+  '/import-export': renderImportExport,
+  '/more': renderMoreMenu
 };
 
-// Simple placeholder renderer for Phase 1 routing
-function renderPlaceholder(title) {
+function renderMoreMenu() {
   const main = document.getElementById('main-content');
-  main.innerHTML = `<h1>${title}</h1><p>Content for ${title} goes here.</p>`;
+  main.innerHTML = `
+    <h1>More</h1>
+    <div style="display: flex; flex-direction: column; gap: var(--spacing-sm); margin-top: var(--spacing-md);">
+      <a href="#/accounts" class="card" style="text-decoration:none; color:inherit;">🏦 Accounts</a>
+      <a href="#/categories" class="card" style="text-decoration:none; color:inherit;">🏷️ Categories</a>
+      <a href="#/bills" class="card" style="text-decoration:none; color:inherit;">📅 Recurring Bills</a>
+      <a href="#/goals" class="card" style="text-decoration:none; color:inherit;">🎯 Savings Goals</a>
+      <a href="#/reports" class="card" style="text-decoration:none; color:inherit;">📈 Reports</a>
+      <a href="#/import-export" class="card" style="text-decoration:none; color:inherit;">🔄 Import & Export</a>
+    </div>
+  `;
 }
 
 function handleRoute() {

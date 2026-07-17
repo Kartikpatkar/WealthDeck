@@ -27,11 +27,11 @@ Checklist for project completion based on architecture, roadmap, smart features,
 - [x] Charts: Integrate Chart.js for dashboard visualizations.
 
 ### Phase 3: Advanced MVP Features
-- [ ] Budgets: Monthly tracking, alerts.
-- [ ] Bills: Recurring payments logic, reminders.
-- [ ] Savings Goals: Visual progress tracking.
-- [ ] Reports: Filtering by date (daily/weekly/monthly/yearly), category, account.
-- [ ] Import/Export: Basic JSON backup and restore.
+- [x] Budgets: Monthly tracking, alerts.
+- [x] Bills: Recurring payments logic, reminders.
+- [x] Savings Goals: Visual progress tracking.
+- [x] Reports: Filtering by date (daily/weekly/monthly/yearly), category, account.
+- [x] Import/Export: Basic JSON backup and restore.
 
 ### Phase 4: Universal Import Engine
 - [ ] Integrate PapaParse for CSV handling.
