@@ -40,10 +40,10 @@ Checklist for project completion based on architecture, roadmap, smart features,
 - [x] Implement Duplicate Detection & Bulk Categorization.
 
 ### Phase 5: Smart Features & Polish
-- [ ] Financial Timeline UI.
-- [ ] Monthly Replay (Spotify Wrapped style).
-- [ ] Gamification (No Spend Challenges).
-- [ ] Analyzers (Oops Detector, Subscription Analyzer).
+- [x] Financial Timeline UI.
+- [x] Monthly Replay (Spotify Wrapped style).
+- [x] Gamification (No Spend Challenges).
+- [x] Analyzers (Oops Detector, Subscription Analyzer).
 
 ## Verification Plan
 

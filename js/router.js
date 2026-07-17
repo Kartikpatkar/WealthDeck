@@ -8,6 +8,7 @@ import { renderGoals } from './pages/goals.js';
 import { renderReports } from './pages/reports.js';
 import { renderImportExport } from './pages/importExport.js';
 import { renderImport } from './pages/import.js';
+import { renderTimeline, renderMonthlyReplay, renderAnalyzers } from './pages/smartFeatures.js';
 
 const routes = {
   '/': renderDashboard,
@@ -21,6 +22,9 @@ const routes = {
   '/reports': renderReports,
   '/import-export': renderImportExport,
   '/import': renderImport,
+  '/timeline': renderTimeline,
+  '/replay': renderMonthlyReplay,
+  '/analyzers': renderAnalyzers,
   '/more': renderMoreMenu
 };
 
@@ -34,6 +38,13 @@ function renderMoreMenu() {
       <a href="#/bills" class="card" style="text-decoration:none; color:inherit;">📅 Recurring Bills</a>
       <a href="#/goals" class="card" style="text-decoration:none; color:inherit;">🎯 Savings Goals</a>
       <a href="#/reports" class="card" style="text-decoration:none; color:inherit;">📈 Reports</a>
+      
+      <h3 style="margin-top: var(--spacing-sm);">Smart Features</h3>
+      <a href="#/timeline" class="card" style="text-decoration:none; color:inherit;">⏳ Financial Timeline</a>
+      <a href="#/replay" class="card" style="text-decoration:none; color:inherit;">⏪ Monthly Replay</a>
+      <a href="#/analyzers" class="card" style="text-decoration:none; color:inherit;">💡 Analyzers & Challenges</a>
+      
+      <h3 style="margin-top: var(--spacing-sm);">Data</h3>
       <a href="#/import" class="card" style="text-decoration:none; color:inherit;">🤖 Smart CSV Import</a>
       <a href="#/import-export" class="card" style="text-decoration:none; color:inherit;">🔄 Backup & Restore</a>
     </div>
