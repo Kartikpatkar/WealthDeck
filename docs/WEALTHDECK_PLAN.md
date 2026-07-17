@@ -20,11 +20,11 @@ Checklist for project completion based on architecture, roadmap, smart features,
 - [x] Build simple router for client-side navigation.
 
 ### Phase 2: Core Modules (MVP)
-- [ ] Accounts: Create schema, UI, balance calculation.
-- [ ] Categories: Create schema, UI (custom icons/colors).
-- [ ] Transactions: Create schema, UI (income/expense/transfer, notes, tags, receipt attach).
-- [ ] Dashboard: Balance overview, summaries, recent transactions list.
-- [ ] Charts: Integrate Chart.js for dashboard visualizations.
+- [x] Accounts: Create schema, UI, balance calculation.
+- [x] Categories: Create schema, UI (custom icons/colors).
+- [x] Transactions: Create schema, UI (income/expense/transfer, notes, tags, receipt attach).
+- [x] Dashboard: Balance overview, summaries, recent transactions list.
+- [x] Charts: Integrate Chart.js for dashboard visualizations.
 
 ### Phase 3: Advanced MVP Features
 - [ ] Budgets: Monthly tracking, alerts.

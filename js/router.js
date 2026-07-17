@@ -1,10 +1,14 @@
+import { renderDashboard } from './pages/dashboard.js';
+import { renderAccounts } from './pages/accounts.js';
+import { renderCategories } from './pages/categories.js';
+import { renderTransactions } from './pages/transactions.js';
+
 const routes = {
-  // We will map these to page modules as we build them
-  '/': () => renderPlaceholder('Dashboard'),
-  '/dashboard': () => renderPlaceholder('Dashboard'),
-  '/transactions': () => renderPlaceholder('Transactions'),
-  '/accounts': () => renderPlaceholder('Accounts'),
-  '/categories': () => renderPlaceholder('Categories'),
+  '/': renderDashboard,
+  '/dashboard': renderDashboard,
+  '/transactions': renderTransactions,
+  '/accounts': renderAccounts,
+  '/categories': renderCategories,
   '/budgets': () => renderPlaceholder('Budgets'),
   '/more': () => renderPlaceholder('More Menu')
 };
