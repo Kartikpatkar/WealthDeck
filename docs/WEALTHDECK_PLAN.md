@@ -1,0 +1,57 @@
+# WealthDeck Implementation Plan
+
+Checklist for project completion based on architecture, roadmap, smart features, import engine, and vision docs.
+
+## Open Questions
+
+- Start exclusively with Phase 1 (MVP) or set up architecture for all future phases now?
+- Architecture doc specifies "Vanilla JS modules". Use a dev server/bundler like Vite, or raw ES modules with no build step?
+- Which icon set for categories and UI? (e.g., Lucide, Phosphor, FontAwesome)
+- Any specific testing framework required?
+
+## Checklist
+
+### Phase 1: Foundation & Storage
+- [ ] Scaffold project structure (HTML, CSS, JS).
+- [ ] Setup Web App Manifest (manifest.json).
+- [ ] Setup Service Worker for offline-first caching.
+- [ ] Create base CSS design system (Mobile-first, Glassmorphism, CSS variables).
+- [ ] Implement IndexedDB local database service.
+- [ ] Build simple router for client-side navigation.
+
+### Phase 2: Core Modules (MVP)
+- [ ] Accounts: Create schema, UI, balance calculation.
+- [ ] Categories: Create schema, UI (custom icons/colors).
+- [ ] Transactions: Create schema, UI (income/expense/transfer, notes, tags, receipt attach).
+- [ ] Dashboard: Balance overview, summaries, recent transactions list.
+- [ ] Charts: Integrate Chart.js for dashboard visualizations.
+
+### Phase 3: Advanced MVP Features
+- [ ] Budgets: Monthly tracking, alerts.
+- [ ] Bills: Recurring payments logic, reminders.
+- [ ] Savings Goals: Visual progress tracking.
+- [ ] Reports: Filtering by date (daily/weekly/monthly/yearly), category, account.
+- [ ] Import/Export: Basic JSON backup and restore.
+
+### Phase 4: Universal Import Engine
+- [ ] Integrate PapaParse for CSV handling.
+- [ ] Build Smart Import Wizard (auto-detect columns).
+- [ ] Implement Merchant Recognition & Local Learning Engine.
+- [ ] Implement Duplicate Detection & Bulk Categorization.
+
+### Phase 5: Smart Features & Polish
+- [ ] Financial Timeline UI.
+- [ ] Monthly Replay (Spotify Wrapped style).
+- [ ] Gamification (No Spend Challenges).
+- [ ] Analyzers (Oops Detector, Subscription Analyzer).
+
+## Verification Plan
+
+### Automated Tests
+- N/A for MVP unless specified.
+
+### Manual Verification
+- Test PWA installation and Service Worker offline caching via Chrome DevTools.
+- Verify IndexedDB persistence across browser reloads.
+- Verify JSON export/import structural integrity.
+- UI validation across mobile dimensions.
