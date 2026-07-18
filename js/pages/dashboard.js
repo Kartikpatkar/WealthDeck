@@ -53,9 +53,9 @@ export async function render(container, params = {}) {
     else if (hour < 17) greeting = 'Good afternoon';
 
     container.innerHTML = `
-      <div class="page-head">
-        <h2>Dashboard</h2>
-        <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">${greeting}, ${userName}</div>
+      <div class="page-header-left" style="margin-bottom: 24px; padding-top: 8px;">
+        <h1 class="page-title" style="font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Welcome back${userName ? `, ${userName}` : ''} 👋</h1>
+        <p class="page-subtitle" style="font-size: 14px; color: var(--text-secondary);">Here's what's happening with your finances.</p>
       </div>
 
       <div class="balance-card">
