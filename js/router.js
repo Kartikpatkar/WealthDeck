@@ -87,8 +87,11 @@ async function handleRoute() {
 
 function updateNav(currentPath) {
   // This will update active states on bottom nav and sidebar
+  let checkPath = currentPath;
+  if (checkPath === '/') checkPath = '/dashboard';
+  
   document.querySelectorAll('.nav-item').forEach(el => {
-    if (el.getAttribute('href') === '#' + currentPath) {
+    if (el.getAttribute('href') === '#' + checkPath) {
       el.classList.add('active');
     } else {
       el.classList.remove('active');
@@ -99,41 +102,23 @@ function updateNav(currentPath) {
 function renderBottomNav() {
   const nav = document.getElementById('bottom-nav');
   nav.innerHTML = `
-    <a href="#/dashboard" class="nav-item active">
-      <span style="font-size: 20px;">📊</span>
-      Dash
+    <a href="#/dashboard" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>
+      Home
     </a>
     <a href="#/transactions" class="nav-item">
-      <span style="font-size: 20px;">📋</span>
-      Txns
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+      Activity
     </a>
-    
-    <div style="flex: 1; display: flex; justify-content: center; position: relative;">
-      <a href="#/transaction/new" style="
-        position: absolute;
-        bottom: 12px;
-        background: var(--color-primary);
-        color: white;
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        font-size: 24px;
-        box-shadow: 0 4px 16px rgba(99, 102, 241, 0.5);
-        z-index: 1000;
-        transition: transform 0.2s;
-      " onclick="this.style.transform='scale(0.9)'; setTimeout(() => this.style.transform='scale(1)', 200);">➕</a>
-    </div>
-
+    <a href="#/transaction/new" class="fab" aria-label="Add transaction" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+    </a>
     <a href="#/budgets" class="nav-item">
-      <span style="font-size: 20px;">📦</span>
-      Budget
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 010-4h14v4"/><path d="M3 5v14a2 2 0 002 2h16v-5"/><path d="M18 12a2 2 0 000 4h4v-4h-4z"/></svg>
+      Budgets
     </a>
     <a href="#/more" class="nav-item">
-      <span style="font-size: 20px;">☰</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
       More
     </a>
   `;
@@ -142,20 +127,38 @@ function renderBottomNav() {
 function renderSidebar() {
   const nav = document.getElementById('sidebar-nav');
   nav.innerHTML = `
-    <a href="#/dashboard" class="nav-item active">📊 Dashboard</a>
-    <a href="#/transactions" class="nav-item">📋 Transactions</a>
-    <a href="#/accounts" class="nav-item">🏦 Accounts</a>
-    <a href="#/categories" class="nav-item">🏷️ Categories</a>
-    <a href="#/budgets" class="nav-item">📦 Budgets</a>
-    <a href="#/bills" class="nav-item">📅 Bills</a>
-    <a href="#/goals" class="nav-item">🎯 Goals</a>
-    <a href="#/reports" class="nav-item">📈 Reports</a>
-    <a href="#/timeline" class="nav-item">⏳ Timeline</a>
-    <a href="#/replay" class="nav-item">⏪ Replay</a>
-    <a href="#/analyzers" class="nav-item">💡 Analyzers</a>
-    <a href="#/import" class="nav-item">🤖 Smart Import</a>
-    <a href="#/import-export" class="nav-item">🔄 Backup</a>
-    <a href="#/settings" class="nav-item">⚙️ Settings</a>
+    <div class="brand"><div class="mark"></div><span>WealthDeck</span></div>
+    
+    <a href="#/dashboard" class="nav-item">
+      <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="#/transactions" class="nav-item">
+      <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+      <span>Transactions</span>
+    </a>
+    <a href="#/budgets" class="nav-item">
+      <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 010-4h14v4"/><path d="M3 5v14a2 2 0 002 2h16v-5"/><path d="M18 12a2 2 0 000 4h4v-4h-4z"/></svg>
+      <span>Budgets</span>
+    </a>
+    <a href="#/accounts" class="nav-item">
+      <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+      <span>Accounts</span>
+    </a>
+    <a href="#/reports" class="nav-item">
+      <span style="font-size:16px; width:18px; text-align:center;">📈</span>
+      <span>Reports</span>
+    </a>
+    <a href="#/timeline" class="nav-item">
+      <span style="font-size:16px; width:18px; text-align:center;">⏳</span>
+      <span>Timeline</span>
+    </a>
+    
+    <div class="spacer"></div>
+    <a href="#/settings" class="nav-item">
+      <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span>Settings</span>
+    </a>
   `;
 }
 

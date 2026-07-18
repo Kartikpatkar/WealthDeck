@@ -3,26 +3,24 @@ export async function render(container) {
   const currentCurrency = localStorage.getItem('wealthdeck_currency') || 'USD';
   
   container.innerHTML = `
-    <header class="page-header">
-      <h1 class="page-header__title">Settings</h1>
-    </header>
+    <div class="page-head"><h2>Settings</h2></div>
     
-    <div class="card" style="margin-top: var(--spacing-lg);">
-      <h2 style="margin-bottom: var(--spacing-md); font-size: 1.1rem;">Appearance</h2>
-      <div class="form-group" style="margin-bottom: var(--spacing-md);">
-        <label class="form-label" for="theme-select">Theme</label>
-        <select class="form-input" id="theme-select">
+    <div class="card" style="margin-top: 16px;">
+      <div class="section-title">Appearance</div>
+      <div class="field">
+        <label>Theme</label>
+        <select id="theme-select">
           <option value="dark" ${currentTheme === 'dark' ? 'selected' : ''}>Dark</option>
           <option value="light" ${currentTheme === 'light' ? 'selected' : ''}>Light</option>
         </select>
       </div>
     </div>
     
-    <div class="card" style="margin-top: var(--spacing-md);">
-      <h2 style="margin-bottom: var(--spacing-md); font-size: 1.1rem;">Preferences</h2>
-      <div class="form-group" style="margin-bottom: var(--spacing-md);">
-        <label class="form-label" for="currency-select">Currency</label>
-        <select class="form-input" id="currency-select">
+    <div class="card" style="margin-top: 16px;">
+      <div class="section-title">Preferences</div>
+      <div class="field">
+        <label>Currency</label>
+        <select id="currency-select">
           <option value="USD" ${currentCurrency === 'USD' ? 'selected' : ''}>USD ($)</option>
           <option value="EUR" ${currentCurrency === 'EUR' ? 'selected' : ''}>EUR (€)</option>
           <option value="GBP" ${currentCurrency === 'GBP' ? 'selected' : ''}>GBP (£)</option>
@@ -45,7 +43,7 @@ export async function render(container) {
   document.getElementById('currency-select').addEventListener('change', (e) => {
     const val = e.target.value;
     localStorage.setItem('wealthdeck_currency', val);
-    import('../components/toast.js').then(m => m.showToast('Currency updated. Note: You may need to refresh to see all changes.'));
+    import('../components/toast.js').then(m => m.showToast('Currency updated.'));
   });
 }
 

@@ -45,14 +45,15 @@ export async function render(container, params = {}) {
       const data = Object.values(summary).map(v => v / 100);
 
       container.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--spacing-lg);">
-          <h1>Reports</h1>
-          <select id="report-filter" class="input" style="width: 150px; margin-bottom:0;">
+        <div class="page-head">
+          <h2>Reports</h2>
+          <select id="report-filter" style="width: 130px; margin-bottom:0; font-size:13px; padding: 6px 10px;">
             <option value="this-month" ${currentFilter === 'this-month' ? 'selected' : ''}>This Month</option>
             <option value="last-month" ${currentFilter === 'last-month' ? 'selected' : ''}>Last Month</option>
             <option value="all-time" ${currentFilter === 'all-time' ? 'selected' : ''}>All Time</option>
           </select>
         </div>
+
         
         <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Expense Breakdown</p>
         

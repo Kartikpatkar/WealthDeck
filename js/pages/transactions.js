@@ -2,71 +2,133 @@ import { getAllTransactions, saveTransaction, deleteTransaction } from '../servi
 import { confirmModal } from '../components/modal.js';
 import { getAllAccounts, seedDefaultAccount } from '../services/accountService.js';
 import { getAllCategories, seedDefaultCategories } from '../services/categoryService.js';
-import { formatCurrency } from '../utils/format.js';
+import { formatCurrency, formatDate } from '../utils/format.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Transactions...</div>`;
   
   try {
     const transactions = await getAllTransactions();
+    await seedDefaultCategories();
+    const categories = await getAllCategories();
+    const catMap = categories.reduce((acc, c) => ({...acc, [c.id]: c}), {});
+    
+    // Group by Date
+    const grouped = {};
+    transactions.forEach(t => {
+      const d = formatDate(t.date);
+      if(!grouped[d]) grouped[d] = [];
+      grouped[d].push(t);
+    });
     
     let txnList = '';
     if (transactions.length === 0) {
-      txnList = `<p>No transactions yet.</p>`;
+      txnList = `<div class="hint" style="margin-top:40px;">No transactions yet.</div>`;
     } else {
-      txnList = transactions.map(t => `
-        <div class="card" style="margin-bottom: var(--spacing-sm); display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <strong>${t.merchant || t.description || 'Transaction'}</strong>
-            <div style="font-size: 0.8em; color: var(--text-secondary);">${new Date(t.date).toLocaleDateString()}</div>
-          </div>
-          <div style="text-align: right;">
-            <div class="mono" style="color: ${t.type === 'income' ? 'var(--color-income)' : 'var(--color-expense)'}; font-weight: bold;">
-              ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount)}
+      Object.keys(grouped).sort((a,b) => new Date(b) - new Date(a)).forEach(date => {
+        txnList += `<div class="date-header">${date}</div>`;
+        txnList += grouped[date].map(t => {
+          const isIncome = t.type === 'income';
+          const cName = catMap[t.categoryId]?.name || 'Uncategorized';
+          const cIcon = catMap[t.categoryId]?.icon || '📦';
+          const amtStr = formatCurrency(t.amount);
+          const colorClass = isIncome ? 'income' : (t.type === 'transfer' ? 'transfer' : 'expense');
+          const sign = isIncome ? '+' : (t.type === 'transfer' ? '' : '-');
+          
+          return `
+            <div class="tx-row" data-id="${t.id}">
+              <div class="tx-icon" style="background:${isIncome ? 'rgba(52,211,153,.15)' : 'rgba(148,163,184,.12)'}">${cIcon}</div>
+              <div class="tx-info">
+                <div class="m">${t.merchant || 'Transaction'}</div>
+                <div class="c">${cName}</div>
+              </div>
+              <div class="tx-amt ${colorClass}">${sign}${amtStr}</div>
             </div>
-            <div style="margin-top:4px;">
-              <button class="edit-txn-btn" data-id="${t.id}" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:0.8em; margin-right:var(--spacing-sm);">Edit</button>
-              <button class="delete-txn-btn" data-id="${t.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer; font-size:0.8em;">Delete</button>
-            </div>
-          </div>
-        </div>
-      `).join('');
+          `;
+        }).join('');
+      });
     }
 
     container.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
-        <h1>Transactions</h1>
-        <button id="add-txn-btn" class="btn btn--primary">+ Add</button>
+      <div class="page-head"><h2>Transactions</h2></div>
+      
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" placeholder="Search merchant, category...">
       </div>
       
-      <div id="transactions-list">
-        ${txnList}
+      <div class="chips">
+        <button class="chip active">All</button>
+        <button class="chip">Income</button>
+        <button class="chip">Expense</button>
+        <button class="chip">This month</button>
       </div>
       
-      <div id="add-txn-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:var(--z-modal); padding:0; display:flex; flex-direction:column; justify-content:flex-end;">
-        <div class="card modal-sheet" style="width: 100%; max-width: 500px; margin: 0 auto; background: var(--bg-surface-elevated); padding: var(--spacing-lg); max-height: 90vh; overflow-y: auto;">
-          <div style="width: 40px; height: 4px; background: var(--border-light); border-radius: 2px; margin: 0 auto 16px auto;"></div>
-          <h2 style="margin-bottom: var(--spacing-sm);">Transaction</h2>
-          <form id="add-txn-form" style="display:flex; flex-direction:column; gap:var(--spacing-md); margin-top:var(--spacing-md);">
+      <div class="card" style="padding:8px 20px;">
+        <div id="fullTxList">${txnList}</div>
+      </div>
+      
+      <!-- ADD TRANSACTION MODAL -->
+      <div class="modal-overlay" id="add-txn-modal">
+        <div class="modal">
+          <div class="modal-handle"></div>
+          <div class="modal-head">
+            <h3>Add transaction</h3>
+            <button type="button" class="modal-close" id="close-txn-modal" aria-label="Close">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <form id="add-txn-form">
             <input type="hidden" id="txn-id">
-            <select id="txn-type" required class="input">
-              <option value="expense">Expense</option>
-              <option value="income">Income</option>
-              <option value="transfer">Transfer</option>
-            </select>
-            <input type="number" step="0.01" id="txn-amount" placeholder="Amount" required class="input">
-            <input type="text" id="txn-merchant" placeholder="Merchant / Title" required class="input">
-            <input type="text" id="txn-description" placeholder="Description (Optional)" class="input">
-            <input type="date" id="txn-date" required class="input">
-            <select id="txn-account" required class="input"><option value="">From Account</option></select>
-            <select id="txn-to-account" class="input" style="display:none;"><option value="">To Account</option></select>
-            <select id="txn-category" required class="input"><option value="">Select Category</option></select>
-            <input type="text" id="txn-tags" placeholder="Tags (comma separated)" class="input">
-            <textarea id="txn-notes" placeholder="Notes (Optional)" class="input" rows="2"></textarea>
             
-            <div style="display:flex; justify-content:flex-end; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
-              <button type="button" id="close-txn-modal" class="btn">Cancel</button>
-              <button type="submit" class="btn btn--primary">Save</button>
+            <div class="segmented" id="typeSeg">
+              <button type="button" class="active" data-type="expense">Expense</button>
+              <button type="button" data-type="income">Income</button>
+              <button type="button" data-type="transfer">Transfer</button>
+            </div>
+            <input type="hidden" id="txn-type" value="expense">
+
+            <div class="amount-input-wrap">
+              <span class="cur">$</span>
+              <input type="number" step="0.01" class="amount-input expense-mode" id="txn-amount" inputmode="decimal" placeholder="0.00" required>
+            </div>
+
+            <div class="field">
+              <label>Category</label>
+              <select id="txn-category" required><option value="">Select Category</option></select>
+            </div>
+            
+            <div class="field-row">
+              <div class="field">
+                <label>Account</label>
+                <select id="txn-account" required><option value="">From Account</option></select>
+              </div>
+              <div class="field" id="txn-to-account-wrap" style="display:none;">
+                <label>To Account</label>
+                <select id="txn-to-account"><option value="">To Account</option></select>
+              </div>
+            </div>
+            
+            <div class="field">
+              <label>Date</label>
+              <input type="date" id="txn-date" required>
+            </div>
+
+            <button type="button" class="more-toggle" id="more-toggle-btn">
+              <span>More details</span>
+              <svg class="svg-icon" id="more-toggle-icon" style="transition:transform .2s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            
+            <div class="more-fields" id="moreFields">
+              <div class="field"><label>Merchant / Title</label><input type="text" id="txn-merchant" placeholder="Start typing to search" required></div>
+              <div class="field"><label>Tags</label><input type="text" id="txn-tags" placeholder="Add tags separated by comma"></div>
+              <div class="field"><label>Notes</label><input type="text" id="txn-notes" placeholder="Add a note"></div>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:24px;">
+              <button type="button" class="btn btn--secondary" id="delete-txn-btn" style="display:none; flex:0.4;">Delete</button>
+              <button type="submit" class="save-btn" style="flex:1;">Save transaction</button>
             </div>
           </form>
         </div>
@@ -79,66 +141,98 @@ export async function render(container, params = {}) {
     document.getElementById('txn-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
     document.getElementById('txn-to-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
     
-    await seedDefaultCategories();
-    const categories = await getAllCategories();
     document.getElementById('txn-category').innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     
-    const typeSelect = document.getElementById('txn-type');
+    // UI logic for Segments
+    const segButtons = document.querySelectorAll('#typeSeg button');
+    const typeInput = document.getElementById('txn-type');
+    const amountInput = document.getElementById('txn-amount');
+    const toAccountWrap = document.getElementById('txn-to-account-wrap');
     const toAccountSelect = document.getElementById('txn-to-account');
-    typeSelect.addEventListener('change', () => {
-      toAccountSelect.style.display = typeSelect.value === 'transfer' ? 'block' : 'none';
-      toAccountSelect.required = typeSelect.value === 'transfer';
+    
+    function setType(type) {
+      segButtons.forEach(b => b.classList.remove('active'));
+      const activeBtn = document.querySelector(`#typeSeg button[data-type="${type}"]`);
+      if(activeBtn) activeBtn.classList.add('active');
+      typeInput.value = type;
+      
+      amountInput.classList.remove('income-mode', 'expense-mode');
+      if(type === 'income') amountInput.classList.add('income-mode');
+      else if(type === 'expense') amountInput.classList.add('expense-mode');
+      
+      if(type === 'transfer') {
+        toAccountWrap.style.display = 'block';
+        toAccountSelect.required = true;
+      } else {
+        toAccountWrap.style.display = 'none';
+        toAccountSelect.required = false;
+      }
+    }
+    
+    segButtons.forEach(b => {
+      b.addEventListener('click', () => setType(b.dataset.type));
     });
 
-    document.getElementById('transactions-list').addEventListener('click', async (e) => {
-      const id = Number(e.target.dataset.id);
-      if (e.target.classList.contains('delete-txn-btn')) {
-        if (await confirmModal('Delete Transaction', 'Are you sure?')) {
-          await deleteTransaction(id);
-          render(container);
+    // More Toggle
+    const moreBtn = document.getElementById('more-toggle-btn');
+    const moreFields = document.getElementById('moreFields');
+    const moreIcon = document.getElementById('more-toggle-icon');
+    moreBtn.addEventListener('click', () => {
+      moreFields.classList.toggle('open');
+      moreIcon.style.transform = moreFields.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+
+    // Row click -> Edit
+    const listEl = document.getElementById('fullTxList');
+    listEl.addEventListener('click', (e) => {
+      const row = e.target.closest('.tx-row');
+      if(!row) return;
+      const id = Number(row.dataset.id);
+      const txn = transactions.find(t => t.id === id);
+      if (txn) {
+        document.getElementById('txn-id').value = txn.id;
+        setType(txn.type);
+        document.getElementById('txn-amount').value = (txn.amount / 100).toFixed(2);
+        document.getElementById('txn-merchant').value = txn.merchant || '';
+        document.getElementById('txn-date').value = new Date(txn.date).toISOString().split('T')[0];
+        document.getElementById('txn-account').value = txn.accountId;
+        if(txn.type === 'transfer') {
+          document.getElementById('txn-to-account').value = txn.toAccountId;
         }
-      } else if (e.target.classList.contains('edit-txn-btn')) {
-        const txn = transactions.find(t => t.id === id);
-        if (txn) {
-          document.getElementById('txn-id').value = txn.id;
-          document.getElementById('txn-type').value = txn.type;
-          document.getElementById('txn-amount').value = (txn.amount / 100).toFixed(2);
-          document.getElementById('txn-merchant').value = txn.merchant || '';
-          document.getElementById('txn-description').value = txn.description || '';
-          document.getElementById('txn-date').value = new Date(txn.date).toISOString().split('T')[0];
-          document.getElementById('txn-account').value = txn.accountId;
-          if (txn.type === 'transfer') {
-            document.getElementById('txn-to-account').value = txn.toAccountId;
-            toAccountSelect.style.display = 'block';
-            toAccountSelect.required = true;
-          } else {
-            toAccountSelect.style.display = 'none';
-            toAccountSelect.required = false;
-          }
-          document.getElementById('txn-category').value = txn.categoryId || '';
-          document.getElementById('txn-tags').value = (txn.tags || []).join(', ');
-          document.getElementById('txn-notes').value = txn.notes || '';
-          
-          document.getElementById('add-txn-modal').style.display = 'flex';
-        }
+        document.getElementById('txn-category').value = txn.categoryId || '';
+        document.getElementById('txn-tags').value = (txn.tags || []).join(', ');
+        document.getElementById('txn-notes').value = txn.notes || '';
+        
+        document.getElementById('delete-txn-btn').style.display = 'block';
+        openModal();
       }
     });
     
-    // Setup modal & form
-    const modal = document.getElementById('add-txn-modal');
-    document.getElementById('add-txn-btn').addEventListener('click', () => {
-      document.getElementById('add-txn-form').reset();
-      document.getElementById('txn-id').value = '';
-      toAccountSelect.style.display = 'none';
-      toAccountSelect.required = false;
-      document.getElementById('txn-date').valueAsDate = new Date();
-      modal.style.display = 'flex';
+    // Delete Button
+    document.getElementById('delete-txn-btn').addEventListener('click', async () => {
+      const id = Number(document.getElementById('txn-id').value);
+      if (id && await confirmModal('Delete Transaction', 'Are you sure?')) {
+        await deleteTransaction(id);
+        closeModal();
+        render(container);
+      }
     });
 
-    document.getElementById('close-txn-modal').addEventListener('click', () => {
-      modal.style.display = 'none';
+    // Setup modal overlay clicks
+    const modalOverlay = document.getElementById('add-txn-modal');
+    modalOverlay.addEventListener('click', (e) => {
+      if(e.target === modalOverlay) closeModal();
     });
+    document.getElementById('close-txn-modal').addEventListener('click', closeModal);
     
+    function openModal() {
+      modalOverlay.classList.add('open');
+    }
+    function closeModal() {
+      modalOverlay.classList.remove('open');
+    }
+    
+    // Form Submit
     document.getElementById('add-txn-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -155,29 +249,32 @@ export async function render(container, params = {}) {
       
       const payload = {
         type: type,
-        amount: parseFloat(document.getElementById('txn-amount').value),
+        amount: Math.round(parseFloat(document.getElementById('txn-amount').value) * 100),
         merchant: document.getElementById('txn-merchant').value,
-        description: document.getElementById('txn-description').value,
         date: document.getElementById('txn-date').value,
         accountId: accountId,
         toAccountId: toAccountId,
         categoryId: Number(document.getElementById('txn-category').value),
         tags: tagsInput ? tagsInput.split(',').map(t => t.trim()) : [],
         notes: document.getElementById('txn-notes').value,
-        isRecurring: false,
-        importSource: 'manual'
       };
       
       const idStr = document.getElementById('txn-id').value;
       if (idStr) payload.id = Number(idStr);
       
       await saveTransaction(payload);
-      modal.style.display = 'none';
+      closeModal();
       render(container); // Re-render list
     });
 
+    // Open Modal via router param (e.g. from FAB)
     if (params.openModal) {
-      document.getElementById('add-txn-btn').click();
+      document.getElementById('add-txn-form').reset();
+      document.getElementById('txn-id').value = '';
+      setType('expense');
+      document.getElementById('delete-txn-btn').style.display = 'none';
+      document.getElementById('txn-date').valueAsDate = new Date();
+      openModal();
       window.location.hash = '#/transactions'; // Reset hash so back button works
     }
 
@@ -186,3 +283,4 @@ export async function render(container, params = {}) {
   }
 }
 export function destroy() {}
+

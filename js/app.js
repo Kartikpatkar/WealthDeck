@@ -6,6 +6,14 @@ async function bootstrap() {
     // 0. Apply Theme
     const theme = localStorage.getItem('wealthdeck_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', theme);
+    
+    window.app = window.app || {};
+    window.app.toggleTheme = function() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('wealthdeck_theme', next);
+    };
 
     // 1. Initialize IndexedDB
     await initDB();

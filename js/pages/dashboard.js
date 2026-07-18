@@ -11,99 +11,162 @@ export async function render(container, params = {}) {
     const transactions = await getAllTransactions();
     const categories = await getAllCategories();
     
-    const totalBalance = accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0);
+    // Calculate total balance
+    const totalBalance = accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0) / 100;
     
-    const recentTxns = transactions.slice(0, 5).map(t => `
-      <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-light);">
-        <div>
-          <strong>${t.merchant || 'Transaction'}</strong>
-          <div style="color: var(--text-secondary); font-size: 0.8em;">${formatDate(t.date)}</div>
+    // Calculate income and expense for this month (simplified to all-time for demo if needed, but let's just do all time for now)
+    let income = 0;
+    let expense = 0;
+    transactions.forEach(t => {
+      if (t.type === 'income') income += t.amount;
+      if (t.type === 'expense') expense += t.amount;
+    });
+    
+    // Category mapping for icons and names
+    const catMap = categories.reduce((acc, c) => ({...acc, [c.id]: c}), {});
+
+    // Recent Transactions
+    const recentTxns = transactions.slice(0, 5).map(t => {
+      const isIncome = t.type === 'income';
+      const cName = catMap[t.categoryId]?.name || 'Uncategorized';
+      const cIcon = catMap[t.categoryId]?.icon || '📦';
+      const amtStr = formatCurrency(t.amount);
+      const colorClass = isIncome ? 'income' : (t.type === 'transfer' ? 'transfer' : 'expense');
+      const sign = isIncome ? '+' : (t.type === 'transfer' ? '' : '-');
+      
+      return `
+        <div class="tx-row" onclick="location.hash='#/transaction/${t.id}'">
+          <div class="tx-icon" style="background:${isIncome ? 'rgba(52,211,153,.15)' : 'rgba(148,163,184,.12)'}">${cIcon}</div>
+          <div class="tx-info">
+            <div class="m">${t.merchant || 'Transaction'}</div>
+            <div class="c">${cName}</div>
+          </div>
+          <div class="tx-amt ${colorClass}">${sign}${amtStr}</div>
         </div>
-        <div style="color: ${t.type === 'income' ? 'var(--color-income)' : 'var(--color-expense)'}">
-          ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount)}
-        </div>
-      </div>
-    `).join('') || '<p>No recent transactions.</p>';
+      `;
+    }).join('') || '<div class="hint">No recent transactions.</div>';
 
     container.innerHTML = `
-      <h1>Dashboard</h1>
-      
-      <div class="card" style="margin-bottom: var(--spacing-lg);">
-        <h3 style="color: var(--text-secondary); font-weight: 500;">Total Balance</h3>
-        <div class="mono" style="font-size: 2em; font-weight: 700;">${formatCurrency(totalBalance)}</div>
-        ${accounts.length === 0 ? '<a href="#/accounts" class="btn btn--primary" style="margin-top:var(--spacing-sm);">+ Add Account</a>' : ''}
+      <div class="page-head"><h2>Dashboard</h2></div>
+
+      <div class="balance-card">
+        <div class="label">Total balance</div>
+        <div class="amount"><span class="cur">$</span><span id="balanceNum">0</span><span class="cents">.00</span></div>
+        <div class="balance-row">
+          <div class="pill" style="color:var(--color-income)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Active</div>
+          <div class="pill">${accounts.length} accounts</div>
+        </div>
       </div>
-      
-      <div style="display: grid; grid-template-columns: 1fr; gap: var(--spacing-md);">
-        <!-- Chart placeholder for later -->
-        <div class="card">
-          <h3>Spending Overview</h3>
-          <div style="position: relative; height: 200px; width: 100%; overflow: hidden;">
-            <canvas id="dashboard-chart" style="width: 100%; height: 100%;"></canvas>
+
+      <div class="dash-grid">
+        <div>
+          <div class="stats-grid">
+            <div class="stat-card income">
+              <div class="top"><span style="font-size:12px;color:var(--text-secondary);font-weight:600">Income</span><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div></div>
+              <div class="amt">${formatCurrency(income)}</div>
+              <div class="lbl">Total</div>
+            </div>
+            <div class="stat-card expense">
+              <div class="top"><span style="font-size:12px;color:var(--text-secondary);font-weight:600">Expense</span><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div></div>
+              <div class="amt">${formatCurrency(expense)}</div>
+              <div class="lbl">Total</div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:16px;">
+            <div class="section-title">Recent activity<span class="link" onclick="location.hash='#/transactions'">See all</span></div>
+            <div>${recentTxns}</div>
           </div>
         </div>
-        
+
         <div class="card">
-          <h3>Recent Transactions</h3>
-          ${recentTxns}
-          <div style="margin-top: var(--spacing-md); text-align: center;">
-            <a href="#/transactions" class="btn btn--primary">View All</a>
+          <div class="section-title">Spending breakdown</div>
+          <div class="donut-wrap">
+            <div class="donut" id="donutChart">
+              <div class="donut-center"><div class="v">${formatCurrency(expense)}</div><div class="t">spent</div></div>
+            </div>
+            <div class="legend" id="donutLegend"></div>
           </div>
         </div>
       </div>
     `;
     
-    initChart(transactions, categories);
+    // Animate balance
+    animateBalance(totalBalance);
+    
+    // Draw CSS Donut
+    drawDonut(transactions, catMap);
 
   } catch (err) {
     container.innerHTML = `<p style="color: red;">Error loading dashboard: ${err.message}</p>`;
   }
 }
 
-let chartInstance = null;
+function animateBalance(targetBalance) {
+  const el = document.getElementById('balanceNum');
+  const centsEl = document.querySelector('.balance-card .cents');
+  if(!el) return;
+  
+  // Format cents
+  const parts = targetBalance.toFixed(2).split('.');
+  centsEl.textContent = '.' + parts[1];
+  const targetWhole = parseInt(parts[0], 10);
+  
+  let start = null;
+  const dur = 1100;
+  function step(ts) {
+    if(!start) start = ts;
+    const p = Math.min(1, (ts - start) / dur);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.floor(eased * targetWhole).toLocaleString();
+    if(p < 1) requestAnimationFrame(step);
+    else el.textContent = targetWhole.toLocaleString();
+  }
+  requestAnimationFrame(step);
+}
 
-function initChart(transactions, categories) {
-  const ctx = document.getElementById('dashboard-chart');
-  if (!ctx || !window.Chart) return;
-
-  // Simple expense chart
+function drawDonut(transactions, catMap) {
   const expenses = transactions.filter(t => t.type === 'expense');
   const grouped = {};
   expenses.forEach(e => {
     grouped[e.categoryId] = (grouped[e.categoryId] || 0) + e.amount;
   });
   
-  const catMap = categories.reduce((acc, c) => ({...acc, [c.id]: c.name}), {});
+  const colors = ['#6366f1', '#f87171', '#fbbf24', '#34d399', '#a78bfa', '#22d3ee'];
   
-  const data = Object.values(grouped).map(v => v / 100);
-  const labels = Object.keys(grouped).map(id => catMap[id] || `Cat ${id}`);
-
-  if (chartInstance) {
-    chartInstance.destroy();
+  const slices = Object.keys(grouped).map((id, idx) => ({
+    name: catMap[id]?.name || 'Other',
+    val: grouped[id] / 100,
+    color: colors[idx % colors.length]
+  })).sort((a,b) => b.val - a.val).slice(0, 5); // top 5
+  
+  const total = slices.reduce((s, x) => s + x.val, 0);
+  if (total === 0) {
+    document.getElementById('donutChart').style.background = 'var(--bg-surface-elevated)';
+    document.getElementById('donutLegend').innerHTML = '<div class="hint">No expense data</div>';
+    return;
   }
-
-  chartInstance = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: labels.length ? labels : ['No Data'],
-      datasets: [{
-        data: data.length ? data : [1],
-        backgroundColor: ['#f87171', '#fbbf24', '#60a5fa', '#34d399', '#a78bfa'],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'right', labels: { color: '#f1f5f9' } }
-      }
-    }
+  
+  let acc = 0;
+  const gradParts = [];
+  slices.forEach(s => {
+    const start = (acc / total) * 360;
+    const end = ((acc + s.val) / total) * 360;
+    gradParts.push(s.color + ' ' + start + 'deg ' + end + 'deg');
+    acc += s.val;
   });
+  
+  document.getElementById('donutChart').style.background = 'conic-gradient(' + gradParts.join(',') + ')';
+  
+  document.getElementById('donutLegend').innerHTML = slices.map(s => `
+    <div class="legend-row">
+      <div class="dot" style="background:${s.color}"></div>
+      <div class="name">${s.name}</div>
+      <div class="val">${formatCurrency(s.val * 100)}</div>
+    </div>
+  `).join('');
 }
+
 export function destroy() {
-  if (chartInstance) {
-    chartInstance.destroy();
-    chartInstance = null;
-  }
+  // No external instances to destroy
 }
