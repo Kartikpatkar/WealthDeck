@@ -82,7 +82,7 @@ export async function render(container, params = {}) {
 
             <div style="display:flex; gap:10px; margin-top:24px;">
               <button type="button" class="btn btn--secondary" id="delete-budget-btn" style="display:none; flex:0.4;">Delete</button>
-              <button type="submit" class="save-btn" style="flex:1;">Save budget</button>
+              <button type="submit" class="btn" style="flex:1;">Save budget</button>
             </div>
           </form>
         </div>

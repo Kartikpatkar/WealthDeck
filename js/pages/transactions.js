@@ -128,7 +128,7 @@ export async function render(container, params = {}) {
 
             <div style="display:flex; gap:10px; margin-top:24px;">
               <button type="button" class="btn btn--secondary" id="delete-txn-btn" style="display:none; flex:0.4;">Delete</button>
-              <button type="submit" class="save-btn" style="flex:1;">Save transaction</button>
+              <button type="submit" class="btn" style="flex:1;">Save transaction</button>
             </div>
           </form>
         </div>
@@ -275,7 +275,7 @@ export async function render(container, params = {}) {
       document.getElementById('delete-txn-btn').style.display = 'none';
       document.getElementById('txn-date').valueAsDate = new Date();
       openModal();
-      window.location.hash = '#/transactions'; // Reset hash so back button works
+      history.replaceState(null, null, '#/transactions'); // Reset hash without triggering re-render
     }
 
   } catch (err) {
