@@ -38,7 +38,9 @@ export async function render(container, params = {}) {
         <!-- Chart placeholder for later -->
         <div class="card">
           <h3>Spending Overview</h3>
-          <canvas id="dashboard-chart" style="width: 100%; height: 200px;"></canvas>
+          <div style="position: relative; height: 200px; width: 100%; overflow: hidden;">
+            <canvas id="dashboard-chart" style="width: 100%; height: 100%;"></canvas>
+          </div>
         </div>
         
         <div class="card">
@@ -75,6 +77,10 @@ function initChart(transactions, categories) {
   
   const data = Object.values(grouped).map(v => v / 100);
   const labels = Object.keys(grouped).map(id => catMap[id] || `Cat ${id}`);
+
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
 
   chartInstance = new Chart(ctx, {
     type: 'doughnut',

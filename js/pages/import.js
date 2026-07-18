@@ -128,7 +128,7 @@ export async function render(container, params = {}) {
       count++;
     }
     
-    showToast(\`Successfully imported \${count} transactions!\`, 'success');
+    showToast(`Successfully imported ${count} transactions!`, 'success');
     window.location.hash = '#/transactions';
   });
 }

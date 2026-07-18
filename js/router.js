@@ -9,6 +9,7 @@ import * as Reports from './pages/reports.js';
 import * as ImportExport from './pages/importExport.js';
 import * as Import from './pages/import.js';
 import * as SmartFeatures from './pages/smartFeatures.js';
+import * as Settings from './pages/settings.js';
 
 const routes = [
   { path: /^\/$/, module: Dashboard },
@@ -29,6 +30,7 @@ const routes = [
   { path: /^\/timeline$/, module: { render: SmartFeatures.renderTimeline, destroy: () => {} } },
   { path: /^\/replay$/, module: { render: SmartFeatures.renderMonthlyReplay, destroy: () => {} } },
   { path: /^\/analyzers$/, module: { render: SmartFeatures.renderAnalyzers, destroy: () => {} } },
+  { path: /^\/settings$/, module: Settings },
   { path: /^\/more$/, module: { render: renderMoreMenu, destroy: () => {} } }
 ];
 
@@ -52,6 +54,9 @@ export function renderMoreMenu(container) {
       <h3 style="margin-top: var(--spacing-sm);">Data</h3>
       <a href="#/import" class="card" style="text-decoration:none; color:inherit;">🤖 Smart CSV Import</a>
       <a href="#/import-export" class="card" style="text-decoration:none; color:inherit;">🔄 Backup & Restore</a>
+      
+      <h3 style="margin-top: var(--spacing-sm);">Preferences</h3>
+      <a href="#/settings" class="card" style="text-decoration:none; color:inherit;">⚙️ Settings</a>
     </div>
   `;
 }

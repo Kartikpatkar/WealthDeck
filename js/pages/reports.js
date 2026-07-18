@@ -2,11 +2,12 @@ import { getAllTransactions } from '../services/transactionService.js';
 import { getAllCategories } from '../services/categoryService.js';
 import { formatCurrency } from '../utils/format.js';
 
+let chartInstance = null;
+
 export async function render(container, params = {}) {
   
   // Basic framework for rendering with filter state
   let currentFilter = 'this-month';
-  let chartInstance = null;
   
   async function draw() {
     container.innerHTML = `<div class="loading">Loading Reports...</div>`;
@@ -55,8 +56,8 @@ export async function render(container, params = {}) {
         
         <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Expense Breakdown</p>
         
-        <div class="card" style="height: 400px; display:flex; align-items:center; justify-content:center;">
-          ${expenses.length === 0 ? '<p>No expense data available for this period.</p>' : '<canvas id="reports-chart" style="width:100%; height:100%;"></canvas>'}
+        <div class="card" style="display:flex; align-items:center; justify-content:center;">
+          ${expenses.length === 0 ? '<p style="height:400px; display:flex; align-items:center;">No expense data available for this period.</p>' : '<div style="position: relative; height: 400px; width: 100%; overflow: hidden;"><canvas id="reports-chart" style="width: 100%; height: 100%;"></canvas></div>'}
         </div>
         
         <div class="card" style="margin-top: var(--spacing-md);">
@@ -76,6 +77,9 @@ export async function render(container, params = {}) {
       });
 
       if (expenses.length > 0) {
+        if (chartInstance) {
+          chartInstance.destroy();
+        }
         const ctx = document.getElementById('reports-chart');
         chartInstance = new Chart(ctx, {
           type: 'bar',
@@ -109,4 +113,10 @@ export async function render(container, params = {}) {
   
   draw();
 }
-export function destroy() {}
+
+export function destroy() {
+  if (chartInstance) {
+    chartInstance.destroy();
+    chartInstance = null;
+  }
+}

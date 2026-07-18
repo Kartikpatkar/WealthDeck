@@ -39,7 +39,7 @@
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-light);
   background: var(--bg-primary);
-  color: white;
+  color: var(--text-primary);
   width: 100%;
   box-sizing: border-box;
 }
@@ -59,7 +59,7 @@ select.input {
 
 .btn--primary {
   background-color: var(--color-primary);
-  color: var(--text-primary);
+  color: #ffffff;
 }
 
 .btn--primary:hover {

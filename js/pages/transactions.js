@@ -1,6 +1,6 @@
 import { getAllTransactions, saveTransaction, deleteTransaction } from '../services/transactionService.js';
 import { confirmModal } from '../components/modal.js';
-import { getAllAccounts } from '../services/accountService.js';
+import { getAllAccounts, seedDefaultAccount } from '../services/accountService.js';
 import { getAllCategories, seedDefaultCategories } from '../services/categoryService.js';
 import { formatCurrency } from '../utils/format.js';
 
@@ -73,6 +73,7 @@ export async function render(container, params = {}) {
     `;
     
     // Populate dropdowns globally once
+    await seedDefaultAccount();
     const accounts = await getAllAccounts();
     document.getElementById('txn-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
     document.getElementById('txn-to-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');

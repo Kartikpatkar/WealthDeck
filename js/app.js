@@ -3,12 +3,19 @@ import { initRouter } from './router.js';
 
 async function bootstrap() {
   try {
+    // 0. Apply Theme
+    const theme = localStorage.getItem('wealthdeck_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+
     // 1. Initialize IndexedDB
     await initDB();
     console.log('Database initialized');
 
     const { seedDefaultCategories } = await import('./services/categoryService.js');
     await seedDefaultCategories();
+    
+    const { seedDefaultAccount } = await import('./services/accountService.js');
+    await seedDefaultAccount();
 
     // 2. Register Service Worker for PWA
     if ('serviceWorker' in navigator) {

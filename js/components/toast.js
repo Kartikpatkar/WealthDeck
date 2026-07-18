@@ -3,7 +3,7 @@ export function showToast(message, type = 'info') {
   if (!container) return;
   
   const toast = document.createElement('div');
-  toast.className = \`toast toast--\${type}\`;
+  toast.className = `toast toast--${type}`;
   
   // Basic styling for the toast, keeping it inline for brevity or can be in components.css
   toast.style.padding = '12px 24px';

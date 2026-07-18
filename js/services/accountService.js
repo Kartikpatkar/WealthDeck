@@ -11,6 +11,21 @@ export async function getAllAccounts() {
   });
 }
 
+export async function seedDefaultAccount() {
+  const existing = await getAllAccounts();
+  if (existing.length === 0) {
+    await saveAccount({
+      name: 'Cash Wallet',
+      type: 'cash',
+      balance: 0,
+      currency: 'USD',
+      color: '#34d399',
+      icon: '💵',
+      isArchived: false
+    });
+  }
+}
+
 export async function getAccountById(id) {
   const db = getDB();
   return new Promise((resolve, reject) => {
