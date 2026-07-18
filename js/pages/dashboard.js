@@ -36,7 +36,7 @@ export async function render(container, params = {}) {
       
       return `
         <div class="tx-row" onclick="location.hash='#/transaction/${t.id}'">
-          <div class="tx-icon" style="background:${isIncome ? 'rgba(52,211,153,.15)' : 'rgba(148,163,184,.12)'}">${cIcon}</div>
+          <div class="tx-icon" style="background:${isIncome ? 'rgba(52,211,153,.15)' : 'rgba(148,163,184,.12)'}; color:${isIncome ? 'var(--color-income)' : 'var(--text-secondary)'};">${cIcon}</div>
           <div class="tx-info">
             <div class="m">${t.merchant || 'Transaction'}</div>
             <div class="c">${cName}</div>

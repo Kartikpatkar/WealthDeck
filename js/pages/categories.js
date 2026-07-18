@@ -1,5 +1,6 @@
 import { getAllCategories, saveCategory, deleteCategory } from '../services/categoryService.js';
 import { confirmModal } from '../components/modal.js';
+import { ICONS } from '../utils/icons.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Categories...</div>`;
@@ -9,7 +10,7 @@ export async function render(container, params = {}) {
     
     const catList = categories.map(c => `
       <div class="card" style="margin-bottom: var(--spacing-sm); display: flex; align-items: center; gap: var(--spacing-md);">
-        <div style="width:40px; height:40px; border-radius:50%; background:${c.color}; display:flex; align-items:center; justify-content:center; font-size:1.2em;">
+        <div style="width:40px; height:40px; border-radius:50%; background:${c.color}; display:flex; align-items:center; justify-content:center; font-size:1.2em; color:#fff;">
           ${c.icon}
         </div>
         <div style="flex:1;">
@@ -43,7 +44,9 @@ export async function render(container, params = {}) {
               <option value="expense">Expense</option>
               <option value="income">Income</option>
             </select>
-            <input type="text" id="cat-icon" placeholder="Icon (Emoji)" required class="input">
+            <select id="cat-icon" required class="input">
+              ${Object.keys(ICONS).map(k => `<option value='${ICONS[k].replace(/'/g, "&apos;")}'>${k}</option>`).join('')}
+            </select>
             <input type="color" id="cat-color" value="#6366f1" required class="input" style="height: 40px; padding: 2px;">
             <div style="display:flex; justify-content:flex-end; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
               <button type="button" id="close-cat-btn" class="btn">Cancel</button>
