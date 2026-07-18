@@ -1,6 +1,7 @@
 import { getAllBills, saveBill, deleteBill } from '../services/billService.js';
 import { confirmModal } from '../components/modal.js';
 import { getAllCategories } from '../services/categoryService.js';
+import { getAllAccounts } from '../services/accountService.js';
 import { formatCurrency } from '../utils/format.js';
 
 export async function render(container, params = {}) {
@@ -112,7 +113,7 @@ export async function render(container, params = {}) {
       e.preventDefault();
       const payload = {
         name: document.getElementById('bill-name').value,
-        amount: Math.round(parseFloat(document.getElementById('bill-amount').value) * 100),
+        amount: parseFloat(document.getElementById('bill-amount').value),
         categoryId: Number(document.getElementById('bill-category').value),
         frequency: document.getElementById('bill-frequency').value,
         nextDueDate: document.getElementById('bill-date').value,

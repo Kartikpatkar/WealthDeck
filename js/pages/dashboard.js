@@ -58,6 +58,8 @@ export async function render(container, params = {}) {
   }
 }
 
+let chartInstance = null;
+
 function initChart(transactions, categories) {
   const ctx = document.getElementById('dashboard-chart');
   if (!ctx || !window.Chart) return;
@@ -74,7 +76,7 @@ function initChart(transactions, categories) {
   const data = Object.values(grouped).map(v => v / 100);
   const labels = Object.keys(grouped).map(id => catMap[id] || `Cat ${id}`);
 
-  new Chart(ctx, {
+  chartInstance = new Chart(ctx, {
     type: 'doughnut',
     data: {
       labels: labels.length ? labels : ['No Data'],
@@ -93,4 +95,9 @@ function initChart(transactions, categories) {
     }
   });
 }
-export function destroy() {}
+export function destroy() {
+  if (chartInstance) {
+    chartInstance.destroy();
+    chartInstance = null;
+  }
+}

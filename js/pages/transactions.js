@@ -75,6 +75,7 @@ export async function render(container, params = {}) {
     // Populate dropdowns globally once
     const accounts = await getAllAccounts();
     document.getElementById('txn-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+    document.getElementById('txn-to-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
     
     await seedDefaultCategories();
     const categories = await getAllCategories();

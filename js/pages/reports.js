@@ -18,17 +18,18 @@ export async function render(container, params = {}) {
       // Apply date filter
       const now = new Date();
       let startDate = new Date(0);
+      let endDate = new Date(now);
       
       if (currentFilter === 'this-month') {
         startDate = new Date(now.getFullYear(), now.getMonth(), 1);
       } else if (currentFilter === 'last-month') {
         startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        now.setDate(0); // End of last month
+        endDate = new Date(now.getFullYear(), now.getMonth(), 0); // End of last month
       }
       
       const expenses = transactions.filter(t => {
         const d = new Date(t.date);
-        return t.type === 'expense' && (currentFilter === 'all-time' || (d >= startDate && d <= now));
+        return t.type === 'expense' && (currentFilter === 'all-time' || (d >= startDate && d <= endDate));
       });
       
       const catMap = categories.reduce((map, c) => ({...map, [c.id]: c}), {});
@@ -63,7 +64,7 @@ export async function render(container, params = {}) {
           ${labels.length === 0 ? '<p>No data</p>' : labels.map((l, i) => `
             <div style="display:flex; justify-content:space-between; padding: var(--spacing-sm) 0; border-bottom:1px solid var(--border-light);">
               <span>${l}</span>
-              <span class="mono">${formatCurrency(data[i])}</span>
+              <span class="mono">${formatCurrency(Object.values(summary)[i])}</span>
             </div>
           `).join('')}
         </div>
