@@ -33,7 +33,20 @@ async function bootstrap() {
     // 2. Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('SW registered!', reg))
+        .then(reg => {
+          console.log('SW registered!', reg);
+          
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                import('./components/toast.js').then(m => {
+                  m.showToast('New update available! <a href="#" onclick="window.location.reload(); return false;" style="color:#fff;text-decoration:underline;margin-left:8px;font-weight:bold;">Refresh</a>', 'info', 10000);
+                });
+              }
+            });
+          });
+        })
         .catch(err => console.error('SW registration failed', err));
     }
 

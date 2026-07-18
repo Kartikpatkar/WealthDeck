@@ -1,4 +1,4 @@
-export function showToast(message, type = 'info') {
+export function showToast(message, type = 'info', duration = 3000) {
   const container = document.getElementById('toast-container');
   if (!container) return;
   
@@ -16,7 +16,7 @@ export function showToast(message, type = 'info') {
   toast.style.opacity = '0';
   toast.style.transform = 'translateY(20px)';
   
-  toast.textContent = message;
+  toast.innerHTML = message;
   container.appendChild(toast);
   
   // Container styling to position it
@@ -35,10 +35,10 @@ export function showToast(message, type = 'info') {
     toast.style.transform = 'translateY(0)';
   });
   
-  // Remove after 3s
+  // Remove after duration
   setTimeout(() => {
     toast.style.opacity = '0';
     toast.style.transform = 'translateY(20px)';
     setTimeout(() => toast.remove(), 300);
-  }, 3000);
+  }, duration);
 }
