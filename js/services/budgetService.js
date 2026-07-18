@@ -41,8 +41,11 @@ export async function getBudgetsWithSpent() {
 export async function saveBudget(budget) {
   const db = getDB();
   return new Promise((resolve, reject) => {
-    budget.updatedAt = new Date();
-    if (!budget.id) budget.createdAt = new Date();
+    // Convert to cents
+    budget.amount = Math.round(parseFloat(budget.amount) * 100) || 0;
+    budget.updatedAt = new Date().toISOString();
+    if (!budget.id) budget.createdAt = budget.updatedAt;
+
     const request = budget.id ? 
       db.transaction('budgets', 'readwrite').objectStore('budgets').put(budget) : 
       db.transaction('budgets', 'readwrite').objectStore('budgets').add(budget);

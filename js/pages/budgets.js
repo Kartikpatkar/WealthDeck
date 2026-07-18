@@ -2,9 +2,8 @@ import { getBudgetsWithSpent, saveBudget } from '../services/budgetService.js';
 import { getAllCategories } from '../services/categoryService.js';
 import { formatCurrency } from '../utils/format.js';
 
-export async function renderBudgets() {
-  const main = document.getElementById('main-content');
-  main.innerHTML = `<div class="loading">Loading Budgets...</div>`;
+export async function render(container, params = {}) {
+  container.innerHTML = `<div class="loading">Loading Budgets...</div>`;
   
   try {
     const budgets = await getBudgetsWithSpent();
@@ -26,7 +25,7 @@ export async function renderBudgets() {
       `).join('');
     }
 
-    main.innerHTML = `
+    container.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
         <h1>Budgets</h1>
         <button id="add-budget-btn" class="btn btn--primary">+ Add</button>
@@ -70,10 +69,11 @@ export async function renderBudgets() {
         spent: 0
       });
       modal.style.display = 'none';
-      renderBudgets();
+      render(container);
     });
 
   } catch (err) {
-    main.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+    container.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
   }
 }
+export function destroy() {}

@@ -1,9 +1,8 @@
 import { exportDataJSON, importDataJSON } from '../services/exportService.js';
 import { showToast } from '../components/toast.js';
 
-export async function renderImportExport() {
-  const main = document.getElementById('main-content');
-  main.innerHTML = `
+export async function render(container, params = {}) {
+  container.innerHTML = `
     <h1>Import & Export</h1>
     
     <div class="card" style="margin-top: var(--spacing-lg);">
@@ -49,3 +48,4 @@ export async function renderImportExport() {
     reader.readAsText(file);
   });
 }
+export function destroy() {}

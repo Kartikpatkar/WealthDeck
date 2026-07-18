@@ -12,8 +12,13 @@ export async function getAllGoals() {
 export async function saveGoal(goal) {
   const db = getDB();
   return new Promise((resolve, reject) => {
-    goal.updatedAt = new Date();
-    if (!goal.id) goal.createdAt = new Date();
+    // Convert to cents
+    goal.targetAmount = Math.round(parseFloat(goal.targetAmount) * 100) || 0;
+    goal.savedAmount = Math.round(parseFloat(goal.savedAmount) * 100) || 0;
+    
+    goal.updatedAt = new Date().toISOString();
+    if (!goal.id) goal.createdAt = goal.updatedAt;
+    
     const request = goal.id ? 
       db.transaction('goals', 'readwrite').objectStore('goals').put(goal) : 
       db.transaction('goals', 'readwrite').objectStore('goals').add(goal);

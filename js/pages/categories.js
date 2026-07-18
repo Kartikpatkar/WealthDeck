@@ -1,8 +1,7 @@
 import { getAllCategories, saveCategory, seedDefaultCategories } from '../services/categoryService.js';
 
-export async function renderCategories() {
-  const main = document.getElementById('main-content');
-  main.innerHTML = `<div class="loading">Loading Categories...</div>`;
+export async function render(container, params = {}) {
+  container.innerHTML = `<div class="loading">Loading Categories...</div>`;
   
   try {
     // Ensure we have defaults if empty
@@ -21,7 +20,7 @@ export async function renderCategories() {
       </div>
     `).join('');
 
-    main.innerHTML = `
+    container.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
         <h1>Categories</h1>
         <button id="add-cat-btn" class="btn btn--primary">+ Add</button>
@@ -64,10 +63,11 @@ export async function renderCategories() {
         color: document.getElementById('cat-color').value
       });
       modal.style.display = 'none';
-      renderCategories();
+      render(container);
     });
     
   } catch (err) {
-    main.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+    container.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
   }
 }
+export function destroy() {}

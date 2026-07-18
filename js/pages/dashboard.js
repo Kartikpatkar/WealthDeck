@@ -3,9 +3,8 @@ import { getAllAccounts } from '../services/accountService.js';
 import { getAllCategories } from '../services/categoryService.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
 
-export async function renderDashboard() {
-  const main = document.getElementById('main-content');
-  main.innerHTML = `<div class="loading">Loading Dashboard...</div>`;
+export async function render(container, params = {}) {
+  container.innerHTML = `<div class="loading">Loading Dashboard...</div>`;
   
   try {
     const accounts = await getAllAccounts();
@@ -26,7 +25,7 @@ export async function renderDashboard() {
       </div>
     `).join('') || '<p>No recent transactions.</p>';
 
-    main.innerHTML = `
+    container.innerHTML = `
       <h1>Dashboard</h1>
       
       <div class="card" style="margin-bottom: var(--spacing-lg);">
@@ -54,7 +53,7 @@ export async function renderDashboard() {
     initChart(transactions, categories);
 
   } catch (err) {
-    main.innerHTML = `<p style="color: red;">Error loading dashboard: ${err.message}</p>`;
+    container.innerHTML = `<p style="color: red;">Error loading dashboard: ${err.message}</p>`;
   }
 }
 
@@ -93,3 +92,4 @@ function initChart(transactions, categories) {
     }
   });
 }
+export function destroy() {}

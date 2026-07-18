@@ -25,13 +25,13 @@ export async function getAccountById(id) {
 export async function saveAccount(account) {
   const db = getDB();
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction('accounts', 'readwrite');
+    // Convert to cents
+    account.balance = Math.round(parseFloat(account.balance) * 100) || 0;
+    account.updatedAt = new Date().toISOString();
+    if (!account.id) account.createdAt = account.updatedAt;
+
+    const transaction = db.transaction(['accounts'], 'readwrite');
     const store = transaction.objectStore('accounts');
-    
-    account.updatedAt = new Date();
-    if (!account.id) {
-      account.createdAt = new Date();
-    }
     
     const request = account.id ? store.put(account) : store.add(account);
     request.onsuccess = () => resolve(request.result); // Returns the generated ID

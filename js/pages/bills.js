@@ -2,9 +2,8 @@ import { getAllBills, saveBill } from '../services/billService.js';
 import { getAllCategories } from '../services/categoryService.js';
 import { formatCurrency } from '../utils/format.js';
 
-export async function renderBills() {
-  const main = document.getElementById('main-content');
-  main.innerHTML = `<div class="loading">Loading Bills...</div>`;
+export async function render(container, params = {}) {
+  container.innerHTML = `<div class="loading">Loading Bills...</div>`;
   
   try {
     const bills = await getAllBills();
@@ -26,7 +25,7 @@ export async function renderBills() {
       `).join('');
     }
 
-    main.innerHTML = `
+    container.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
         <h1>Recurring Bills</h1>
         <button id="add-bill-btn" class="btn btn--primary">+ Add</button>
@@ -39,8 +38,16 @@ export async function renderBills() {
           <form id="add-bill-form" style="display:flex; flex-direction:column; gap:var(--spacing-md); margin-top:var(--spacing-md);">
             <input type="text" id="bill-name" placeholder="Bill Name (e.g. Netflix)" required class="input">
             <input type="number" step="0.01" id="bill-amount" placeholder="Amount" required class="input">
-            <input type="date" id="bill-due" required class="input">
             <select id="bill-category" required class="input"></select>
+            <select id="bill-account" required class="input"><option value="">Pay From Account</option></select>
+            <select id="bill-freq" required class="input">
+              <option value="monthly">Monthly</option>
+              <option value="weekly">Weekly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+            <input type="date" id="bill-date" required class="input">
+            <input type="number" id="bill-remind" placeholder="Remind Days Before (0 for due date)" class="input" value="0">
+            <textarea id="bill-notes" placeholder="Notes (Optional)" class="input" rows="2"></textarea>
             <div style="display:flex; justify-content:flex-end; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
               <button type="button" id="close-bill-btn" class="btn">Cancel</button>
               <button type="submit" class="btn btn--primary">Save</button>
@@ -53,9 +60,12 @@ export async function renderBills() {
     const modal = document.getElementById('add-bill-modal');
     document.getElementById('add-bill-btn').addEventListener('click', async () => {
       const categories = await getAllCategories();
-      const catSelect = document.getElementById('bill-category');
-      catSelect.innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-      document.getElementById('bill-due').valueAsDate = new Date();
+      document.getElementById('bill-category').innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      
+      const { getAllAccounts } = await import('../services/accountService.js');
+      const accounts = await getAllAccounts();
+      document.getElementById('bill-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+      
       modal.style.display = 'block';
     });
     
@@ -66,15 +76,21 @@ export async function renderBills() {
       await saveBill({
         name: document.getElementById('bill-name').value,
         amount: parseFloat(document.getElementById('bill-amount').value),
-        nextDueDate: document.getElementById('bill-due').value,
         categoryId: Number(document.getElementById('bill-category').value),
-        isActive: true
+        accountId: Number(document.getElementById('bill-account').value),
+        frequency: document.getElementById('bill-freq').value,
+        nextDueDate: document.getElementById('bill-date').value,
+        remindDaysBefore: Number(document.getElementById('bill-remind').value) || 0,
+        notes: document.getElementById('bill-notes').value,
+        isActive: true,
+        isAutoDetected: false
       });
       modal.style.display = 'none';
-      renderBills();
+      render(container);
     });
 
   } catch (err) {
-    main.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+    container.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
   }
 }
+export function destroy() {}

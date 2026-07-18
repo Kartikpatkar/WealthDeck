@@ -1,9 +1,8 @@
 import { getAllAccounts, saveAccount } from '../services/accountService.js';
 import { formatCurrency } from '../utils/format.js';
 
-export async function renderAccounts() {
-  const main = document.getElementById('main-content');
-  main.innerHTML = `<div class="loading">Loading Accounts...</div>`;
+export async function render(container, params = {}) {
+  container.innerHTML = `<div class="loading">Loading Accounts...</div>`;
   
   try {
     const accounts = await getAllAccounts();
@@ -23,7 +22,7 @@ export async function renderAccounts() {
       `).join('');
     }
 
-    main.innerHTML = `
+    container.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
         <h1>Accounts</h1>
         <button id="add-account-btn" class="btn btn--primary">+ Add</button>
@@ -43,8 +42,18 @@ export async function renderAccounts() {
               <option value="cash">Cash</option>
               <option value="bank">Bank</option>
               <option value="wallet">Wallet</option>
+              <option value="credit_card">Credit Card</option>
+              <option value="upi">UPI</option>
+              <option value="investment">Investment</option>
             </select>
             <input type="number" step="0.01" id="acc-balance" placeholder="Initial Balance" class="input">
+            <select id="acc-currency" required class="input">
+              <option value="INR">INR (₹)</option>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+            </select>
+            <input type="color" id="acc-color" value="#6366f1" required class="input" style="height: 40px; padding: 2px;">
             <div style="display:flex; justify-content:flex-end; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
               <button type="button" id="close-modal-btn" class="btn">Cancel</button>
               <button type="submit" class="btn btn--primary">Save</button>
@@ -62,15 +71,22 @@ export async function renderAccounts() {
     document.getElementById('add-account-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = document.getElementById('acc-name').value;
-      const type = document.getElementById('acc-type').value;
-      const balance = parseFloat(document.getElementById('acc-balance').value) || 0;
-      
-      await saveAccount({ name, type, balance });
+      await saveAccount({ 
+        name, 
+        type: document.getElementById('acc-type').value,
+        balance: parseFloat(document.getElementById('acc-balance').value) || 0,
+        currency: document.getElementById('acc-currency').value,
+        color: document.getElementById('acc-color').value,
+        icon: 'default-icon',
+        isArchived: false
+      });
       modal.style.display = 'none';
-      renderAccounts(); // Re-render
+      render(container); // Re-render
     });
 
   } catch (err) {
-    main.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+    container.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
   }
 }
+
+export function destroy() {}

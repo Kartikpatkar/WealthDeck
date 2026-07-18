@@ -12,8 +12,11 @@ export async function getAllBills() {
 export async function saveBill(bill) {
   const db = getDB();
   return new Promise((resolve, reject) => {
-    bill.updatedAt = new Date();
-    if (!bill.id) bill.createdAt = new Date();
+    // Convert to cents
+    bill.amount = Math.round(parseFloat(bill.amount) * 100) || 0;
+    bill.updatedAt = new Date().toISOString();
+    if (!bill.id) bill.createdAt = bill.updatedAt;
+    
     const request = bill.id ? 
       db.transaction('bills', 'readwrite').objectStore('bills').put(bill) : 
       db.transaction('bills', 'readwrite').objectStore('bills').add(bill);

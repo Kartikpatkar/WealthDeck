@@ -1,9 +1,8 @@
 import { getAllGoals, saveGoal } from '../services/goalService.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
 
-export async function renderGoals() {
-  const main = document.getElementById('main-content');
-  main.innerHTML = `<div class="loading">Loading Goals...</div>`;
+export async function render(container, params = {}) {
+  container.innerHTML = `<div class="loading">Loading Goals...</div>`;
   
   try {
     const goals = await getAllGoals();
@@ -28,7 +27,7 @@ export async function renderGoals() {
       `}).join('');
     }
 
-    main.innerHTML = `
+    container.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
         <h1>Savings Goals</h1>
         <button id="add-goal-btn" class="btn btn--primary">+ Add</button>
@@ -70,10 +69,11 @@ export async function renderGoals() {
         isCompleted: false
       });
       modal.style.display = 'none';
-      renderGoals();
+      render(container);
     });
 
   } catch (err) {
-    main.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+    container.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
   }
 }
+export function destroy() {}

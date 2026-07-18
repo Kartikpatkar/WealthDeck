@@ -1,37 +1,41 @@
-import { renderDashboard } from './pages/dashboard.js';
-import { renderAccounts } from './pages/accounts.js';
-import { renderCategories } from './pages/categories.js';
-import { renderTransactions } from './pages/transactions.js';
-import { renderBudgets } from './pages/budgets.js';
-import { renderBills } from './pages/bills.js';
-import { renderGoals } from './pages/goals.js';
-import { renderReports } from './pages/reports.js';
-import { renderImportExport } from './pages/importExport.js';
-import { renderImport } from './pages/import.js';
-import { renderTimeline, renderMonthlyReplay, renderAnalyzers } from './pages/smartFeatures.js';
+import * as Dashboard from './pages/dashboard.js';
+import * as Accounts from './pages/accounts.js';
+import * as Categories from './pages/categories.js';
+import * as Transactions from './pages/transactions.js';
+import * as Budgets from './pages/budgets.js';
+import * as Bills from './pages/bills.js';
+import * as Goals from './pages/goals.js';
+import * as Reports from './pages/reports.js';
+import * as ImportExport from './pages/importExport.js';
+import * as Import from './pages/import.js';
+import * as SmartFeatures from './pages/smartFeatures.js';
 
-const routes = {
-  '/': renderDashboard,
-  '/dashboard': renderDashboard,
-  '/transactions': renderTransactions,
-  '/transaction/new': () => renderTransactions({ openModal: true }),
-  '/accounts': renderAccounts,
-  '/categories': renderCategories,
-  '/budgets': renderBudgets,
-  '/bills': renderBills,
-  '/goals': renderGoals,
-  '/reports': renderReports,
-  '/import-export': renderImportExport,
-  '/import': renderImport,
-  '/timeline': renderTimeline,
-  '/replay': renderMonthlyReplay,
-  '/analyzers': renderAnalyzers,
-  '/more': renderMoreMenu
-};
+const routes = [
+  { path: /^\/$/, module: Dashboard },
+  { path: /^\/dashboard$/, module: Dashboard },
+  { path: /^\/transactions$/, module: Transactions },
+  { path: /^\/transaction\/new$/, module: Transactions, params: { openModal: true } },
+  { path: /^\/transaction\/(\d+)$/, module: Transactions, keys: ['id'] },
+  { path: /^\/accounts$/, module: Accounts },
+  { path: /^\/account\/(\d+)$/, module: Accounts, keys: ['id'] },
+  { path: /^\/categories$/, module: Categories },
+  { path: /^\/budgets$/, module: Budgets },
+  { path: /^\/budget\/(\d+)$/, module: Budgets, keys: ['id'] },
+  { path: /^\/bills$/, module: Bills },
+  { path: /^\/goals$/, module: Goals },
+  { path: /^\/reports$/, module: Reports },
+  { path: /^\/import-export$/, module: ImportExport },
+  { path: /^\/import$/, module: Import },
+  { path: /^\/timeline$/, module: { render: SmartFeatures.renderTimeline, destroy: () => {} } },
+  { path: /^\/replay$/, module: { render: SmartFeatures.renderMonthlyReplay, destroy: () => {} } },
+  { path: /^\/analyzers$/, module: { render: SmartFeatures.renderAnalyzers, destroy: () => {} } },
+  { path: /^\/more$/, module: { render: renderMoreMenu, destroy: () => {} } }
+];
 
-function renderMoreMenu() {
-  const main = document.getElementById('main-content');
-  main.innerHTML = `
+let currentPageModule = null;
+
+export function renderMoreMenu(container) {
+  container.innerHTML = `
     <h1>More</h1>
     <div style="display: flex; flex-direction: column; gap: var(--spacing-sm); margin-top: var(--spacing-md);">
       <a href="#/accounts" class="card" style="text-decoration:none; color:inherit;">🏦 Accounts</a>
@@ -52,12 +56,26 @@ function renderMoreMenu() {
   `;
 }
 
-function handleRoute() {
+async function handleRoute() {
   let path = window.location.hash.slice(1) || '/';
+  const container = document.getElementById('main-content');
   
-  // Basic route matching (without params for now)
-  const routeFn = routes[path] || routes['/'];
-  routeFn();
+  if (currentPageModule && typeof currentPageModule.destroy === 'function') {
+    currentPageModule.destroy();
+  }
+  
+  let matchedRoute = routes.find(r => r.path.test(path)) || routes[0];
+  let params = { ...matchedRoute.params };
+  
+  const match = path.match(matchedRoute.path);
+  if (match && matchedRoute.keys) {
+    matchedRoute.keys.forEach((key, index) => {
+      params[key] = match[index + 1];
+    });
+  }
+
+  currentPageModule = matchedRoute.module;
+  await currentPageModule.render(container, params);
   
   updateNav(path);
 }

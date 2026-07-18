@@ -2,15 +2,14 @@ import { getAllTransactions } from '../services/transactionService.js';
 import { getAllCategories } from '../services/categoryService.js';
 import { formatCurrency } from '../utils/format.js';
 
-export async function renderReports() {
-  const main = document.getElementById('main-content');
+export async function render(container, params = {}) {
   
   // Basic framework for rendering with filter state
   let currentFilter = 'this-month';
   let chartInstance = null;
   
   async function draw() {
-    main.innerHTML = `<div class="loading">Loading Reports...</div>`;
+    container.innerHTML = `<div class="loading">Loading Reports...</div>`;
     
     try {
       const transactions = await getAllTransactions();
@@ -43,7 +42,7 @@ export async function renderReports() {
       const labels = Object.keys(summary);
       const data = Object.values(summary);
 
-      main.innerHTML = `
+      container.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--spacing-lg);">
           <h1>Reports</h1>
           <select id="report-filter" class="input" style="width: 150px; margin-bottom:0;">
@@ -103,9 +102,10 @@ export async function renderReports() {
       }
 
     } catch (err) {
-      main.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+      container.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
     }
   }
   
   draw();
 }
+export function destroy() {}

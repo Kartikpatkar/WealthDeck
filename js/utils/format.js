@@ -1,9 +1,5 @@
-export function formatCurrency(amount) {
-  // Store amounts natively, but when rendering use Intl API
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD' // Would pull from settings in full version
-  }).format(amount);
+export function formatCurrency(val) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format((val || 0) / 100);
 }
 
 export function formatDate(dateString) {

@@ -1,14 +1,13 @@
-import { parseCSV, detectColumns, processTransactions, getMerchantRule } from '../services/importService.js';
+import { parseCSV, detectColumns, processTransactions, getMerchantRule, isDuplicateTransaction } from '../services/importService.js';
 import { getAllAccounts } from '../services/accountService.js';
 import { saveTransaction } from '../services/transactionService.js';
 import { getAllCategories, seedDefaultCategories } from '../services/categoryService.js';
 import { formatCurrency } from '../utils/format.js';
 import { showToast } from '../components/toast.js';
 
-export async function renderImport() {
-  const main = document.getElementById('main-content');
+export async function render(container, params = {}) {
   
-  main.innerHTML = `
+  container.innerHTML = `
     <h1>Smart Import Wizard</h1>
     <p>Upload CSV statements to automatically categorize and import transactions.</p>
     
@@ -110,6 +109,11 @@ export async function renderImport() {
       if (!t.amount || isNaN(new Date(t.date).getTime())) continue; // Skip invalid
       
       const rule = await getMerchantRule(t.merchant);
+      const merchantName = rule ? rule.merchantName : t.merchant;
+      
+      const isDup = await isDuplicateTransaction({ ...t, merchant: merchantName });
+      if (isDup) continue;
+      
       const catId = rule ? rule.categoryId : defaultCatId;
       
       await saveTransaction({
@@ -128,3 +132,4 @@ export async function renderImport() {
     window.location.hash = '#/transactions';
   });
 }
+export function destroy() {}

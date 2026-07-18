@@ -86,3 +86,21 @@ export async function saveMerchantRule(rule) {
     request.onerror = () => reject(request.error);
   });
 }
+
+export async function isDuplicateTransaction(txnObj) {
+  const db = getDB();
+  return new Promise(resolve => {
+    const store = db.transaction('transactions', 'readonly').objectStore('transactions');
+    const request = store.getAll();
+    request.onsuccess = (e) => {
+      const txns = e.target.result;
+      const tDate = new Date(txnObj.date).toISOString().split('T')[0];
+      const dup = txns.find(t => 
+        new Date(t.date).toISOString().split('T')[0] === tDate &&
+        Math.abs(t.amount - Math.round(txnObj.amount * 100)) < 1 && // Compare in cents
+        t.merchant.toLowerCase() === txnObj.merchant.toLowerCase()
+      );
+      resolve(!!dup);
+    };
+  });
+}

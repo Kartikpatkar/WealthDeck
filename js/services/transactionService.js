@@ -18,11 +18,19 @@ export async function getAllTransactions() {
 
 export async function saveTransaction(txn) {
   const db = getDB();
-  
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction(['transactions', 'accounts'], 'readwrite');
-    const store = transaction.objectStore('transactions');
-    const accountStore = transaction.objectStore('accounts');
+    // Convert to cents
+    txn.amount = Math.round(parseFloat(txn.amount) * 100) || 0;
+    txn.updatedAt = new Date().toISOString();
+    if (!txn.id) txn.createdAt = txn.updatedAt;
+    
+    // Default missing fields for robustness
+    if (txn.tags === undefined) txn.tags = [];
+    if (txn.isRecurring === undefined) txn.isRecurring = false;
+    
+    const t = db.transaction(['transactions', 'accounts'], 'readwrite');
+    const txnStore = t.objectStore('transactions');
+    const accountStore = t.objectStore('accounts');
     
     txn.updatedAt = new Date();
     
