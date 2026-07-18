@@ -43,9 +43,10 @@ export async function render(container, params = {}) {
         ${txnList}
       </div>
       
-      <div id="add-txn-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:var(--z-modal); padding:var(--spacing-lg); overflow-y:auto;">
-        <div class="card" style="max-width: 400px; margin: 5vh auto;">
-          <h2>Transaction</h2>
+      <div id="add-txn-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:var(--z-modal); padding:0; display:flex; flex-direction:column; justify-content:flex-end;">
+        <div class="card modal-sheet" style="width: 100%; max-width: 500px; margin: 0 auto; background: var(--bg-surface-elevated); padding: var(--spacing-lg); max-height: 90vh; overflow-y: auto;">
+          <div style="width: 40px; height: 4px; background: var(--border-light); border-radius: 2px; margin: 0 auto 16px auto;"></div>
+          <h2 style="margin-bottom: var(--spacing-sm);">Transaction</h2>
           <form id="add-txn-form" style="display:flex; flex-direction:column; gap:var(--spacing-md); margin-top:var(--spacing-md);">
             <input type="hidden" id="txn-id">
             <select id="txn-type" required class="input">
@@ -118,7 +119,7 @@ export async function render(container, params = {}) {
           document.getElementById('txn-tags').value = (txn.tags || []).join(', ');
           document.getElementById('txn-notes').value = txn.notes || '';
           
-          document.getElementById('add-txn-modal').style.display = 'block';
+          document.getElementById('add-txn-modal').style.display = 'flex';
         }
       }
     });
@@ -131,7 +132,7 @@ export async function render(container, params = {}) {
       toAccountSelect.style.display = 'none';
       toAccountSelect.required = false;
       document.getElementById('txn-date').valueAsDate = new Date();
-      modal.style.display = 'block';
+      modal.style.display = 'flex';
     });
 
     document.getElementById('close-txn-modal').addEventListener('click', () => {

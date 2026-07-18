@@ -99,11 +99,43 @@ function updateNav(currentPath) {
 function renderBottomNav() {
   const nav = document.getElementById('bottom-nav');
   nav.innerHTML = `
-    <a href="#/dashboard" class="nav-item active">📊 Dash</a>
-    <a href="#/transactions" class="nav-item">📋 Txns</a>
-    <a href="#/transaction/new" class="nav-item btn btn--primary" style="border-radius: 50%; width: 40px; height: 40px; margin-top: -20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; text-decoration: none;">➕</a>
-    <a href="#/budgets" class="nav-item">📦 Budget</a>
-    <a href="#/more" class="nav-item">☰ More</a>
+    <a href="#/dashboard" class="nav-item active">
+      <span style="font-size: 20px;">📊</span>
+      Dash
+    </a>
+    <a href="#/transactions" class="nav-item">
+      <span style="font-size: 20px;">📋</span>
+      Txns
+    </a>
+    
+    <div style="flex: 1; display: flex; justify-content: center; position: relative;">
+      <a href="#/transaction/new" style="
+        position: absolute;
+        bottom: 12px;
+        background: var(--color-primary);
+        color: white;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 24px;
+        box-shadow: 0 4px 16px rgba(99, 102, 241, 0.5);
+        z-index: 1000;
+        transition: transform 0.2s;
+      " onclick="this.style.transform='scale(0.9)'; setTimeout(() => this.style.transform='scale(1)', 200);">➕</a>
+    </div>
+
+    <a href="#/budgets" class="nav-item">
+      <span style="font-size: 20px;">📦</span>
+      Budget
+    </a>
+    <a href="#/more" class="nav-item">
+      <span style="font-size: 20px;">☰</span>
+      More
+    </a>
   `;
 }
 
@@ -123,6 +155,7 @@ function renderSidebar() {
     <a href="#/analyzers" class="nav-item">💡 Analyzers</a>
     <a href="#/import" class="nav-item">🤖 Smart Import</a>
     <a href="#/import-export" class="nav-item">🔄 Backup</a>
+    <a href="#/settings" class="nav-item">⚙️ Settings</a>
   `;
 }
 

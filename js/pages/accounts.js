@@ -40,9 +40,10 @@ export async function render(container, params = {}) {
       </div>
       
       <!-- Basic Add Modal inline for MVP -->
-      <div id="add-account-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:var(--z-modal); padding:var(--spacing-lg);">
-        <div class="card" style="max-width: 400px; margin: 10vh auto;">
-          <h2>Account</h2>
+      <div id="add-account-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:var(--z-modal); padding:0; display:flex; flex-direction:column; justify-content:flex-end;">
+        <div class="card modal-sheet" style="width: 100%; max-width: 500px; margin: 0 auto; background: var(--bg-surface-elevated); padding: var(--spacing-lg); max-height: 90vh; overflow-y: auto;">
+          <div style="width: 40px; height: 4px; background: var(--border-light); border-radius: 2px; margin: 0 auto 16px auto;"></div>
+          <h2 style="margin-bottom: var(--spacing-sm);">Account</h2>
           <form id="add-account-form" style="display:flex; flex-direction:column; gap:var(--spacing-md); margin-top:var(--spacing-md);">
             <input type="hidden" id="acc-id">
             <input type="text" id="acc-name" placeholder="Account Name" required class="input">
@@ -61,7 +62,7 @@ export async function render(container, params = {}) {
               <option value="EUR">EUR (€)</option>
               <option value="GBP">GBP (£)</option>
             </select>
-            <input type="color" id="acc-color" value="#6366f1" required class="input" style="height: 40px; padding: 2px;">
+            <input type="color" id="acc-color" value="#6366f1" required class="input" style="height: 48px; padding: 2px;">
             <div style="display:flex; justify-content:flex-end; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
               <button type="button" id="close-modal-btn" class="btn">Cancel</button>
               <button type="submit" class="btn btn--primary">Save</button>
@@ -86,7 +87,7 @@ export async function render(container, params = {}) {
           document.getElementById('acc-type').value = acc.type;
           document.getElementById('acc-balance').value = (acc.balance / 100).toFixed(2);
           document.getElementById('acc-color').value = acc.color || '#6366f1';
-          document.getElementById('add-account-modal').style.display = 'block';
+          document.getElementById('add-account-modal').style.display = 'flex';
         }
       }
     });
@@ -96,7 +97,7 @@ export async function render(container, params = {}) {
     document.getElementById('add-account-btn').addEventListener('click', () => {
       document.getElementById('add-account-form').reset();
       document.getElementById('acc-id').value = '';
-      modal.style.display = 'block';
+      modal.style.display = 'flex';
     });
     document.getElementById('close-modal-btn').addEventListener('click', () => modal.style.display = 'none');
     
