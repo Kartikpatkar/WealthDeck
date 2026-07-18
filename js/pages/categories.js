@@ -16,7 +16,10 @@ export async function render(container, params = {}) {
           <strong>${c.name}</strong>
           <div style="font-size: 0.8em; color: var(--text-secondary); text-transform: capitalize;">${c.type}</div>
         </div>
-        <button class="delete-cat-btn" data-id="${c.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer;">Delete</button>
+        <div>
+          <button class="edit-cat-btn" data-id="${c.id}" style="background:none; border:none; color:var(--text-secondary); cursor:pointer;">Edit</button>
+          <button class="delete-cat-btn" data-id="${c.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer;">Delete</button>
+        </div>
       </div>
     `).join('');
 
@@ -31,9 +34,10 @@ export async function render(container, params = {}) {
       </div>
       
       <div id="add-cat-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:var(--z-modal); padding:var(--spacing-lg);">
-        <div class="card" style="max-width: 400px; margin: 20vh auto;">
-          <h2>New Category</h2>
+        <div class="card" style="max-width: 400px; margin: 10vh auto;">
+          <h2>Category</h2>
           <form id="add-cat-form" style="display:flex; flex-direction:column; gap:var(--spacing-md); margin-top:var(--spacing-md);">
+            <input type="hidden" id="cat-id">
             <input type="text" id="cat-name" placeholder="Category Name" required class="input">
             <select id="cat-type" required class="input">
               <option value="expense">Expense</option>
@@ -51,26 +55,47 @@ export async function render(container, params = {}) {
     `;
     
     document.getElementById('categories-list').addEventListener('click', async (e) => {
+      const id = Number(e.target.dataset.id);
       if (e.target.classList.contains('delete-cat-btn')) {
         if (await confirmModal('Delete Category', 'Are you sure? Transactions under this category will lose their category association.')) {
-          await deleteCategory(Number(e.target.dataset.id));
+          await deleteCategory(id);
           render(container);
+        }
+      } else if (e.target.classList.contains('edit-cat-btn')) {
+        const cat = categories.find(c => c.id === id);
+        if (cat) {
+          document.getElementById('cat-id').value = cat.id;
+          document.getElementById('cat-name').value = cat.name;
+          document.getElementById('cat-type').value = cat.type;
+          document.getElementById('cat-icon').value = cat.icon;
+          document.getElementById('cat-color').value = cat.color || '#6366f1';
+          document.getElementById('add-cat-modal').style.display = 'block';
         }
       }
     });
     
     const modal = document.getElementById('add-cat-modal');
-    document.getElementById('add-cat-btn').addEventListener('click', () => modal.style.display = 'block');
+    document.getElementById('add-cat-btn').addEventListener('click', () => {
+      document.getElementById('add-cat-form').reset();
+      document.getElementById('cat-id').value = '';
+      modal.style.display = 'block';
+    });
     document.getElementById('close-cat-btn').addEventListener('click', () => modal.style.display = 'none');
     
     document.getElementById('add-cat-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      await saveCategory({
+      
+      const payload = {
         name: document.getElementById('cat-name').value,
         type: document.getElementById('cat-type').value,
         icon: document.getElementById('cat-icon').value,
         color: document.getElementById('cat-color').value
-      });
+      };
+      
+      const idStr = document.getElementById('cat-id').value;
+      if (idStr) payload.id = Number(idStr);
+      
+      await saveCategory(payload);
       modal.style.display = 'none';
       render(container);
     });

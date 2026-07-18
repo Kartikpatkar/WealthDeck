@@ -20,7 +20,10 @@ export async function render(container, params = {}) {
           </div>
           <div style="text-align: right;">
             <div class="mono" style="font-weight: bold;">${formatCurrency(a.balance || 0)}</div>
-            <button class="delete-acc-btn" data-id="${a.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer; font-size:0.8em; margin-top:4px;">Delete</button>
+            <div style="margin-top:4px;">
+              <button class="edit-acc-btn" data-id="${a.id}" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:0.8em; margin-right:var(--spacing-sm);">Edit</button>
+              <button class="delete-acc-btn" data-id="${a.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer; font-size:0.8em;">Delete</button>
+            </div>
           </div>
         </div>
       `).join('');
@@ -38,10 +41,11 @@ export async function render(container, params = {}) {
       
       <!-- Basic Add Modal inline for MVP -->
       <div id="add-account-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:var(--z-modal); padding:var(--spacing-lg);">
-        <div class="card" style="max-width: 400px; margin: 20vh auto;">
-          <h2>New Account</h2>
+        <div class="card" style="max-width: 400px; margin: 10vh auto;">
+          <h2>Account</h2>
           <form id="add-account-form" style="display:flex; flex-direction:column; gap:var(--spacing-md); margin-top:var(--spacing-md);">
-            <input type="text" id="acc-name" placeholder="Account Name (e.g. Wallet)" required class="input">
+            <input type="hidden" id="acc-id">
+            <input type="text" id="acc-name" placeholder="Account Name" required class="input">
             <select id="acc-type" required class="input">
               <option value="cash">Cash</option>
               <option value="bank">Bank</option>
@@ -68,31 +72,52 @@ export async function render(container, params = {}) {
     `;
 
     document.getElementById('accounts-list').addEventListener('click', async (e) => {
+      const id = Number(e.target.dataset.id);
       if (e.target.classList.contains('delete-acc-btn')) {
         if (await confirmModal('Delete Account', 'Are you sure? Related transactions will NOT be deleted.')) {
-          await deleteAccount(Number(e.target.dataset.id));
+          await deleteAccount(id);
           render(container);
+        }
+      } else if (e.target.classList.contains('edit-acc-btn')) {
+        const acc = accounts.find(a => a.id === id);
+        if (acc) {
+          document.getElementById('acc-id').value = acc.id;
+          document.getElementById('acc-name').value = acc.name;
+          document.getElementById('acc-type').value = acc.type;
+          document.getElementById('acc-balance').value = (acc.balance / 100).toFixed(2);
+          document.getElementById('acc-color').value = acc.color || '#6366f1';
+          document.getElementById('add-account-modal').style.display = 'block';
         }
       }
     });
 
     // Event Listeners
     const modal = document.getElementById('add-account-modal');
-    document.getElementById('add-account-btn').addEventListener('click', () => modal.style.display = 'block');
+    document.getElementById('add-account-btn').addEventListener('click', () => {
+      document.getElementById('add-account-form').reset();
+      document.getElementById('acc-id').value = '';
+      modal.style.display = 'block';
+    });
     document.getElementById('close-modal-btn').addEventListener('click', () => modal.style.display = 'none');
     
     document.getElementById('add-account-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = document.getElementById('acc-name').value;
-      await saveAccount({ 
-        name, 
+      
+      const payload = {
+        name: document.getElementById('acc-name').value,
         type: document.getElementById('acc-type').value,
         balance: parseFloat(document.getElementById('acc-balance').value) || 0,
         currency: document.getElementById('acc-currency').value,
         color: document.getElementById('acc-color').value,
         icon: 'default-icon',
         isArchived: false
-      });
+      };
+      
+      const idStr = document.getElementById('acc-id').value;
+      if (idStr) payload.id = Number(idStr);
+
+      await saveAccount(payload);
+      
       modal.style.display = 'none';
       render(container); // Re-render
     });

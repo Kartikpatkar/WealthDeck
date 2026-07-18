@@ -21,7 +21,10 @@ export async function render(container, params = {}) {
           </div>
           <div style="text-align: right;">
             <div class="mono" style="font-weight: bold;">${formatCurrency(b.amount)}</div>
-            <button class="delete-bill-btn" data-id="${b.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer; font-size:0.8em; margin-top:4px;">Delete</button>
+            <div style="margin-top:4px;">
+              <button class="edit-bill-btn" data-id="${b.id}" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:0.8em; margin-right:var(--spacing-sm);">Edit</button>
+              <button class="delete-bill-btn" data-id="${b.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer; font-size:0.8em;">Delete</button>
+            </div>
           </div>
         </div>
       `).join('');
@@ -34,22 +37,24 @@ export async function render(container, params = {}) {
       </div>
       <div id="bills-list">${listHTML}</div>
       
-      <div id="add-bill-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:var(--z-modal); padding:var(--spacing-lg);">
-        <div class="card" style="max-width: 400px; margin: 20vh auto;">
-          <h2>New Recurring Bill</h2>
+      <div id="add-bill-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:var(--z-modal); padding:var(--spacing-lg); overflow-y:auto;">
+        <div class="card" style="max-width: 400px; margin: 5vh auto;">
+          <h2>Bill</h2>
           <form id="add-bill-form" style="display:flex; flex-direction:column; gap:var(--spacing-md); margin-top:var(--spacing-md);">
-            <input type="text" id="bill-name" placeholder="Bill Name (e.g. Netflix)" required class="input">
+            <input type="hidden" id="bill-id">
+            <input type="text" id="bill-name" placeholder="Bill Name" required class="input">
             <input type="number" step="0.01" id="bill-amount" placeholder="Amount" required class="input">
             <select id="bill-category" required class="input"></select>
             <select id="bill-account" required class="input"><option value="">Pay From Account</option></select>
-            <select id="bill-freq" required class="input">
+            <select id="bill-frequency" required class="input">
               <option value="monthly">Monthly</option>
               <option value="weekly">Weekly</option>
               <option value="yearly">Yearly</option>
             </select>
             <input type="date" id="bill-date" required class="input">
-            <input type="number" id="bill-remind" placeholder="Remind Days Before (0 for due date)" class="input" value="0">
-            <textarea id="bill-notes" placeholder="Notes (Optional)" class="input" rows="2"></textarea>
+            <label style="display:flex; align-items:center; gap:var(--spacing-xs);">
+              <input type="checkbox" id="bill-auto-pay"> Auto-pay enabled
+            </label>
             <div style="display:flex; justify-content:flex-end; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
               <button type="button" id="close-bill-btn" class="btn">Cancel</button>
               <button type="submit" class="btn btn--primary">Save</button>
@@ -60,20 +65,40 @@ export async function render(container, params = {}) {
     `;
 
     document.getElementById('bills-list').addEventListener('click', async (e) => {
+      const id = Number(e.target.dataset.id);
       if (e.target.classList.contains('delete-bill-btn')) {
         if (await confirmModal('Delete Bill', 'Are you sure?')) {
-          await deleteBill(Number(e.target.dataset.id));
+          await deleteBill(id);
           render(container);
+        }
+      } else if (e.target.classList.contains('edit-bill-btn')) {
+        const b = bills.find(x => x.id === id);
+        if (b) {
+          const categories = await getAllCategories();
+          document.getElementById('bill-category').innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+          const accounts = await getAllAccounts();
+          document.getElementById('bill-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+          
+          document.getElementById('bill-id').value = b.id;
+          document.getElementById('bill-name').value = b.name;
+          document.getElementById('bill-amount').value = (b.amount / 100).toFixed(2);
+          document.getElementById('bill-frequency').value = b.frequency;
+          document.getElementById('bill-date').value = new Date(b.nextDueDate).toISOString().split('T')[0];
+          document.getElementById('bill-account').value = b.accountId || '';
+          document.getElementById('bill-category').value = b.categoryId || '';
+          document.getElementById('bill-auto-pay').checked = b.autoPay || false;
+          
+          document.getElementById('add-bill-modal').style.display = 'block';
         }
       }
     });
 
     const modal = document.getElementById('add-bill-modal');
     document.getElementById('add-bill-btn').addEventListener('click', async () => {
+      document.getElementById('add-bill-form').reset();
+      document.getElementById('bill-id').value = '';
       const categories = await getAllCategories();
       document.getElementById('bill-category').innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-      
-      const { getAllAccounts } = await import('../services/accountService.js');
       const accounts = await getAllAccounts();
       document.getElementById('bill-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
       
@@ -85,18 +110,21 @@ export async function render(container, params = {}) {
     
     document.getElementById('add-bill-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      await saveBill({
+      const payload = {
         name: document.getElementById('bill-name').value,
-        amount: parseFloat(document.getElementById('bill-amount').value),
+        amount: Math.round(parseFloat(document.getElementById('bill-amount').value) * 100),
         categoryId: Number(document.getElementById('bill-category').value),
-        accountId: Number(document.getElementById('bill-account').value),
-        frequency: document.getElementById('bill-freq').value,
+        frequency: document.getElementById('bill-frequency').value,
         nextDueDate: document.getElementById('bill-date').value,
-        remindDaysBefore: Number(document.getElementById('bill-remind').value) || 0,
-        notes: document.getElementById('bill-notes').value,
-        isActive: true,
-        isAutoDetected: false
-      });
+        accountId: Number(document.getElementById('bill-account').value),
+        autoPay: document.getElementById('bill-auto-pay').checked,
+        isActive: true
+      };
+      
+      const idStr = document.getElementById('bill-id').value;
+      if (idStr) payload.id = Number(idStr);
+      
+      await saveBill(payload);
       modal.style.display = 'none';
       render(container);
     });

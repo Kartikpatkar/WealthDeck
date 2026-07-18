@@ -17,10 +17,13 @@ export async function render(container, params = {}) {
         return `
         <div class="card" style="margin-bottom: var(--spacing-sm);">
           <h3>${g.name}</h3>
-          <div style="display: flex; justify-content: space-between; margin: var(--spacing-sm) 0;">
+          <div style="display: flex; justify-content: space-between; margin: var(--spacing-sm) 0; align-items: center;">
             <span>${formatCurrency(g.savedAmount || 0)}</span>
             <span>Target: ${formatCurrency(g.targetAmount)} by ${formatDate(g.targetDate)}</span>
-            <button class="delete-goal-btn" data-id="${g.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer;">Delete</button>
+            <div>
+              <button class="edit-goal-btn" data-id="${g.id}" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; margin-right:var(--spacing-sm);">Edit</button>
+              <button class="delete-goal-btn" data-id="${g.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer;">Delete</button>
+            </div>
           </div>
           <div style="background: var(--bg-primary); border-radius: 4px; height: 12px; overflow: hidden;">
             <div style="width: ${percent}%; height: 100%; background: var(--color-primary);"></div>
@@ -37,10 +40,11 @@ export async function render(container, params = {}) {
       <div id="goals-list">${listHTML}</div>
       
       <div id="add-goal-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:var(--z-modal); padding:var(--spacing-lg);">
-        <div class="card" style="max-width: 400px; margin: 20vh auto;">
-          <h2>New Goal</h2>
+        <div class="card" style="max-width: 400px; margin: 10vh auto;">
+          <h2>Goal</h2>
           <form id="add-goal-form" style="display:flex; flex-direction:column; gap:var(--spacing-md); margin-top:var(--spacing-md);">
-            <input type="text" id="goal-name" placeholder="Goal Name (e.g. Car)" required class="input">
+            <input type="hidden" id="goal-id">
+            <input type="text" id="goal-name" placeholder="Goal Name" required class="input">
             <input type="number" step="0.01" id="goal-target" placeholder="Target Amount" required class="input">
             <input type="number" step="0.01" id="goal-current" placeholder="Initial Saved Amount" class="input">
             <input type="date" id="goal-date" required class="input">
@@ -54,16 +58,29 @@ export async function render(container, params = {}) {
     `;
 
     document.getElementById('goals-list').addEventListener('click', async (e) => {
+      const id = Number(e.target.dataset.id);
       if (e.target.classList.contains('delete-goal-btn')) {
         if (await confirmModal('Delete Goal', 'Are you sure?')) {
-          await deleteGoal(Number(e.target.dataset.id));
+          await deleteGoal(id);
           render(container);
+        }
+      } else if (e.target.classList.contains('edit-goal-btn')) {
+        const g = goals.find(x => x.id === id);
+        if (g) {
+          document.getElementById('goal-id').value = g.id;
+          document.getElementById('goal-name').value = g.name;
+          document.getElementById('goal-target').value = g.targetAmount;
+          document.getElementById('goal-current').value = g.savedAmount;
+          document.getElementById('goal-date').value = new Date(g.targetDate).toISOString().split('T')[0];
+          document.getElementById('add-goal-modal').style.display = 'block';
         }
       }
     });
 
     const modal = document.getElementById('add-goal-modal');
     document.getElementById('add-goal-btn').addEventListener('click', () => {
+      document.getElementById('add-goal-form').reset();
+      document.getElementById('goal-id').value = '';
       document.getElementById('goal-date').valueAsDate = new Date();
       modal.style.display = 'block';
     });
@@ -72,13 +89,18 @@ export async function render(container, params = {}) {
     
     document.getElementById('add-goal-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      await saveGoal({
+      const payload = {
         name: document.getElementById('goal-name').value,
         targetAmount: parseFloat(document.getElementById('goal-target').value),
         savedAmount: parseFloat(document.getElementById('goal-current').value) || 0,
         targetDate: document.getElementById('goal-date').value,
         isCompleted: false
-      });
+      };
+      
+      const idStr = document.getElementById('goal-id').value;
+      if (idStr) payload.id = Number(idStr);
+      
+      await saveGoal(payload);
       modal.style.display = 'none';
       render(container);
     });
