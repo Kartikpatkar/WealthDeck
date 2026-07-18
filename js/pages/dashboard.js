@@ -1,7 +1,7 @@
 import { getAllTransactions } from '../services/transactionService.js';
 import { getAllAccounts } from '../services/accountService.js';
 import { getAllCategories } from '../services/categoryService.js';
-import { formatCurrency, formatDate, getCurrencySymbol } from '../utils/format.js';
+import { formatCurrency, formatDate, getCurrencySymbol, getLocale } from '../utils/format.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Dashboard...</div>`;
@@ -127,9 +127,10 @@ function animateBalance(targetBalance) {
     if(!start) start = ts;
     const p = Math.min(1, (ts - start) / dur);
     const eased = 1 - Math.pow(1 - p, 3);
-    el.textContent = Math.floor(eased * targetWhole).toLocaleString();
+    const locale = getLocale();
+    el.textContent = Math.floor(eased * targetWhole).toLocaleString(locale);
     if(p < 1) requestAnimationFrame(step);
-    else el.textContent = targetWhole.toLocaleString();
+    else el.textContent = targetWhole.toLocaleString(locale);
   }
   requestAnimationFrame(step);
 }

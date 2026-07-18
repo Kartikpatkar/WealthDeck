@@ -1,4 +1,4 @@
-export function formatCurrency(val) {
+export function getLocale() {
   const currency = localStorage.getItem('wealthdeck_currency') || 'USD';
   let locale = 'en-US';
   if (currency === 'EUR') locale = 'en-IE';
@@ -7,7 +7,12 @@ export function formatCurrency(val) {
   if (currency === 'AUD') locale = 'en-AU';
   if (currency === 'CAD') locale = 'en-CA';
   if (currency === 'JPY') locale = 'ja-JP';
+  return locale;
+}
 
+export function formatCurrency(val) {
+  const currency = localStorage.getItem('wealthdeck_currency') || 'USD';
+  const locale = getLocale();
   return new Intl.NumberFormat(locale, { style: 'currency', currency: currency }).format((val || 0) / 100);
 }
 
