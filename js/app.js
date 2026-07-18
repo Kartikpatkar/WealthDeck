@@ -3,9 +3,14 @@ import { initRouter } from './router.js';
 
 async function bootstrap() {
   try {
-    // 0. Apply Theme
+    // 0. Apply Theme & Accent
     const theme = localStorage.getItem('wealthdeck_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', theme);
+    
+    const accent = localStorage.getItem('wealthdeck_accent');
+    if (accent) {
+      document.documentElement.style.setProperty('--color-primary', accent);
+    }
     
     window.app = window.app || {};
     window.app.toggleTheme = function() {

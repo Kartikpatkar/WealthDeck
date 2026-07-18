@@ -10,9 +10,11 @@ import * as ImportExport from './pages/importExport.js';
 import * as Import from './pages/import.js';
 import * as SmartFeatures from './pages/smartFeatures.js';
 import * as Settings from './pages/settings.js';
+import * as Onboarding from './pages/onboarding.js';
 
 const routes = [
   { path: /^\/$/, module: Dashboard },
+  { path: /^\/onboarding$/, module: Onboarding },
   { path: /^\/dashboard$/, module: Dashboard },
   { path: /^\/transactions$/, module: Transactions },
   { path: /^\/transaction\/new$/, module: Transactions, params: { openModal: true } },
@@ -85,6 +87,14 @@ export function renderMoreMenu(container) {
 
 async function handleRoute() {
   let path = window.location.hash.slice(1) || '/';
+  
+  // Onboarding Guard
+  const hasName = localStorage.getItem('wealthdeck_name');
+  if (!hasName && path !== '/onboarding') {
+    window.location.hash = '#/onboarding';
+    return;
+  }
+  
   const container = document.getElementById('main-content');
   
   if (currentPageModule && typeof currentPageModule.destroy === 'function') {

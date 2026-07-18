@@ -46,8 +46,17 @@ export async function render(container, params = {}) {
       `;
     }).join('') || '<div class="hint">No recent transactions.</div>';
 
+    const userName = localStorage.getItem('wealthdeck_name') || 'there';
+    const hour = new Date().getHours();
+    let greeting = 'Good evening';
+    if (hour < 12) greeting = 'Good morning';
+    else if (hour < 17) greeting = 'Good afternoon';
+
     container.innerHTML = `
-      <div class="page-head"><h2>Dashboard</h2></div>
+      <div class="page-head">
+        <h2>Dashboard</h2>
+        <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">${greeting}, ${userName}</div>
+      </div>
 
       <div class="balance-card">
         <div class="label">Total balance</div>
