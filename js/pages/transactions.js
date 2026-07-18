@@ -23,7 +23,7 @@ export async function render(container, params = {}) {
     
     let txnList = '';
     if (transactions.length === 0) {
-      txnList = `<div class="hint" style="margin-top:40px;">No transactions yet.</div>`;
+      txnList = `<div class="hint mt-24">No transactions yet.</div>`;
     } else {
       Object.keys(grouped).sort((a,b) => new Date(b) - new Date(a)).forEach(date => {
         txnList += `<div class="date-header">${date}</div>`;
@@ -37,7 +37,7 @@ export async function render(container, params = {}) {
           
           return `
             <div class="tx-row" data-id="${t.id}">
-              <div class="tx-icon" style="background:${isIncome ? 'rgba(52,211,153,.15)' : 'rgba(148,163,184,.12)'}; color:${isIncome ? 'var(--color-income)' : 'var(--text-secondary)'};">${cIcon}</div>
+              <div class="tx-icon" style="background:${isIncome ? 'rgba(52,211,153,.15)' : 'rgba(148,163,184,.12)'};" class="${isIncome ? 'text-income' : 'text-secondary'}">${cIcon}</div>
               <div class="tx-info">
                 <div class="m">${t.merchant || 'Transaction'}</div>
                 <div class="c">${cName}</div>
@@ -102,9 +102,9 @@ export async function render(container, params = {}) {
             <div class="field-row">
               <div class="field">
                 <label>Account</label>
-                <div style="display:flex; gap:8px;">
-                  <select id="txn-account" required style="flex:1;"><option value="">From Account</option></select>
-                  <button type="button" id="quick-add-account" class="icon-btn" style="flex-shrink:0; height: 50px; width: 50px; border-radius: 12px;" aria-label="Add new account">
+                <div class="d-flex gap-8">
+                  <select id="txn-account" required class="flex-1"><option value="">From Account</option></select>
+                  <button type="button" id="quick-add-account" class="icon-btn flex-shrink-0" style="height: 50px; width: 50px; border-radius: 12px;" aria-label="Add new account">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
                   </button>
                 </div>
@@ -131,9 +131,9 @@ export async function render(container, params = {}) {
               <div class="field"><label>Notes</label><input type="text" id="txn-notes" placeholder="Add a note"></div>
             </div>
 
-            <div style="display:flex; gap:10px; margin-top:24px;">
-              <button type="button" class="btn btn--secondary" id="delete-txn-btn" style="display:none; flex:0.4;">Delete</button>
-              <button type="submit" class="btn" style="flex:1;">Save transaction</button>
+            <div class="d-flex gap-12 mt-24">
+              <button type="button" class="btn btn--secondary flex-1" id="delete-txn-btn" style="display:none;">Delete</button>
+              <button type="submit" class="btn flex-2">Save transaction</button>
             </div>
           </form>
         </div>
@@ -307,7 +307,7 @@ export async function render(container, params = {}) {
     }
 
   } catch (err) {
-    container.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+    container.innerHTML = `<p class="text-danger">Error: ${err.message}</p>`;
   }
 }
 export function destroy() {}

@@ -53,16 +53,16 @@ export async function render(container, params = {}) {
     else if (hour < 17) greeting = 'Good afternoon';
 
     container.innerHTML = `
-      <div class="page-header-left" style="margin-bottom: 24px; padding-top: 8px;">
-        <h1 class="page-title" style="font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Welcome back${userName ? `, ${userName}` : ''} 👋</h1>
-        <p class="page-subtitle" style="font-size: 14px; color: var(--text-secondary);">Here's what's happening with your finances.</p>
+      <div class="page-header-left">
+        <h1 class="page-title">Welcome back${userName ? `, ${userName}` : ''} 👋</h1>
+        <p class="page-subtitle">Here's what's happening with your finances.</p>
       </div>
 
       <div class="balance-card">
         <div class="label">Total balance</div>
         <div class="amount"><span class="cur">${getCurrencySymbol()}</span><span id="balanceNum">0</span><span class="cents">.00</span></div>
         <div class="balance-row">
-          <div class="pill" style="color:var(--color-income)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Active</div>
+          <div class="pill text-income"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Active</div>
           <div class="pill">${accounts.length} accounts</div>
         </div>
       </div>
@@ -71,18 +71,18 @@ export async function render(container, params = {}) {
         <div>
           <div class="stats-grid">
             <div class="stat-card income">
-              <div class="top"><span style="font-size:12px;color:var(--text-secondary);font-weight:600">Income</span><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div></div>
+              <div class="top"><span class="text-xs text-secondary font-semibold">Income</span><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div></div>
               <div class="amt">${formatCurrency(income)}</div>
               <div class="lbl">Total</div>
             </div>
             <div class="stat-card expense">
-              <div class="top"><span style="font-size:12px;color:var(--text-secondary);font-weight:600">Expense</span><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div></div>
+              <div class="top"><span class="text-xs text-secondary font-semibold">Expense</span><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div></div>
               <div class="amt">${formatCurrency(expense)}</div>
               <div class="lbl">Total</div>
             </div>
           </div>
 
-          <div class="card" style="margin-top:16px;">
+          <div class="card mt-16">
             <div class="section-title">Recent activity<span class="link" onclick="location.hash='#/transactions'">See all</span></div>
             <div>${recentTxns}</div>
           </div>
@@ -107,7 +107,7 @@ export async function render(container, params = {}) {
     drawDonut(transactions, catMap);
 
   } catch (err) {
-    container.innerHTML = `<p style="color: red;">Error loading dashboard: ${err.message}</p>`;
+    container.innerHTML = `<p class="text-danger">Error loading dashboard: ${err.message}</p>`;
   }
 }
 

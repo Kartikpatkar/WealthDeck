@@ -31,13 +31,13 @@ export function promptModal(title, message, placeholder = '') {
     overlay.style.zIndex = '10000'; // above others
 
     overlay.innerHTML = `
-      <div style="max-width: 320px; width: 90%; background: var(--bg-primary); margin: auto; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 20px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border);">
-        <h3 style="margin-bottom: 8px; font-size: 18px;">${title}</h3>
-        <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 14px;">${message}</p>
-        <input type="text" class="input prompt-input" placeholder="${placeholder}" style="width: 100%; margin-bottom: 24px; padding: 12px; border-radius: 12px; font-size: 15px;">
-        <div style="display: flex; gap: 8px; justify-content: flex-end;">
-          <button class="btn btn--secondary prompt-cancel" style="padding: 10px 16px; width: auto; font-size: 14px; border: none; background: transparent;">Cancel</button>
-          <button class="btn prompt-ok" style="padding: 10px 20px; width: auto; font-size: 14px; box-shadow: none;">Save</button>
+      <div class="prompt-modal">
+        <h3>${title}</h3>
+        <p>${message}</p>
+        <input type="text" class="input prompt-input" placeholder="${placeholder}">
+        <div class="prompt-actions">
+          <button class="btn btn--secondary prompt-cancel">Cancel</button>
+          <button class="btn prompt-ok">Save</button>
         </div>
       </div>
     `;

@@ -15,7 +15,7 @@ export async function render(container) {
   container.innerHTML = `
     <div class="page-head"><h2>Settings</h2></div>
     
-    <div class="card" style="margin-top: 16px;">
+    <div class="card mt-16">
       <div class="section-title">Profile</div>
       <div class="field">
         <label>Your Name</label>
@@ -23,7 +23,7 @@ export async function render(container) {
       </div>
     </div>
     
-    <div class="card" style="margin-top: 16px;">
+    <div class="card mt-16">
       <div class="section-title">Appearance</div>
       <div class="field">
         <label>Theme</label>
@@ -33,20 +33,20 @@ export async function render(container) {
         </select>
       </div>
       
-      <div class="field" style="margin-top: 16px;">
-        <label style="margin-bottom: 8px; display: block;">Accent Color</label>
-        <div style="display: flex; gap: 12px; flex-wrap: wrap;" id="accent-picker">
+      <div class="field mt-16">
+        <label class="mb-8 block">Accent Color</label>
+        <div class="d-flex gap-12 flex-wrap" id="accent-picker">
           ${accentColors.map(c => `
-            <label style="cursor: pointer; position: relative;">
-              <input type="radio" name="accent" value="${c.hex}" ${currentAccent === c.hex ? 'checked' : ''} style="position: absolute; opacity: 0;">
-              <div class="color-swatch ${currentAccent === c.hex ? 'active' : ''}" style="width: 36px; height: 36px; border-radius: 50%; background: ${c.hex}; border: 2px solid transparent; transition: 0.2s; ${currentAccent === c.hex ? 'border-color: var(--text-primary); transform: scale(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.15);' : ''}"></div>
+            <label class="cursor-pointer relative">
+              <input type="radio" name="accent" value="${c.hex}" ${currentAccent === c.hex ? 'checked' : ''} class="sr-only">
+              <div class="color-swatch ${currentAccent === c.hex ? 'active' : ''}" style="background: ${c.hex};"></div>
             </label>
           `).join('')}
         </div>
       </div>
     </div>
     
-    <div class="card" style="margin-top: 16px;">
+    <div class="card mt-16">
       <div class="section-title">Preferences</div>
       <div class="field">
         <label>Currency</label>
