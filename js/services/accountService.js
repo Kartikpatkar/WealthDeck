@@ -49,3 +49,12 @@ export async function deleteAccount(id) {
     request.onerror = () => reject(request.error);
   });
 }
+
+export async function deleteAccount(id) {
+  const db = getDB();
+  return new Promise((resolve, reject) => {
+    const req = db.transaction('accounts', 'readwrite').objectStore('accounts').delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}

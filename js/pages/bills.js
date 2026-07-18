@@ -1,4 +1,5 @@
-import { getAllBills, saveBill } from '../services/billService.js';
+import { getAllBills, saveBill, deleteBill } from '../services/billService.js';
+import { confirmModal } from '../components/modal.js';
 import { getAllCategories } from '../services/categoryService.js';
 import { formatCurrency } from '../utils/format.js';
 
@@ -18,8 +19,9 @@ export async function render(container, params = {}) {
             <strong>${b.name}</strong>
             <div style="font-size: 0.8em; color: var(--text-secondary);">Due: ${new Date(b.nextDueDate).toLocaleDateString()}</div>
           </div>
-          <div class="mono" style="font-weight: bold; color: var(--color-expense);">
-            ${formatCurrency(b.amount)}
+          <div style="text-align: right;">
+            <div class="mono" style="font-weight: bold;">${formatCurrency(b.amount)}</div>
+            <button class="delete-bill-btn" data-id="${b.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer; font-size:0.8em; margin-top:4px;">Delete</button>
           </div>
         </div>
       `).join('');
@@ -57,6 +59,15 @@ export async function render(container, params = {}) {
       </div>
     `;
 
+    document.getElementById('bills-list').addEventListener('click', async (e) => {
+      if (e.target.classList.contains('delete-bill-btn')) {
+        if (await confirmModal('Delete Bill', 'Are you sure?')) {
+          await deleteBill(Number(e.target.dataset.id));
+          render(container);
+        }
+      }
+    });
+
     const modal = document.getElementById('add-bill-modal');
     document.getElementById('add-bill-btn').addEventListener('click', async () => {
       const categories = await getAllCategories();
@@ -66,6 +77,7 @@ export async function render(container, params = {}) {
       const accounts = await getAllAccounts();
       document.getElementById('bill-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
       
+      document.getElementById('bill-date').valueAsDate = new Date();
       modal.style.display = 'block';
     });
     

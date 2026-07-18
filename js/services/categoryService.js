@@ -65,3 +65,12 @@ export async function saveCategory(category) {
     request.onerror = () => reject(request.error);
   });
 }
+
+export async function deleteCategory(id) {
+  const db = getDB();
+  return new Promise((resolve, reject) => {
+    const req = db.transaction('categories', 'readwrite').objectStore('categories').delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}

@@ -1,4 +1,5 @@
-import { getAllGoals, saveGoal } from '../services/goalService.js';
+import { getAllGoals, saveGoal, deleteGoal } from '../services/goalService.js';
+import { confirmModal } from '../components/modal.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
 
 export async function render(container, params = {}) {
@@ -19,6 +20,7 @@ export async function render(container, params = {}) {
           <div style="display: flex; justify-content: space-between; margin: var(--spacing-sm) 0;">
             <span>${formatCurrency(g.savedAmount || 0)}</span>
             <span>Target: ${formatCurrency(g.targetAmount)} by ${formatDate(g.targetDate)}</span>
+            <button class="delete-goal-btn" data-id="${g.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer;">Delete</button>
           </div>
           <div style="background: var(--bg-primary); border-radius: 4px; height: 12px; overflow: hidden;">
             <div style="width: ${percent}%; height: 100%; background: var(--color-primary);"></div>
@@ -50,6 +52,15 @@ export async function render(container, params = {}) {
         </div>
       </div>
     `;
+
+    document.getElementById('goals-list').addEventListener('click', async (e) => {
+      if (e.target.classList.contains('delete-goal-btn')) {
+        if (await confirmModal('Delete Goal', 'Are you sure?')) {
+          await deleteGoal(Number(e.target.dataset.id));
+          render(container);
+        }
+      }
+    });
 
     const modal = document.getElementById('add-goal-modal');
     document.getElementById('add-goal-btn').addEventListener('click', () => {

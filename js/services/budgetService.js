@@ -27,9 +27,8 @@ export async function getBudgetsWithSpent() {
           
           budgets.forEach(b => {
             b.categoryName = catMap[b.categoryId];
-            b.spent = txns
-              .filter(t => t.type === 'expense' && t.categoryId === b.categoryId && t.date.startsWith(b.month))
-              .reduce((sum, t) => sum + t.amount, 0);
+            const expenses = txns.filter(t => t.type === 'expense' && new Date(t.date).toISOString().startsWith(b.month));
+            b.spent = expenses.filter(t => t.categoryId === b.categoryId).reduce((sum, t) => sum + t.amount, 0);
           });
           resolve(budgets);
         };
@@ -51,5 +50,14 @@ export async function saveBudget(budget) {
       db.transaction('budgets', 'readwrite').objectStore('budgets').add(budget);
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
+  });
+}
+
+export async function deleteBudget(id) {
+  const db = getDB();
+  return new Promise((resolve, reject) => {
+    const req = db.transaction('budgets', 'readwrite').objectStore('budgets').delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
   });
 }

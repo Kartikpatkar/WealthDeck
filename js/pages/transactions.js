@@ -1,4 +1,5 @@
-import { getAllTransactions, saveTransaction } from '../services/transactionService.js';
+import { getAllTransactions, saveTransaction, deleteTransaction } from '../services/transactionService.js';
+import { confirmModal } from '../components/modal.js';
 import { getAllAccounts } from '../services/accountService.js';
 import { getAllCategories, seedDefaultCategories } from '../services/categoryService.js';
 import { formatCurrency } from '../utils/format.js';
@@ -19,8 +20,11 @@ export async function render(container, params = {}) {
             <strong>${t.merchant || t.description || 'Transaction'}</strong>
             <div style="font-size: 0.8em; color: var(--text-secondary);">${new Date(t.date).toLocaleDateString()}</div>
           </div>
-          <div class="mono" style="color: ${t.type === 'income' ? 'var(--color-income)' : 'var(--color-expense)'}; font-weight: bold;">
-            ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount)}
+          <div style="text-align: right;">
+            <div class="mono" style="color: ${t.type === 'income' ? 'var(--color-income)' : 'var(--color-expense)'}; font-weight: bold;">
+              ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount)}
+            </div>
+            <button class="delete-txn-btn" data-id="${t.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer; font-size:0.8em; margin-top:4px;">Delete</button>
           </div>
         </div>
       `).join('');
@@ -64,6 +68,15 @@ export async function render(container, params = {}) {
       </div>
     `;
     
+    document.getElementById('transactions-list').addEventListener('click', async (e) => {
+      if (e.target.classList.contains('delete-txn-btn')) {
+        if (await confirmModal('Delete Transaction', 'Are you sure?')) {
+          await deleteTransaction(Number(e.target.dataset.id));
+          render(container);
+        }
+      }
+    });
+    
     // Setup modal & form
     const modal = document.getElementById('add-txn-modal');
     document.getElementById('add-txn-btn').addEventListener('click', async () => {
@@ -84,13 +97,10 @@ export async function render(container, params = {}) {
         toAccountSelect.required = typeSelect.value === 'transfer';
       });
       
-    if (params.openModal) {
-      document.getElementById('add-txn-btn').click();
-      window.location.hash = '#/transactions'; // Reset hash so back button works
-    }
+      document.getElementById('txn-date').valueAsDate = new Date();
+      modal.style.display = 'block';
+    });
 
-  } catch (err) {
-    
     document.getElementById('close-txn-modal').addEventListener('click', () => modal.style.display = 'none');
     
     document.getElementById('add-txn-form').addEventListener('submit', async (e) => {
@@ -114,6 +124,11 @@ export async function render(container, params = {}) {
       modal.style.display = 'none';
       render(container); // Re-render list
     });
+
+    if (params.openModal) {
+      document.getElementById('add-txn-btn').click();
+      window.location.hash = '#/transactions'; // Reset hash so back button works
+    }
 
   } catch (err) {
     container.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;

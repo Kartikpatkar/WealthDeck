@@ -8,6 +8,7 @@ const APP_SHELL = [
   './css/reset.css',
   './css/base.css',
   './css/components.css',
+  './css/pages.css',
   './js/app.js'
 ];
 
@@ -54,6 +55,10 @@ self.addEventListener('fetch', (e) => {
         }
         
         return networkResponse;
+      }).catch(() => {
+        // Return a fallback or just undefined to prevent unhandled rejection
+        console.warn('Network request failed and not in cache:', e.request.url);
+        return new Response('', { status: 503, statusText: 'Offline' });
       });
     })
   );

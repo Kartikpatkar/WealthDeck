@@ -24,3 +24,12 @@ export async function saveBill(bill) {
     request.onerror = () => reject(request.error);
   });
 }
+
+export async function deleteBill(id) {
+  const db = getDB();
+  return new Promise((resolve, reject) => {
+    const req = db.transaction('bills', 'readwrite').objectStore('bills').delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}

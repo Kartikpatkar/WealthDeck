@@ -1,11 +1,10 @@
-import { getAllCategories, saveCategory, seedDefaultCategories } from '../services/categoryService.js';
+import { getAllCategories, saveCategory, deleteCategory } from '../services/categoryService.js';
+import { confirmModal } from '../components/modal.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Categories...</div>`;
   
   try {
-    // Ensure we have defaults if empty
-    await seedDefaultCategories();
     const categories = await getAllCategories();
     
     const catList = categories.map(c => `
@@ -17,6 +16,7 @@ export async function render(container, params = {}) {
           <strong>${c.name}</strong>
           <div style="font-size: 0.8em; color: var(--text-secondary); text-transform: capitalize;">${c.type}</div>
         </div>
+        <button class="delete-cat-btn" data-id="${c.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer;">Delete</button>
       </div>
     `).join('');
 
@@ -49,6 +49,15 @@ export async function render(container, params = {}) {
         </div>
       </div>
     `;
+    
+    document.getElementById('categories-list').addEventListener('click', async (e) => {
+      if (e.target.classList.contains('delete-cat-btn')) {
+        if (await confirmModal('Delete Category', 'Are you sure? Transactions under this category will lose their category association.')) {
+          await deleteCategory(Number(e.target.dataset.id));
+          render(container);
+        }
+      }
+    });
     
     const modal = document.getElementById('add-cat-modal');
     document.getElementById('add-cat-btn').addEventListener('click', () => modal.style.display = 'block');

@@ -26,3 +26,12 @@ export async function saveGoal(goal) {
     request.onerror = () => reject(request.error);
   });
 }
+
+export async function deleteGoal(id) {
+  const db = getDB();
+  return new Promise((resolve, reject) => {
+    const req = db.transaction('goals', 'readwrite').objectStore('goals').delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}

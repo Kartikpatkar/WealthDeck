@@ -89,7 +89,7 @@ export async function render(container, params = {}) {
           <small>${new Date(t.date).toLocaleDateString()}</small>
         </div>
         <div class="mono" style="color: ${t.type === 'income' ? 'var(--color-income)' : 'var(--color-expense)'}">
-          ${formatCurrency(t.amount)}
+          ${formatCurrency(t.amount * 100)}
         </div>
       </div>
     `).join('');

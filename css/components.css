@@ -44,6 +44,15 @@
   box-sizing: border-box;
 }
 
+textarea.input {
+  resize: vertical;
+}
+
+input[type="color"].input {
+  padding: 0;
+  border: none;
+}
+
 select.input {
   appearance: none;
 }
@@ -92,4 +101,26 @@ select.input {
     padding: var(--spacing-md);
     border-right: 1px solid var(--border-light);
   }
+}
+
+/* Nav Items */
+.nav-item {
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.nav-item:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.nav-item.active {
+  color: var(--color-primary);
+  font-weight: 500;
 }

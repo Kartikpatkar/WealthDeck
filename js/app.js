@@ -7,6 +7,9 @@ async function bootstrap() {
     await initDB();
     console.log('Database initialized');
 
+    const { seedDefaultCategories } = await import('./services/categoryService.js');
+    await seedDefaultCategories();
+
     // 2. Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js')

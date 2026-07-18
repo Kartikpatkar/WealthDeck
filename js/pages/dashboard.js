@@ -31,6 +31,7 @@ export async function render(container, params = {}) {
       <div class="card" style="margin-bottom: var(--spacing-lg);">
         <h3 style="color: var(--text-secondary); font-weight: 500;">Total Balance</h3>
         <div class="mono" style="font-size: 2em; font-weight: 700;">${formatCurrency(totalBalance)}</div>
+        ${accounts.length === 0 ? '<a href="#/accounts" class="btn btn--primary" style="margin-top:var(--spacing-sm);">+ Add Account</a>' : ''}
       </div>
       
       <div style="display: grid; grid-template-columns: 1fr; gap: var(--spacing-md);">
@@ -70,7 +71,7 @@ function initChart(transactions, categories) {
   
   const catMap = categories.reduce((acc, c) => ({...acc, [c.id]: c.name}), {});
   
-  const data = Object.values(grouped);
+  const data = Object.values(grouped).map(v => v / 100);
   const labels = Object.keys(grouped).map(id => catMap[id] || `Cat ${id}`);
 
   new Chart(ctx, {

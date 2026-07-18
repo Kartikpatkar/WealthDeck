@@ -1,5 +1,6 @@
 import { exportDataJSON, importDataJSON } from '../services/exportService.js';
 import { showToast } from '../components/toast.js';
+import { confirmModal } from '../components/modal.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `
@@ -33,7 +34,8 @@ export async function render(container, params = {}) {
     const file = document.getElementById('import-json-file').files[0];
     if (!file) return showToast('Select a file first', 'error');
     
-    if (!confirm('Are you sure? This will delete current data.')) return;
+    const isOk = await confirmModal('Restore Data', 'Are you sure? This will delete all current local data and replace it with the backup.');
+    if (!isOk) return;
 
     const reader = new FileReader();
     reader.onload = async (e) => {

@@ -40,7 +40,7 @@ export async function render(container, params = {}) {
       });
       
       const labels = Object.keys(summary);
-      const data = Object.values(summary);
+      const data = Object.values(summary).map(v => v / 100);
 
       container.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--spacing-lg);">

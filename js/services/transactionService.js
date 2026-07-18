@@ -32,8 +32,6 @@ export async function saveTransaction(txn) {
     const txnStore = t.objectStore('transactions');
     const accountStore = t.objectStore('accounts');
     
-    txn.updatedAt = new Date();
-    
     const finishSave = (oldTxn) => {
       // Calculate net change to account balance
       let netChange = 0;
@@ -58,17 +56,26 @@ export async function saveTransaction(txn) {
         };
       }
       
-      const request = txn.id ? store.put(txn) : store.add(txn);
+      const request = txn.id ? txnStore.put(txn) : txnStore.add(txn);
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
     };
 
     if (txn.id) {
       // It's an edit, get the old one first
-      store.get(txn.id).onsuccess = (e) => finishSave(e.target.result);
+      txnStore.get(txn.id).onsuccess = (e) => finishSave(e.target.result);
     } else {
       txn.createdAt = new Date();
       finishSave(null);
     }
+  });
+}
+
+export async function deleteTransaction(id) {
+  const db = getDB();
+  return new Promise((resolve, reject) => {
+    const req = db.transaction('transactions', 'readwrite').objectStore('transactions').delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
   });
 }

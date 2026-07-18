@@ -2,7 +2,7 @@ import { getDB } from '../db/database.js';
 
 export async function exportDataJSON() {
   const db = getDB();
-  const stores = ['accounts', 'categories', 'transactions', 'budgets', 'bills', 'goals', 'settings'];
+  const stores = ['accounts', 'categories', 'transactions', 'budgets', 'bills', 'goals', 'settings', 'merchantRules', 'importHistory', 'receipts'];
   const exportData = {
     version: 1,
     exportDate: new Date().toISOString(),

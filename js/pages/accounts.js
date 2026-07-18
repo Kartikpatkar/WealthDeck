@@ -1,4 +1,5 @@
-import { getAllAccounts, saveAccount } from '../services/accountService.js';
+import { getAllAccounts, saveAccount, deleteAccount } from '../services/accountService.js';
+import { confirmModal } from '../components/modal.js';
 import { formatCurrency } from '../utils/format.js';
 
 export async function render(container, params = {}) {
@@ -17,7 +18,10 @@ export async function render(container, params = {}) {
             <strong>${a.name}</strong>
             <div style="font-size: 0.8em; color: var(--text-secondary);">${a.type}</div>
           </div>
-          <div class="mono" style="font-weight: bold;">${formatCurrency(a.balance || 0)}</div>
+          <div style="text-align: right;">
+            <div class="mono" style="font-weight: bold;">${formatCurrency(a.balance || 0)}</div>
+            <button class="delete-acc-btn" data-id="${a.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer; font-size:0.8em; margin-top:4px;">Delete</button>
+          </div>
         </div>
       `).join('');
     }
@@ -62,6 +66,15 @@ export async function render(container, params = {}) {
         </div>
       </div>
     `;
+
+    document.getElementById('accounts-list').addEventListener('click', async (e) => {
+      if (e.target.classList.contains('delete-acc-btn')) {
+        if (await confirmModal('Delete Account', 'Are you sure? Related transactions will NOT be deleted.')) {
+          await deleteAccount(Number(e.target.dataset.id));
+          render(container);
+        }
+      }
+    });
 
     // Event Listeners
     const modal = document.getElementById('add-account-modal');

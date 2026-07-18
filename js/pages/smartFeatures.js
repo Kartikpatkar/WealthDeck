@@ -1,8 +1,7 @@
 import { getAllTransactions } from '../services/transactionService.js';
 import { formatCurrency, formatDate } from '../utils/format.js';
 
-export async function renderTimeline() {
-  const main = document.getElementById('main-content');
+export async function renderTimeline(container, params = {}) {
   try {
     const txns = await getAllTransactions();
     // Sort oldest first for timeline
@@ -29,7 +28,7 @@ export async function renderTimeline() {
       html = '<p>No data to build timeline yet.</p>';
     }
 
-    main.innerHTML = `
+    container.innerHTML = `
       <h1>Financial Timeline</h1>
       <p style="color: var(--text-secondary);">Your financial life as a continuous story.</p>
       
@@ -38,12 +37,11 @@ export async function renderTimeline() {
       </div>
     `;
   } catch (err) {
-    main.innerHTML = `<p>Error: ${err.message}</p>`;
+    container.innerHTML = `<p>Error: ${err.message}</p>`;
   }
 }
 
-export async function renderMonthlyReplay() {
-  const main = document.getElementById('main-content');
+export async function renderMonthlyReplay(container, params = {}) {
   try {
     const txns = await getAllTransactions();
     const now = new Date();
@@ -63,7 +61,7 @@ export async function renderMonthlyReplay() {
 
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     
-    main.innerHTML = `
+    container.innerHTML = `
       <div style="text-align: center; margin-top: 10vh;">
         <h1 style="font-size: 3em; background: linear-gradient(to right, var(--color-primary), var(--color-accent)); -webkit-background-clip: text; color: transparent;">${monthNames[now.getMonth()]} Replay</h1>
         <p style="font-size: 1.2em; color: var(--text-secondary); margin: var(--spacing-md) 0;">Let's see how you did this month.</p>
@@ -78,12 +76,11 @@ export async function renderMonthlyReplay() {
       </div>
     `;
   } catch (err) {
-    main.innerHTML = `<p>Error</p>`;
+    container.innerHTML = `<p>Error</p>`;
   }
 }
 
-export async function renderAnalyzers() {
-  const main = document.getElementById('main-content');
+export async function renderAnalyzers(container, params = {}) {
   try {
     const txns = await getAllTransactions();
     const today = new Date().toISOString().split('T')[0];
@@ -96,7 +93,7 @@ export async function renderAnalyzers() {
     const merchants = txns.filter(t => t.type === 'expense').map(t => t.merchant);
     const subCount = new Set(merchants.filter(m => m.toLowerCase().includes('netflix') || m.toLowerCase().includes('spotify'))).size || 1;
 
-    main.innerHTML = `
+    container.innerHTML = `
       <h1>Analyzers & Challenges</h1>
       
       <div class="card" style="margin-top: var(--spacing-lg); border-left: 4px solid var(--color-warning);">
@@ -118,5 +115,7 @@ export async function renderAnalyzers() {
         <p style="color: var(--text-secondary);">We detected ${subCount} possible subscriptions. Review them to save money!</p>
       </div>
     `;
-  } catch(e) {}
+  } catch(e) {
+    console.error(e);
+  }
 }

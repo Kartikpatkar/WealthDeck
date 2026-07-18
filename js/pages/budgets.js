@@ -1,4 +1,5 @@
-import { getBudgetsWithSpent, saveBudget } from '../services/budgetService.js';
+import { getBudgetsWithSpent, saveBudget, deleteBudget } from '../services/budgetService.js';
+import { confirmModal } from '../components/modal.js';
 import { getAllCategories } from '../services/categoryService.js';
 import { formatCurrency } from '../utils/format.js';
 
@@ -16,8 +17,11 @@ export async function render(container, params = {}) {
         <div class="card" style="margin-bottom: var(--spacing-sm);">
           <div style="display: flex; justify-content: space-between;">
             <strong>${b.categoryName || 'Category #' + b.categoryId} (Month: ${b.month})</strong>
-            <div class="mono">${formatCurrency(b.spent || 0)} / ${formatCurrency(b.amount)}</div>
+            <div style="text-align: right;">
+            <div class="mono" style="font-weight: bold;">${formatCurrency(b.spent || 0)} / ${formatCurrency(b.amount)}</div>
+            <button class="delete-budget-btn" data-id="${b.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer; font-size:0.8em; margin-top:4px;">Delete</button>
           </div>
+        </div>
           <div style="background: var(--bg-primary); border-radius: 4px; height: 8px; margin-top: 8px; overflow: hidden;">
             <div style="width: ${Math.min(((b.spent||0) / b.amount) * 100, 100)}%; height: 100%; background: ${((b.spent||0) > b.amount) ? 'var(--color-expense)' : 'var(--color-primary)'};"></div>
           </div>
@@ -48,6 +52,15 @@ export async function render(container, params = {}) {
         </div>
       </div>
     `;
+
+    document.getElementById('budgets-list').addEventListener('click', async (e) => {
+      if (e.target.classList.contains('delete-budget-btn')) {
+        if (await confirmModal('Delete Budget', 'Are you sure?')) {
+          await deleteBudget(Number(e.target.dataset.id));
+          render(container);
+        }
+      }
+    });
 
     const modal = document.getElementById('add-budget-modal');
     document.getElementById('add-budget-btn').addEventListener('click', async () => {
