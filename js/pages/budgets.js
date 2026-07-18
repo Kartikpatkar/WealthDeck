@@ -1,7 +1,7 @@
 import { getBudgetsWithSpent, saveBudget, deleteBudget } from '../services/budgetService.js';
 import { confirmModal } from '../components/modal.js';
 import { getAllCategories } from '../services/categoryService.js';
-import { formatCurrency } from '../utils/format.js';
+import { formatCurrency, getCurrencySymbol } from '../utils/format.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Budgets...</div>`;
@@ -70,7 +70,7 @@ export async function render(container, params = {}) {
               <div class="field" style="flex: 2;">
                 <label>Monthly Limit</label>
                 <div class="amount-input-wrap" style="margin-top:0; padding:4px 0;">
-                  <span class="cur" style="font-size:16px;">$</span>
+                  <span class="cur" style="font-size:16px;">${getCurrencySymbol()}</span>
                   <input type="number" step="0.01" class="amount-input" id="budget-amount" placeholder="0.00" required style="font-size:24px;">
                 </div>
               </div>

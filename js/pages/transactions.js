@@ -2,7 +2,7 @@ import { getAllTransactions, saveTransaction, deleteTransaction } from '../servi
 import { confirmModal } from '../components/modal.js';
 import { getAllAccounts, seedDefaultAccount } from '../services/accountService.js';
 import { getAllCategories, seedDefaultCategories } from '../services/categoryService.js';
-import { formatCurrency, formatDate } from '../utils/format.js';
+import { formatCurrency, formatDate, getCurrencySymbol } from '../utils/format.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Transactions...</div>`;
@@ -90,7 +90,7 @@ export async function render(container, params = {}) {
             <input type="hidden" id="txn-type" value="expense">
 
             <div class="amount-input-wrap">
-              <span class="cur">$</span>
+              <span class="cur">${getCurrencySymbol()}</span>
               <input type="number" step="0.01" class="amount-input expense-mode" id="txn-amount" inputmode="decimal" placeholder="0.00" required>
             </div>
 

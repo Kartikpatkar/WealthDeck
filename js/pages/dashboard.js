@@ -1,7 +1,7 @@
 import { getAllTransactions } from '../services/transactionService.js';
 import { getAllAccounts } from '../services/accountService.js';
 import { getAllCategories } from '../services/categoryService.js';
-import { formatCurrency, formatDate } from '../utils/format.js';
+import { formatCurrency, formatDate, getCurrencySymbol } from '../utils/format.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Dashboard...</div>`;
@@ -51,7 +51,7 @@ export async function render(container, params = {}) {
 
       <div class="balance-card">
         <div class="label">Total balance</div>
-        <div class="amount"><span class="cur">$</span><span id="balanceNum">0</span><span class="cents">.00</span></div>
+        <div class="amount"><span class="cur">${getCurrencySymbol()}</span><span id="balanceNum">0</span><span class="cents">.00</span></div>
         <div class="balance-row">
           <div class="pill" style="color:var(--color-income)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Active</div>
           <div class="pill">${accounts.length} accounts</div>

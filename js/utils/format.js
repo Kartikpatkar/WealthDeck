@@ -11,6 +11,20 @@ export function formatCurrency(val) {
   return new Intl.NumberFormat(locale, { style: 'currency', currency: currency }).format((val || 0) / 100);
 }
 
+export function getCurrencySymbol() {
+  const currency = localStorage.getItem('wealthdeck_currency') || 'USD';
+  const symbols = {
+    'USD': '$',
+    'EUR': '€',
+    'GBP': '£',
+    'INR': '₹',
+    'AUD': 'A$',
+    'CAD': 'C$',
+    'JPY': '¥'
+  };
+  return symbols[currency] || '$';
+}
+
 export function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric'
