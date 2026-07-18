@@ -1,6 +1,6 @@
 import { getAllTransactions, saveTransaction, deleteTransaction } from '../services/transactionService.js';
-import { confirmModal } from '../components/modal.js';
-import { getAllAccounts, seedDefaultAccount } from '../services/accountService.js';
+import { confirmModal, promptModal } from '../components/modal.js';
+import { getAllAccounts, seedDefaultAccount, saveAccount } from '../services/accountService.js';
 import { getAllCategories, seedDefaultCategories } from '../services/categoryService.js';
 import { formatCurrency, formatDate, getCurrencySymbol } from '../utils/format.js';
 
@@ -102,7 +102,12 @@ export async function render(container, params = {}) {
             <div class="field-row">
               <div class="field">
                 <label>Account</label>
-                <select id="txn-account" required><option value="">From Account</option></select>
+                <div style="display:flex; gap:8px;">
+                  <select id="txn-account" required style="flex:1;"><option value="">From Account</option></select>
+                  <button type="button" id="quick-add-account" class="icon-btn" style="flex-shrink:0; height: 50px; width: 50px; border-radius: 12px;" aria-label="Add new account">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                  </button>
+                </div>
               </div>
               <div class="field" id="txn-to-account-wrap" style="display:none;">
                 <label>To Account</label>
@@ -142,6 +147,29 @@ export async function render(container, params = {}) {
     document.getElementById('txn-to-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
     
     document.getElementById('txn-category').innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    
+    // Quick add account listener
+    document.getElementById('quick-add-account').addEventListener('click', async () => {
+      const name = await promptModal('New Account', 'Enter the name of your new account:', 'e.g. Chase Checking');
+      if (name && name.trim()) {
+        const id = await saveAccount({
+          name: name.trim(),
+          type: 'cash',
+          balance: 0,
+          currency: localStorage.getItem('wealthdeck_currency') || 'USD',
+          color: localStorage.getItem('wealthdeck_accent') || '#6366f1',
+          icon: '<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+          isArchived: false
+        });
+        
+        const newAccounts = await getAllAccounts();
+        const optionsHtml = newAccounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+        document.getElementById('txn-account').innerHTML = optionsHtml;
+        document.getElementById('txn-to-account').innerHTML = optionsHtml;
+        document.getElementById('txn-account').value = id;
+        import('../components/toast.js').then(m => m.showToast('Account added successfully!'));
+      }
+    });
     
     // UI logic for Segments
     const segButtons = document.querySelectorAll('#typeSeg button');
