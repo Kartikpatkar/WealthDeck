@@ -87,6 +87,11 @@ export async function render(container, params = {}) {
                 <input type="color" id="acc-color" value="#6366f1" required style="height:44px; padding:2px;">
               </div>
             </div>
+            
+            <div class="field" style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" id="acc-default" style="width:18px; height:18px;">
+              <label for="acc-default" style="margin:0;">Set as Default Account</label>
+            </div>
 
             <div style="display:flex; gap:10px; margin-top:24px;">
               <button type="button" class="btn btn--secondary" id="delete-acc-btn" style="display:none; flex:0.4;">Delete</button>
@@ -111,6 +116,7 @@ export async function render(container, params = {}) {
         document.getElementById('acc-balance').value = ((acc.balance || 0) / 100).toFixed(2);
         document.getElementById('acc-currency').value = acc.currency || 'INR';
         document.getElementById('acc-color').value = acc.color || '#6366f1';
+        document.getElementById('acc-default').checked = acc.isDefault || false;
         
         document.getElementById('delete-acc-btn').style.display = 'block';
         openModal();
@@ -159,6 +165,7 @@ export async function render(container, params = {}) {
         balance: parseFloat(document.getElementById('acc-balance').value) || 0,
         currency: document.getElementById('acc-currency').value,
         color: document.getElementById('acc-color').value,
+        isDefault: document.getElementById('acc-default').checked,
         icon: 'default-icon',
         isArchived: false
       };

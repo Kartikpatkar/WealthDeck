@@ -110,7 +110,7 @@
 
 .field { margin-bottom: 14px; }
 .field label { font-size: 12px; color: var(--text-secondary); font-weight: 600; display: block; margin-bottom: 6px; }
-.field select, .field input[type=text], .field input[type=date], .field input[type=number] {
+.field select, .field input[type=text], .field input[type=date], .field input[type=month], .field input[type=number]:not(.amount-input) {
   width: 100%; background: var(--bg-surface-elevated); border: 1px solid transparent;
   border-radius: 13px; padding: 13px 14px; font-size: 14px; outline: none; transition: border-color .15s;
   color: var(--text-primary);

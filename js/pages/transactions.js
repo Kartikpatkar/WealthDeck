@@ -300,6 +300,12 @@ export async function render(container, params = {}) {
       document.getElementById('add-txn-form').reset();
       document.getElementById('txn-id').value = '';
       setType('expense');
+      
+      const defaultAcc = accounts.find(a => a.isDefault);
+      if (defaultAcc) {
+        document.getElementById('txn-account').value = defaultAcc.id;
+      }
+      
       document.getElementById('delete-txn-btn').style.display = 'none';
       document.getElementById('txn-date').valueAsDate = new Date();
       openModal();

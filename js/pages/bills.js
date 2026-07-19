@@ -2,7 +2,7 @@ import { getAllBills, saveBill, deleteBill } from '../services/billService.js';
 import { confirmModal } from '../components/modal.js';
 import { getAllCategories } from '../services/categoryService.js';
 import { getAllAccounts } from '../services/accountService.js';
-import { formatCurrency } from '../utils/format.js';
+import { formatCurrency, getCurrencySymbol } from '../utils/format.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Bills...</div>`;
@@ -12,89 +12,143 @@ export async function render(container, params = {}) {
     
     let listHTML = '';
     if (bills.length === 0) {
-      listHTML = `<p>No recurring bills. Add one below.</p>`;
+      listHTML = `<div class="hint" style="margin-top:40px;">No recurring bills. Add one to track automatically.</div>`;
     } else {
       listHTML = bills.map(b => `
-        <div class="card" style="margin-bottom: var(--spacing-sm); display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <strong>${b.name}</strong>
-            <div style="font-size: 0.8em; color: var(--text-secondary);">Due: ${new Date(b.nextDueDate).toLocaleDateString()}</div>
-          </div>
-          <div style="text-align: right;">
-            <div class="mono" style="font-weight: bold;">${formatCurrency(b.amount)}</div>
-            <div style="margin-top:4px;">
-              <button class="edit-bill-btn" data-id="${b.id}" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:0.8em; margin-right:var(--spacing-sm);">Edit</button>
-              <button class="delete-bill-btn" data-id="${b.id}" style="background:none; border:none; color:var(--color-expense); cursor:pointer; font-size:0.8em;">Delete</button>
+        <div class="budget-item" data-id="${b.id}" style="cursor:pointer; padding: 12px 0;">
+          <div class="budget-top" style="align-items: center;">
+            <div class="name" style="display:flex; flex-direction:column;">
+              <span style="font-weight:600; font-size:15px; color:var(--text-primary);">${b.name}</span>
+              <span style="font-size:12px; color:var(--text-secondary);">Due: ${new Date(b.nextDueDate).toLocaleDateString()} &bull; ${b.frequency}</span>
+            </div>
+            <div class="amt" style="display:flex; flex-direction:column; align-items:flex-end;">
+              <span>${formatCurrency(b.amount)}</span>
+              ${b.autoPay ? '<span style="font-size:10px; color:var(--color-primary);">Auto-pay</span>' : ''}
             </div>
           </div>
         </div>
       `).join('');
+      listHTML = `<div class="card">${listHTML}</div>`;
     }
 
     container.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
-        <h1>Recurring Bills</h1>
-        <button id="add-bill-btn" class="btn btn--primary">+ Add</button>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="font-size: 19px; font-weight: 700;">Recurring Bills</h2>
+        <button id="add-bill-btn" class="icon-btn" aria-label="Add bill" style="color:var(--color-primary);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
       </div>
       <div id="bills-list">${listHTML}</div>
       
-      <div id="add-bill-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:var(--z-modal); padding:var(--spacing-lg); overflow-y:auto;">
-        <div class="card" style="max-width: 400px; margin: 5vh auto;">
-          <h2>Bill</h2>
-          <form id="add-bill-form" style="display:flex; flex-direction:column; gap:var(--spacing-md); margin-top:var(--spacing-md);">
+      <div class="modal-overlay" id="add-bill-modal">
+        <div class="modal">
+          <div class="modal-handle"></div>
+          <div class="modal-head">
+            <h3>Bill</h3>
+            <button type="button" class="modal-close" id="close-bill-modal" aria-label="Close">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+          
+          <form id="add-bill-form">
             <input type="hidden" id="bill-id">
-            <input type="text" id="bill-name" placeholder="Bill Name" required class="input">
-            <input type="number" step="0.01" id="bill-amount" placeholder="Amount" required class="input">
-            <select id="bill-category" required class="input"></select>
-            <select id="bill-account" required class="input"><option value="">Pay From Account</option></select>
-            <select id="bill-frequency" required class="input">
-              <option value="monthly">Monthly</option>
-              <option value="weekly">Weekly</option>
-              <option value="yearly">Yearly</option>
-            </select>
-            <input type="date" id="bill-date" required class="input">
-            <label style="display:flex; align-items:center; gap:var(--spacing-xs);">
-              <input type="checkbox" id="bill-auto-pay"> Auto-pay enabled
-            </label>
-            <div style="display:flex; justify-content:flex-end; gap:var(--spacing-sm); margin-top:var(--spacing-md);">
-              <button type="button" id="close-bill-btn" class="btn">Cancel</button>
-              <button type="submit" class="btn btn--primary">Save</button>
+            
+            <div class="field">
+              <label>Bill Name</label>
+              <input type="text" id="bill-name" placeholder="e.g. Netflix" required>
+            </div>
+            
+            <div class="amount-input-wrap" style="margin-top: 16px;">
+              <span class="cur">${getCurrencySymbol()}</span>
+              <input type="number" step="0.01" class="amount-input" id="bill-amount" placeholder="0.00" required>
+            </div>
+            
+            <div class="field">
+              <label>Next Due Date</label>
+              <input type="date" id="bill-date" required>
+            </div>
+            
+            <div class="field-row">
+              <div class="field" style="flex:1;">
+                <label>Frequency</label>
+                <select id="bill-frequency" required>
+                  <option value="monthly">Monthly</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
+              </div>
+              <div class="field" style="flex:1;">
+                <label>Category</label>
+                <select id="bill-category" required></select>
+              </div>
+            </div>
+            
+            <div class="field">
+              <label>Pay From Account</label>
+              <select id="bill-account" required></select>
+            </div>
+            
+            <div class="field" style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" id="bill-auto-pay" style="width:18px; height:18px;">
+              <label for="bill-auto-pay" style="margin:0;">Enable Auto-pay</label>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:24px;">
+              <button type="button" class="btn btn--secondary" id="delete-bill-btn" style="display:none; flex:0.4;">Delete</button>
+              <button type="submit" class="btn" style="flex:1;">Save bill</button>
             </div>
           </form>
         </div>
       </div>
     `;
 
+    const modalOverlay = document.getElementById('add-bill-modal');
+    modalOverlay.addEventListener('click', (e) => {
+      if(e.target === modalOverlay) closeModal();
+    });
+    document.getElementById('close-bill-modal').addEventListener('click', closeModal);
+    
+    function openModal() {
+      modalOverlay.classList.add('open');
+    }
+    function closeModal() {
+      modalOverlay.classList.remove('open');
+    }
+
     document.getElementById('bills-list').addEventListener('click', async (e) => {
-      const id = Number(e.target.dataset.id);
-      if (e.target.classList.contains('delete-bill-btn')) {
-        if (await confirmModal('Delete Bill', 'Are you sure?')) {
-          await deleteBill(id);
-          render(container);
-        }
-      } else if (e.target.classList.contains('edit-bill-btn')) {
-        const b = bills.find(x => x.id === id);
-        if (b) {
-          const categories = await getAllCategories();
-          document.getElementById('bill-category').innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-          const accounts = await getAllAccounts();
-          document.getElementById('bill-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-          
-          document.getElementById('bill-id').value = b.id;
-          document.getElementById('bill-name').value = b.name;
-          document.getElementById('bill-amount').value = (b.amount / 100).toFixed(2);
-          document.getElementById('bill-frequency').value = b.frequency;
-          document.getElementById('bill-date').value = new Date(b.nextDueDate).toISOString().split('T')[0];
-          document.getElementById('bill-account').value = b.accountId || '';
-          document.getElementById('bill-category').value = b.categoryId || '';
-          document.getElementById('bill-auto-pay').checked = b.autoPay || false;
-          
-          document.getElementById('add-bill-modal').style.display = 'block';
-        }
+      const row = e.target.closest('.budget-item');
+      if(!row) return;
+      const id = Number(row.dataset.id);
+      const b = bills.find(x => x.id === id);
+      if (b) {
+        const categories = await getAllCategories();
+        document.getElementById('bill-category').innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        const accounts = await getAllAccounts();
+        document.getElementById('bill-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+        
+        document.getElementById('bill-id').value = b.id;
+        document.getElementById('bill-name').value = b.name;
+        document.getElementById('bill-amount').value = (b.amount / 100).toFixed(2);
+        document.getElementById('bill-frequency').value = b.frequency;
+        document.getElementById('bill-date').value = new Date(b.nextDueDate).toISOString().split('T')[0];
+        document.getElementById('bill-account').value = b.accountId || '';
+        document.getElementById('bill-category').value = b.categoryId || '';
+        document.getElementById('bill-auto-pay').checked = b.autoPay || false;
+        
+        document.getElementById('delete-bill-btn').style.display = 'block';
+        openModal();
       }
     });
 
-    const modal = document.getElementById('add-bill-modal');
+    document.getElementById('delete-bill-btn').addEventListener('click', async () => {
+      const id = Number(document.getElementById('bill-id').value);
+      if (id && await confirmModal('Delete Bill', 'Are you sure?')) {
+        await deleteBill(id);
+        closeModal();
+        render(container);
+      }
+    });
+
     document.getElementById('add-bill-btn').addEventListener('click', async () => {
       document.getElementById('add-bill-form').reset();
       document.getElementById('bill-id').value = '';
@@ -103,11 +157,15 @@ export async function render(container, params = {}) {
       const accounts = await getAllAccounts();
       document.getElementById('bill-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
       
+      const defaultAcc = accounts.find(a => a.isDefault);
+      if(defaultAcc) {
+        document.getElementById('bill-account').value = defaultAcc.id;
+      }
+      
       document.getElementById('bill-date').valueAsDate = new Date();
-      modal.style.display = 'block';
+      document.getElementById('delete-bill-btn').style.display = 'none';
+      openModal();
     });
-    
-    document.getElementById('close-bill-btn').addEventListener('click', () => modal.style.display = 'none');
     
     document.getElementById('add-bill-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -126,7 +184,7 @@ export async function render(container, params = {}) {
       if (idStr) payload.id = Number(idStr);
       
       await saveBill(payload);
-      modal.style.display = 'none';
+      closeModal();
       render(container);
     });
 

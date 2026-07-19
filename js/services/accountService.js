@@ -21,7 +21,8 @@ export async function seedDefaultAccount() {
       currency: 'USD',
       color: '#34d399',
       icon: '💵',
-      isArchived: false
+      isArchived: false,
+      isDefault: true
     });
   }
 }
@@ -47,6 +48,19 @@ export async function saveAccount(account) {
 
     const transaction = db.transaction(['accounts'], 'readwrite');
     const store = transaction.objectStore('accounts');
+    
+    // If setting as default, we must unset others
+    if (account.isDefault) {
+      store.getAll().onsuccess = (e) => {
+        const all = e.target.result;
+        all.forEach(acc => {
+          if (acc.id !== account.id && acc.isDefault) {
+            acc.isDefault = false;
+            store.put(acc);
+          }
+        });
+      };
+    }
     
     const request = account.id ? store.put(account) : store.add(account);
     request.onsuccess = () => resolve(request.result); // Returns the generated ID

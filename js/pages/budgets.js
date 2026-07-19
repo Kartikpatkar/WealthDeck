@@ -66,18 +66,14 @@ export async function render(container, params = {}) {
               <select id="budget-category" required></select>
             </div>
             
-            <div class="field-row">
-              <div class="field" style="flex: 2;">
-                <label>Monthly Limit</label>
-                <div class="amount-input-wrap" style="margin-top:0; padding:4px 0;">
-                  <span class="cur" style="font-size:16px;">${getCurrencySymbol()}</span>
-                  <input type="number" step="0.01" class="amount-input" id="budget-amount" placeholder="0.00" required style="font-size:24px;">
-                </div>
-              </div>
-              <div class="field" style="flex: 1;">
-                <label>Month</label>
-                <input type="month" id="budget-month" required>
-              </div>
+            <div class="amount-input-wrap" style="margin-top: 16px;">
+              <span class="cur">${getCurrencySymbol()}</span>
+              <input type="number" step="0.01" class="amount-input" id="budget-amount" placeholder="0.00" required>
+            </div>
+            
+            <div class="field">
+              <label>Target Month</label>
+              <input type="month" id="budget-month" required>
             </div>
 
             <div style="display:flex; gap:10px; margin-top:24px;">
