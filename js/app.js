@@ -20,7 +20,11 @@ async function bootstrap() {
       localStorage.setItem('wealthdeck_theme', next);
     };
 
-    // 1. Initialize IndexedDB
+    // 1. Verify Network for Chromium Bug Workaround
+    await verifyNetwork();
+    setupOfflineListeners();
+
+    // 2. Initialize IndexedDB
     await initDB();
     console.log('Database initialized');
 
@@ -68,4 +72,34 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', bootstrap);
 } else {
   bootstrap();
+}
+
+async function verifyNetwork() {
+  try {
+    const res = await fetch('./', { 
+      headers: { 'X-Ping': '1' },
+      cache: 'no-store'
+    });
+    if (res.status !== 200) throw new Error('Offline');
+  } catch (e) {
+    Object.defineProperty(navigator, 'onLine', { get: () => false });
+  }
+}
+
+function setupOfflineListeners() {
+  const banner = document.createElement('div');
+  banner.id = 'offline-banner';
+  banner.style.cssText = 'display:none; background:var(--color-expense); color:#fff; text-align:center; padding:8px; font-size:14px; position:fixed; top:0; left:0; right:0; z-index:99999;';
+  banner.textContent = 'You are offline. Some features may be unavailable.';
+  document.body.appendChild(banner);
+
+  const updateBanner = () => {
+    banner.style.display = navigator.onLine ? 'none' : 'block';
+  };
+
+  window.addEventListener('online', updateBanner);
+  window.addEventListener('offline', updateBanner);
+  
+  // Initial check
+  updateBanner();
 }

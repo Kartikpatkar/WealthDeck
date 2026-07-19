@@ -1,4 +1,5 @@
-const CACHE_NAME = 'wealthdeck-v1';
+const CACHE_NAME = 'wealthdeck-v2';
+const PERSISTENT_CACHE_NAME = 'wealthdeck-persistent';
 
 const APP_SHELL = [
   './',
@@ -24,7 +25,8 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keyList) => {
       return Promise.all(keyList.map((key) => {
-        if (key !== CACHE_NAME) {
+        // Keep current shell and persistent caches
+        if (key !== CACHE_NAME && key !== PERSISTENT_CACHE_NAME) {
           return caches.delete(key);
         }
       }));
@@ -33,6 +35,12 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  // 1. Synthetic Ping for Offline Detection
+  if (e.request.headers.get('X-Ping')) {
+    e.respondWith(new Response('pong', { status: 200 }));
+    return;
+  }
+
   // Cache First Strategy for static assets, network fallback
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
@@ -56,9 +64,12 @@ self.addEventListener('fetch', (e) => {
         
         return networkResponse;
       }).catch(() => {
-        // Return a fallback or just undefined to prevent unhandled rejection
+        // Graceful fallback synthetic 503
         console.warn('Network request failed and not in cache:', e.request.url);
-        return new Response('', { status: 503, statusText: 'Offline' });
+        return new Response(JSON.stringify({ error: 'Offline' }), { 
+          status: 503, 
+          headers: { 'Content-Type': 'application/json' }
+        });
       });
     })
   );
