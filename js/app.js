@@ -94,7 +94,13 @@ function setupOfflineListeners() {
   document.body.appendChild(banner);
 
   const updateBanner = () => {
-    banner.style.display = navigator.onLine ? 'none' : 'block';
+    if (navigator.onLine) {
+      banner.style.display = 'none';
+      document.body.style.paddingTop = '0';
+    } else {
+      banner.style.display = 'block';
+      document.body.style.paddingTop = banner.offsetHeight + 'px';
+    }
   };
 
   window.addEventListener('online', updateBanner);

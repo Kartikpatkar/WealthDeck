@@ -126,7 +126,7 @@ export async function render(container, params = {}) {
             </button>
             
             <div class="more-fields" id="moreFields">
-              <div class="field"><label>Merchant / Title</label><input type="text" id="txn-merchant" placeholder="Start typing to search" required></div>
+              <div class="field"><label>Merchant / Title</label><input type="text" id="txn-merchant" placeholder="Start typing to search"></div>
               <div class="field"><label>Tags</label><input type="text" id="txn-tags" placeholder="Add tags separated by comma"></div>
               <div class="field"><label>Notes</label><input type="text" id="txn-notes" placeholder="Add a note"></div>
             </div>
@@ -277,7 +277,7 @@ export async function render(container, params = {}) {
       
       const payload = {
         type: type,
-        amount: Math.round(parseFloat(document.getElementById('txn-amount').value) * 100),
+        amount: parseFloat(document.getElementById('txn-amount').value),
         merchant: document.getElementById('txn-merchant').value,
         date: document.getElementById('txn-date').value,
         accountId: accountId,

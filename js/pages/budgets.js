@@ -147,7 +147,7 @@ export async function render(container, params = {}) {
       e.preventDefault();
       const payload = {
         categoryId: Number(document.getElementById('budget-category').value),
-        amount: Math.round(parseFloat(document.getElementById('budget-amount').value) * 100),
+        amount: parseFloat(document.getElementById('budget-amount').value),
         month: document.getElementById('budget-month').value
       };
       const idStr = document.getElementById('budget-id').value;

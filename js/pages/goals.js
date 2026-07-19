@@ -69,8 +69,8 @@ export async function render(container, params = {}) {
         if (g) {
           document.getElementById('goal-id').value = g.id;
           document.getElementById('goal-name').value = g.name;
-          document.getElementById('goal-target').value = g.targetAmount;
-          document.getElementById('goal-current').value = g.savedAmount;
+          document.getElementById('goal-target').value = (g.targetAmount / 100).toFixed(2);
+          document.getElementById('goal-current').value = g.savedAmount ? (g.savedAmount / 100).toFixed(2) : '0.00';
           document.getElementById('goal-date').value = new Date(g.targetDate).toISOString().split('T')[0];
           document.getElementById('add-goal-modal').style.display = 'block';
         }

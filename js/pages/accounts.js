@@ -156,7 +156,7 @@ export async function render(container, params = {}) {
       const payload = {
         name: document.getElementById('acc-name').value,
         type: document.getElementById('acc-type').value,
-        balance: Math.round((parseFloat(document.getElementById('acc-balance').value) || 0) * 100),
+        balance: parseFloat(document.getElementById('acc-balance').value) || 0,
         currency: document.getElementById('acc-currency').value,
         color: document.getElementById('acc-color').value,
         icon: 'default-icon',
