@@ -8,6 +8,8 @@ export async function render(container, params = {}) {
   
   // Basic framework for rendering with filter state
   let currentFilter = 'this-month';
+  let customStartDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+  let customEndDate = new Date().toISOString().split('T')[0];
   
   async function draw() {
     container.innerHTML = `<div class="loading">Loading Reports...</div>`;
@@ -26,6 +28,10 @@ export async function render(container, params = {}) {
       } else if (currentFilter === 'last-month') {
         startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
         endDate = new Date(now.getFullYear(), now.getMonth(), 0); // End of last month
+      } else if (currentFilter === 'custom') {
+        startDate = new Date(customStartDate);
+        endDate = new Date(customEndDate);
+        endDate.setHours(23, 59, 59, 999); // Include full end day
       }
       
       const expenses = transactions.filter(t => {
@@ -45,13 +51,22 @@ export async function render(container, params = {}) {
       const data = Object.values(summary).map(v => v / 100);
 
       container.innerHTML = `
-        <div class="page-head">
-          <h2>Reports</h2>
-          <select id="report-filter" style="width: 130px; margin-bottom:0; font-size:13px; padding: 6px 10px;">
-            <option value="this-month" ${currentFilter === 'this-month' ? 'selected' : ''}>This Month</option>
-            <option value="last-month" ${currentFilter === 'last-month' ? 'selected' : ''}>Last Month</option>
-            <option value="all-time" ${currentFilter === 'all-time' ? 'selected' : ''}>All Time</option>
-          </select>
+        <div class="page-head" style="flex-direction: column; align-items: stretch; gap: 12px; margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="margin: 0;">Reports</h2>
+            <select id="report-filter" style="width: auto; margin-bottom:0; font-size:13px; padding: 6px 10px;">
+              <option value="this-month" ${currentFilter === 'this-month' ? 'selected' : ''}>This Month</option>
+              <option value="last-month" ${currentFilter === 'last-month' ? 'selected' : ''}>Last Month</option>
+              <option value="all-time" ${currentFilter === 'all-time' ? 'selected' : ''}>All Time</option>
+              <option value="custom" ${currentFilter === 'custom' ? 'selected' : ''}>Custom Date...</option>
+            </select>
+          </div>
+          ${currentFilter === 'custom' ? `
+            <div style="display: flex; gap: 12px; padding-top: 12px; border-top: 1px solid var(--border-light);">
+              <div class="field" style="flex:1; margin:0;"><label style="font-size:11px;">From</label><input type="date" id="custom-start" value="${customStartDate}" style="padding:6px; font-size:13px;"></div>
+              <div class="field" style="flex:1; margin:0;"><label style="font-size:11px;">To</label><input type="date" id="custom-end" value="${customEndDate}" style="padding:6px; font-size:13px;"></div>
+            </div>
+          ` : ''}
         </div>
 
         
@@ -76,6 +91,17 @@ export async function render(container, params = {}) {
         currentFilter = e.target.value;
         draw();
       });
+
+      if (currentFilter === 'custom') {
+        document.getElementById('custom-start').addEventListener('change', (e) => {
+          customStartDate = e.target.value;
+          draw();
+        });
+        document.getElementById('custom-end').addEventListener('change', (e) => {
+          customEndDate = e.target.value;
+          draw();
+        });
+      }
 
       if (expenses.length > 0) {
         if (chartInstance) {
