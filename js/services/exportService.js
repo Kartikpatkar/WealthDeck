@@ -1,6 +1,6 @@
 import { getDB } from '../db/database.js';
 
-export async function exportDataJSON() {
+export async function getRawExportJSON() {
   const db = getDB();
   const stores = ['accounts', 'categories', 'transactions', 'budgets', 'bills', 'goals', 'settings', 'merchantRules', 'importHistory', 'receipts'];
   const exportData = {
@@ -19,8 +19,12 @@ export async function exportDataJSON() {
       }
     });
   }
+  return JSON.stringify(exportData, null, 2);
+}
 
-  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+export async function exportDataJSON() {
+  const jsonString = await getRawExportJSON();
+  const blob = new Blob([jsonString], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
