@@ -167,3 +167,10 @@
   color: var(--text-secondary);
   font-size: 14px;
 }
+
+/* Onboarding */
+.onboarding-active #bottom-nav, 
+.onboarding-active #sidebar-nav, 
+.onboarding-active .topbar, 
+.onboarding-active .fab-desktop { display: none !important; }
+.onboarding-active .main { margin-left: 0 !important; padding-bottom: 0 !important; }

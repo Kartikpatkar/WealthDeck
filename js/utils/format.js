@@ -31,7 +31,21 @@ export function getCurrencySymbol() {
 }
 
 export function formatDate(dateString) {
-  return new Date(dateString).toLocaleDateString('en-US', {
+  const locale = getLocale();
+  return new Date(dateString).toLocaleDateString(locale, {
     year: 'numeric', month: 'short', day: 'numeric'
   });
+}
+
+export function escapeHTML(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[&<>'"]/g, 
+    tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag)
+  );
 }

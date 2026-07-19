@@ -1,7 +1,7 @@
 import { getAllTransactions } from '../services/transactionService.js';
 import { getAllAccounts } from '../services/accountService.js';
 import { getAllCategories } from '../services/categoryService.js';
-import { formatCurrency, formatDate, getCurrencySymbol, getLocale } from '../utils/format.js';
+import { formatCurrency, formatDate, escapeHTML, getCurrencySymbol, getLocale } from '../utils/format.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Dashboard...</div>`;
@@ -14,12 +14,16 @@ export async function render(container, params = {}) {
     // Calculate total balance
     const totalBalance = accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0) / 100;
     
-    // Calculate income and expense for this month (simplified to all-time for demo if needed, but let's just do all time for now)
+    // Calculate income and expense for this month
     let income = 0;
     let expense = 0;
+    const now = new Date();
     transactions.forEach(t => {
-      if (t.type === 'income') income += t.amount;
-      if (t.type === 'expense') expense += t.amount;
+      const d = new Date(t.date);
+      if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+        if (t.type === 'income') income += t.amount;
+        if (t.type === 'expense') expense += t.amount;
+      }
     });
     
     // Category mapping for icons and names
@@ -38,7 +42,7 @@ export async function render(container, params = {}) {
         <div class="tx-row" onclick="location.hash='#/transaction/${t.id}'">
           <div class="tx-icon" style="background:${isIncome ? 'rgba(52,211,153,.15)' : 'rgba(148,163,184,.12)'}; color:${isIncome ? 'var(--color-income)' : 'var(--text-secondary)'};">${cIcon}</div>
           <div class="tx-info">
-            <div class="m">${t.merchant || 'Transaction'}</div>
+            <div class="m">${escapeHTML(t.merchant) || 'Transaction'}</div>
             <div class="c">${cName}</div>
           </div>
           <div class="tx-amt ${colorClass}">${sign}${amtStr}</div>

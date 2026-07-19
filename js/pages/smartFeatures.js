@@ -72,9 +72,13 @@ export async function renderMonthlyReplay(container, params = {}) {
           <p>You spent <strong>${formatCurrency(topMerchant.amount)}</strong> here in ${topMerchant.count} orders.</p>
         </div>
         
-        <button class="btn btn--primary" style="font-size: 1.1em; padding: var(--spacing-sm) var(--spacing-lg);">Play Next Slide</button>
+        <button id="next-slide-btn" class="btn btn--primary" style="font-size: 1.1em; padding: var(--spacing-sm) var(--spacing-lg);">Play Next Slide</button>
       </div>
     `;
+    
+    document.getElementById('next-slide-btn').addEventListener('click', () => {
+      import('../components/toast.js').then(m => m.showToast('More slides coming soon!', 'info'));
+    });
   } catch (err) {
     container.innerHTML = `<p>Error</p>`;
   }

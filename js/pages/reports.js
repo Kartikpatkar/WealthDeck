@@ -81,6 +81,9 @@ export async function render(container, params = {}) {
         if (chartInstance) {
           chartInstance.destroy();
         }
+        const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--border-light').trim() || 'rgba(255,255,255,0.1)';
+        const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim() || '#94a3b8';
+        
         const ctx = document.getElementById('reports-chart');
         chartInstance = new Chart(ctx, {
           type: 'bar',
@@ -100,8 +103,8 @@ export async function render(container, params = {}) {
               legend: { display: false }
             },
             scales: {
-              y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#94a3b8' } },
-              x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+              y: { grid: { color: gridColor }, ticks: { color: textColor } },
+              x: { grid: { display: false }, ticks: { color: textColor } }
             }
           }
         });

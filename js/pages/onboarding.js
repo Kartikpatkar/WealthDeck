@@ -45,11 +45,10 @@ export async function render(container, params = {}) {
         transform: scale(1.1);
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       }
-      /* Hide navigation on onboarding */
-      #bottom-nav, #sidebar-nav, .topbar, .fab-desktop { display: none !important; }
-      .main { margin-left: 0 !important; padding-bottom: 0 !important; }
     </style>
   `;
+  
+  document.body.classList.add('onboarding-active');
   
   // Real-time accent color preview
   const radios = document.querySelectorAll('input[name="accent"]');
@@ -67,12 +66,10 @@ export async function render(container, params = {}) {
     localStorage.setItem('wealthdeck_name', name);
     localStorage.setItem('wealthdeck_accent', accent);
     
-    // Restore navigation visibility layout by removing style injected above is handled automatically on re-render 
-    // since the injected style is destroyed when container is overwritten, BUT wait, it's global style injection.
-    // So let's reload or we can just change hash.
     window.location.hash = '#/dashboard';
-    window.location.reload(); // Quick way to reset styles and boot cleanly
   });
 }
 
-export function destroy() {}
+export function destroy() {
+  document.body.classList.remove('onboarding-active');
+}

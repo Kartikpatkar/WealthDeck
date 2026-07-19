@@ -2,7 +2,7 @@ import { getAllTransactions, saveTransaction, deleteTransaction } from '../servi
 import { confirmModal, promptModal } from '../components/modal.js';
 import { getAllAccounts, seedDefaultAccount, saveAccount } from '../services/accountService.js';
 import { getAllCategories, seedDefaultCategories } from '../services/categoryService.js';
-import { formatCurrency, formatDate, getCurrencySymbol } from '../utils/format.js';
+import { formatCurrency, formatDate, escapeHTML, getCurrencySymbol } from '../utils/format.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Transactions...</div>`;
@@ -11,62 +11,23 @@ export async function render(container, params = {}) {
     const transactions = await getAllTransactions();
     await seedDefaultCategories();
     const categories = await getAllCategories();
-    const catMap = categories.reduce((acc, c) => ({...acc, [c.id]: c}), {});
     
-    // Group by Date
-    const grouped = {};
-    transactions.forEach(t => {
-      const d = formatDate(t.date);
-      if(!grouped[d]) grouped[d] = [];
-      grouped[d].push(t);
-    });
-    
-    let txnList = '';
-    if (transactions.length === 0) {
-      txnList = `<div class="hint mt-24">No transactions yet.</div>`;
-    } else {
-      Object.keys(grouped).sort((a,b) => new Date(b) - new Date(a)).forEach(date => {
-        txnList += `<div class="date-header">${date}</div>`;
-        txnList += grouped[date].map(t => {
-          const isIncome = t.type === 'income';
-          const cName = catMap[t.categoryId]?.name || 'Uncategorized';
-          const cIcon = catMap[t.categoryId]?.icon || '📦';
-          const amtStr = formatCurrency(t.amount);
-          const colorClass = isIncome ? 'income' : (t.type === 'transfer' ? 'transfer' : 'expense');
-          const sign = isIncome ? '+' : (t.type === 'transfer' ? '' : '-');
-          
-          return `
-            <div class="tx-row" data-id="${t.id}">
-              <div class="tx-icon" style="background:${isIncome ? 'rgba(52,211,153,.15)' : 'rgba(148,163,184,.12)'};" class="${isIncome ? 'text-income' : 'text-secondary'}">${cIcon}</div>
-              <div class="tx-info">
-                <div class="m">${t.merchant || 'Transaction'}</div>
-                <div class="c">${cName}</div>
-              </div>
-              <div class="tx-amt ${colorClass}">${sign}${amtStr}</div>
-            </div>
-          `;
-        }).join('');
-      });
-    }
-
     container.innerHTML = `
       <div class="page-head"><h2>Transactions</h2></div>
       
       <div class="search-bar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <input type="text" placeholder="Search merchant, category...">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="tx-search" placeholder="Search transactions...">
       </div>
       
-      <div class="chips">
-        <button class="chip active">All</button>
-        <button class="chip">Income</button>
-        <button class="chip">Expense</button>
-        <button class="chip">This month</button>
+      <div class="chips" id="tx-filters">
+        <div class="chip active" data-filter="all">All</div>
+        <div class="chip" data-filter="income">Income</div>
+        <div class="chip" data-filter="expense">Expense</div>
+        <div class="chip" data-filter="this-month">This Month</div>
       </div>
       
-      <div class="card" style="padding:8px 20px;">
-        <div id="fullTxList">${txnList}</div>
-      </div>
+      <div id="tx-list"></div>
       
       <!-- ADD TRANSACTION MODAL -->
       <div class="modal-overlay" id="add-txn-modal">
@@ -140,15 +101,12 @@ export async function render(container, params = {}) {
       </div>
     `;
     
-    // Populate dropdowns globally once
     await seedDefaultAccount();
     const accounts = await getAllAccounts();
     document.getElementById('txn-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
     document.getElementById('txn-to-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-    
     document.getElementById('txn-category').innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     
-    // Quick add account listener
     document.getElementById('quick-add-account').addEventListener('click', async () => {
       const name = await promptModal('New Account', 'Enter the name of your new account:', 'e.g. Chase Checking');
       if (name && name.trim()) {
@@ -161,7 +119,6 @@ export async function render(container, params = {}) {
           icon: '<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
           isArchived: false
         });
-        
         const newAccounts = await getAllAccounts();
         const optionsHtml = newAccounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
         document.getElementById('txn-account').innerHTML = optionsHtml;
@@ -171,7 +128,6 @@ export async function render(container, params = {}) {
       }
     });
     
-    // UI logic for Segments
     const segButtons = document.querySelectorAll('#typeSeg button');
     const typeInput = document.getElementById('txn-type');
     const amountInput = document.getElementById('txn-amount');
@@ -183,11 +139,9 @@ export async function render(container, params = {}) {
       const activeBtn = document.querySelector(`#typeSeg button[data-type="${type}"]`);
       if(activeBtn) activeBtn.classList.add('active');
       typeInput.value = type;
-      
       amountInput.classList.remove('income-mode', 'expense-mode');
       if(type === 'income') amountInput.classList.add('income-mode');
       else if(type === 'expense') amountInput.classList.add('expense-mode');
-      
       if(type === 'transfer') {
         toAccountWrap.style.display = 'block';
         toAccountSelect.required = true;
@@ -197,11 +151,8 @@ export async function render(container, params = {}) {
       }
     }
     
-    segButtons.forEach(b => {
-      b.addEventListener('click', () => setType(b.dataset.type));
-    });
+    segButtons.forEach(b => b.addEventListener('click', () => setType(b.dataset.type)));
 
-    // More Toggle
     const moreBtn = document.getElementById('more-toggle-btn');
     const moreFields = document.getElementById('moreFields');
     const moreIcon = document.getElementById('more-toggle-icon');
@@ -210,8 +161,79 @@ export async function render(container, params = {}) {
       moreIcon.style.transform = moreFields.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
     });
 
-    // Row click -> Edit
-    const listEl = document.getElementById('fullTxList');
+    let currentFilter = 'all';
+    let searchQuery = '';
+    
+    function renderList() {
+      const now = new Date();
+      let filtered = transactions.filter(t => {
+        if (currentFilter === 'income' && t.type !== 'income') return false;
+        if (currentFilter === 'expense' && t.type !== 'expense') return false;
+        if (currentFilter === 'this-month') {
+          const d = new Date(t.date);
+          if (d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear()) return false;
+        }
+        if (searchQuery) {
+          if (!(t.merchant || '').toLowerCase().includes(searchQuery.toLowerCase())) return false;
+        }
+        return true;
+      });
+      
+      let html = '';
+      if (filtered.length === 0) {
+        html = '<div class="hint" style="margin-top:40px;">No transactions found.</div>';
+      } else {
+        const grouped = {};
+        filtered.forEach(t => {
+          const d = new Date(t.date).toLocaleDateString('en-CA');
+          if (!grouped[d]) grouped[d] = [];
+          grouped[d].push(t);
+        });
+        
+        const sortedDates = Object.keys(grouped).sort((a,b) => new Date(b) - new Date(a));
+        sortedDates.forEach(date => {
+          html += `<div class="date-header">${formatDate(date)}</div>`;
+          html += `<div class="card" style="padding: 4px 16px;">`;
+          grouped[date].forEach(t => {
+            const isIncome = t.type === 'income';
+            html += `
+              <div class="tx-row" data-id="${t.id}">
+                <div class="tx-icon ${isIncome ? 'income' : (t.type === 'transfer' ? 'transfer' : 'expense')}">
+                  ${t.categoryId ? (categories.find(c => c.id === t.categoryId)?.icon || '💰') : '💰'}
+                </div>
+                <div class="tx-info">
+                  <div class="m">${escapeHTML(t.merchant) || 'Transaction'}</div>
+                  <div class="c">${t.categoryId ? (categories.find(c => c.id === t.categoryId)?.name || 'Uncategorized') : 'Uncategorized'}</div>
+                </div>
+                <div class="tx-amt ${isIncome ? 'income' : (t.type === 'transfer' ? 'transfer' : 'expense')}">
+                  ${isIncome ? '+' : (t.type === 'transfer' ? '' : '-')}${formatCurrency(t.amount)}
+                </div>
+              </div>
+            `;
+          });
+          html += `</div>`;
+        });
+      }
+      document.getElementById('tx-list').innerHTML = html;
+    }
+    
+    renderList();
+
+    document.getElementById('tx-search').addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderList();
+    });
+
+    document.getElementById('tx-filters').addEventListener('click', (e) => {
+      if (e.target.classList.contains('chip')) {
+        document.querySelectorAll('#tx-filters .chip').forEach(c => c.classList.remove('active'));
+        e.target.classList.add('active');
+        currentFilter = e.target.dataset.filter;
+        renderList();
+      }
+    });
+
+    const listEl = document.getElementById('tx-list');
     listEl.addEventListener('click', (e) => {
       const row = e.target.closest('.tx-row');
       if(!row) return;
@@ -275,9 +297,15 @@ export async function render(container, params = {}) {
       
       const tagsInput = document.getElementById('txn-tags').value;
       
+      const amountVal = parseFloat(document.getElementById('txn-amount').value);
+      if (isNaN(amountVal) || amountVal <= 0) {
+        import('../components/toast.js').then(m => m.showToast('Amount must be greater than 0', 'error'));
+        return;
+      }
+
       const payload = {
         type: type,
-        amount: parseFloat(document.getElementById('txn-amount').value),
+        amount: amountVal,
         merchant: document.getElementById('txn-merchant').value,
         date: document.getElementById('txn-date').value,
         accountId: accountId,

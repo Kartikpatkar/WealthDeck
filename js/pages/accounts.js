@@ -71,8 +71,10 @@ export async function render(container, params = {}) {
               <div class="field">
                 <label>Currency</label>
                 <select id="acc-currency" required>
-                  <option value="INR">INR (₹)</option>
                   <option value="USD">USD ($)</option>
+                  <option value="INR">INR (₹)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="GBP">GBP (£)</option>
                 </select>
               </div>
             </div>
@@ -114,7 +116,7 @@ export async function render(container, params = {}) {
         document.getElementById('acc-name').value = acc.name;
         document.getElementById('acc-type').value = acc.type;
         document.getElementById('acc-balance').value = ((acc.balance || 0) / 100).toFixed(2);
-        document.getElementById('acc-currency').value = acc.currency || 'INR';
+        document.getElementById('acc-currency').value = acc.currency || localStorage.getItem('wealthdeck_currency') || 'USD';
         document.getElementById('acc-color').value = acc.color || '#6366f1';
         document.getElementById('acc-default').checked = acc.isDefault || false;
         
@@ -151,6 +153,7 @@ export async function render(container, params = {}) {
     document.getElementById('add-account-btn').addEventListener('click', () => {
       document.getElementById('add-account-form').reset();
       document.getElementById('acc-id').value = '';
+      document.getElementById('acc-currency').value = localStorage.getItem('wealthdeck_currency') || 'USD';
       document.getElementById('delete-acc-btn').style.display = 'none';
       openModal();
     });

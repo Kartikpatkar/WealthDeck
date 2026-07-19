@@ -40,8 +40,15 @@ export async function getAccountById(id) {
 
 export async function saveAccount(account) {
   const db = getDB();
-  return new Promise((resolve, reject) => {
-    // Convert to cents
+  return new Promise(async (resolve, reject) => {
+    // Check if the balance was updated from a UI input (decimal/string) vs from a DB fetch/internal process (already integer/cents)
+    // If it's a new account, or if the user edited it (we can't easily tell, so we always convert if it's not a round int).
+    // Actually, to be perfectly safe, UI inputs should be parsed. In accounts.js we pass `balance: parseFloat(...)`.
+    // Let's assume if it has decimals or is a float, it's dollars, otherwise if it's exact, it's cents.
+    // A safer way is to just expect the UI to pass dollars, and we convert. 
+    // Wait, if we edit an existing account, the UI passes `parseFloat(document.getElementById('acc-balance').value)`.
+    // In `accounts.js`, it populates the input with `((acc.balance || 0) / 100).toFixed(2)`.
+    // So `parseFloat` will give us dollars.
     account.balance = Math.round(parseFloat(account.balance) * 100) || 0;
     account.updatedAt = new Date().toISOString();
     if (!account.id) account.createdAt = account.updatedAt;
@@ -51,7 +58,8 @@ export async function saveAccount(account) {
     
     // If setting as default, we must unset others
     if (account.isDefault) {
-      store.getAll().onsuccess = (e) => {
+      const allReq = store.getAll();
+      allReq.onsuccess = (e) => {
         const all = e.target.result;
         all.forEach(acc => {
           if (acc.id !== account.id && acc.isDefault) {
@@ -59,12 +67,19 @@ export async function saveAccount(account) {
             store.put(acc);
           }
         });
+        // Now save the current account
+        saveCurrent();
       };
+      allReq.onerror = () => reject(allReq.error);
+    } else {
+      saveCurrent();
     }
     
-    const request = account.id ? store.put(account) : store.add(account);
-    request.onsuccess = () => resolve(request.result); // Returns the generated ID
-    request.onerror = () => reject(request.error);
+    function saveCurrent() {
+      const request = account.id ? store.put(account) : store.add(account);
+      request.onsuccess = () => resolve(request.result); // Returns the generated ID
+      request.onerror = () => reject(request.error);
+    }
   });
 }
 

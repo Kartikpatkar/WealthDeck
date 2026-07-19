@@ -43,19 +43,24 @@ export async function importDataJSON(jsonString) {
   // Wipe and replace strategy for simplicity
   for (const storeName of stores) {
     if (db.objectStoreNames.contains(storeName)) {
-      await new Promise(resolve => {
+      const records = data.data[storeName];
+      if (!records || records.length === 0) continue;
+      
+      await new Promise((resolve, reject) => {
         const txn = db.transaction(storeName, 'readwrite');
         const store = txn.objectStore(storeName);
-        store.clear().onsuccess = () => resolve();
+        
+        // Clear existing data
+        store.clear();
+        
+        // Put all records in the same transaction
+        for (const record of records) {
+          store.put(record);
+        }
+        
+        txn.oncomplete = () => resolve();
+        txn.onerror = () => reject(txn.error);
       });
-      
-      const records = data.data[storeName];
-      for (const record of records) {
-        await new Promise(resolve => {
-          const txn = db.transaction(storeName, 'readwrite');
-          txn.objectStore(storeName).put(record).onsuccess = () => resolve();
-        });
-      }
     }
   }
 }

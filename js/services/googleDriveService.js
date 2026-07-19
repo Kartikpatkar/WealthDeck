@@ -3,12 +3,13 @@ import { importDataJSON } from './exportService.js';
 import { showToast } from '../components/toast.js';
 
 // PLACEHOLDER: User needs to replace this with their actual Client ID from Google Cloud Console
-const CLIENT_ID = '388767949571-ovgshl6mmvvv84naocsu0669ncm390s6.apps.googleusercontent.com';
+const CLIENT_ID = '[YOUR_CLIENT_ID_HERE]';
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
 const SCOPES = 'https://www.googleapis.com/auth/drive.file';
 
 let tokenClient;
 let accessToken = null;
+let tokenExpiry = null;
 let gapiInited = false;
 let gisInited = false;
 
@@ -47,6 +48,7 @@ export async function initGoogleDrive() {
           scope: SCOPES,
           callback: (tokenResponse) => {
             accessToken = tokenResponse.access_token;
+            tokenExpiry = Date.now() + (tokenResponse.expires_in * 1000) - 60000; // 1 min buffer
             // The actual action will be handled by the caller who requested the token
           },
         });
@@ -65,7 +67,7 @@ function checkInit(resolve) {
 
 async function requireAuth() {
   return new Promise((resolve, reject) => {
-    if (accessToken) return resolve(true);
+    if (accessToken && tokenExpiry && Date.now() < tokenExpiry) return resolve(true);
 
     if (!tokenClient) return reject(new Error('Google Auth not initialized'));
 
@@ -76,6 +78,7 @@ async function requireAuth() {
         reject(tokenResponse);
       }
       accessToken = tokenResponse.access_token;
+      tokenExpiry = Date.now() + (tokenResponse.expires_in * 1000) - 60000;
       originalCallback(tokenResponse);
       resolve(true);
     };

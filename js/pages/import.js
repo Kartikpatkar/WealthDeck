@@ -12,8 +12,12 @@ export async function render(container, params = {}) {
     <p>Upload CSV statements to automatically categorize and import transactions.</p>
     
     <div class="card" style="margin-top: var(--spacing-lg);">
-      <input type="file" id="csv-file" accept=".csv" class="input">
-      <button id="parse-btn" class="btn btn--primary" style="margin-left: var(--spacing-sm);">Analyze</button>
+      <label for="csv-file" class="btn btn--secondary" style="display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; margin-bottom:12px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span id="csv-file-name">Select CSV File</span>
+      </label>
+      <input type="file" id="csv-file" accept=".csv" style="display:none;">
+      <button id="parse-btn" class="btn btn--primary" style="width:100%;">Analyze</button>
     </div>
 
     <div id="import-wizard" style="display:none; margin-top: var(--spacing-lg);">
@@ -40,6 +44,13 @@ export async function render(container, params = {}) {
 
   let rawData = [];
   let processedData = [];
+
+  document.getElementById('csv-file').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      document.getElementById('csv-file-name').textContent = file.name;
+    }
+  });
 
   document.getElementById('parse-btn').addEventListener('click', async () => {
     const file = document.getElementById('csv-file').files[0];
