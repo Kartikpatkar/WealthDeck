@@ -9,8 +9,8 @@ body {
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
 
-  /* Prevent pull-to-refresh on mobile if we handle it custom */
-  overscroll-behavior-y: none; 
+  /* Allow native pull-to-refresh on mobile */
+  overscroll-behavior-y: auto; 
   transition: background 0.3s ease, color 0.3s ease;
 }
 
