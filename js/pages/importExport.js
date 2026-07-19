@@ -1,23 +1,32 @@
 import { exportDataJSON, importDataJSON } from '../services/exportService.js';
-import { isDriveConfigured, initGoogleDrive, backupToDrive, restoreFromDrive } from '../services/googleDriveService.js';
+import { isDriveConfigured, initGoogleDrive, backupToDrive, restoreFromDrive, getLastSyncDate, isDriveSignedIn, signOutFromDrive } from '../services/googleDriveService.js';
 import { showToast } from '../components/toast.js';
 import { confirmModal } from '../components/modal.js';
 
 export async function render(container, params = {}) {
   const driveConfigured = isDriveConfigured();
+  const lastSync = getLastSyncDate();
+  const signedIn = isDriveSignedIn();
   
+  const lastSyncText = lastSync ? 
+    `<span style="color:var(--color-income); font-weight:600;">Last synced: ${lastSync.toLocaleDateString()} at ${lastSync.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>` : 
+    'Securely backup and restore your financial data to your personal Google Drive.';
+
   container.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
       <h1>Sync & Backup</h1>
     </div>
     
     <div class="card" style="margin-bottom: var(--spacing-lg);">
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom: 12px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:24px; height:24px; color:#4285F4;"><path d="M12 2L2 22h20L12 2z"/><path d="M12 2L2 22h10l10-20H12z" opacity="0.3"/></svg>
-        <h2 style="margin:0;">Google Drive Sync</h2>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:24px; height:24px; color:#4285F4;"><path d="M12 2L2 22h20L12 2z"/><path d="M12 2L2 22h10l10-20H12z" opacity="0.3"/></svg>
+          <h2 style="margin:0;">Google Drive Sync</h2>
+        </div>
+        ${signedIn ? `<button id="drive-signout-btn" style="background:none; border:none; color:var(--text-secondary); font-size:12px; cursor:pointer; text-decoration:underline;">Sign Out</button>` : ''}
       </div>
       <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md); font-size: 14px;">
-        Securely backup and restore your financial data to your personal Google Drive.
+        ${lastSyncText}
       </p>
       
       ${driveConfigured ? `
@@ -68,7 +77,8 @@ export async function render(container, params = {}) {
     initGoogleDrive().catch(err => console.error("Drive Init Error:", err));
 
     document.getElementById('drive-backup-btn').addEventListener('click', async () => {
-      await backupToDrive();
+      const success = await backupToDrive();
+      if (success) render(container, params); // Re-render to show updated sync date
     });
 
     document.getElementById('drive-restore-btn').addEventListener('click', async () => {
@@ -76,6 +86,13 @@ export async function render(container, params = {}) {
       if (!isOk) return;
       await restoreFromDrive();
     });
+
+    const signoutBtn = document.getElementById('drive-signout-btn');
+    if (signoutBtn) {
+      signoutBtn.addEventListener('click', () => {
+        signOutFromDrive();
+      });
+    }
   }
 
   document.getElementById('export-json-btn').addEventListener('click', async () => {

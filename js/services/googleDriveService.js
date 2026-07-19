@@ -16,6 +16,10 @@ export function isDriveConfigured() {
   return CLIENT_ID !== 'YOUR_CLIENT_ID_HERE';
 }
 
+export function isDriveSignedIn() {
+  return accessToken !== null;
+}
+
 export async function initGoogleDrive() {
   if (!isDriveConfigured()) return false;
 
@@ -126,6 +130,7 @@ export async function backupToDrive() {
 
     if (!res.ok) throw new Error('Upload failed');
 
+    localStorage.setItem('wealthdeck_last_sync', new Date().toISOString());
     showToast('Backup synced to Google Drive!', 'success');
     return true;
   } catch (err) {
@@ -163,6 +168,7 @@ export async function restoreFromDrive() {
     });
 
     if (res.body) {
+      localStorage.setItem('wealthdeck_last_sync', new Date().toISOString());
       await importDataJSON(res.body);
       showToast('Restore successful! Reloading...', 'success');
       setTimeout(() => window.location.reload(), 1500);
@@ -175,4 +181,21 @@ export async function restoreFromDrive() {
     showToast('Drive Restore Failed', 'error');
     return false;
   }
+}
+
+export function signOutFromDrive() {
+  if (accessToken && window.google) {
+    google.accounts.oauth2.revoke(accessToken, () => {
+      accessToken = null;
+      showToast('Signed out of Google Drive', 'info');
+      window.location.reload();
+    });
+  } else {
+    showToast('Not signed in', 'info');
+  }
+}
+
+export function getLastSyncDate() {
+  const d = localStorage.getItem('wealthdeck_last_sync');
+  return d ? new Date(d) : null;
 }
