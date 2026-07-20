@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wealthdeck-v6';
+const CACHE_NAME = 'wealthdeck-v7';
 const PERSISTENT_CACHE_NAME = 'wealthdeck-persistent';
 
 const APP_SHELL = [
@@ -38,7 +38,8 @@ const APP_SHELL = [
   './js/pages/settings.js',
   './js/pages/import.js',
   './js/pages/smartFeatures.js',
-  './js/pages/onboarding.js'
+  './js/pages/onboarding.js',
+  './js/pages/guide.js'
 ];
 
 self.addEventListener('install', (e) => {
