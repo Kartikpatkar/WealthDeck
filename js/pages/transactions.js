@@ -153,12 +153,7 @@ export async function render(container, params = {}) {
       
       // Update category dropdown
       if (allCategories && allCategories.length > 0) {
-        let filteredCats = allCategories;
-        if (type === 'income') {
-          filteredCats = allCategories.filter(c => c.type === 'income');
-        } else if (type === 'expense') {
-          filteredCats = allCategories.filter(c => c.type === 'expense');
-        }
+        const filteredCats = allCategories.filter(c => c.type === type);
         document.getElementById('txn-category').innerHTML = filteredCats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
       }
     }

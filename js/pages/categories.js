@@ -4,30 +4,46 @@ import { ICONS } from '../utils/icons.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Categories...</div>`;
-  
+
   try {
     const categories = await getAllCategories();
-    
+
     let catList = '';
     if (categories.length === 0) {
       catList = `<div class="hint mod-style-c43a02">No categories set. Create your first category.</div>`;
     } else {
-      catList = categories.map(c => `
-        <div class="budget-item mod-style-dc3988" data-id="${c.id}">
-          <div class="budget-top mod-style-d0da85">
-            <div class="name mod-style-7f8dc0">
-              <div style="width:36px; height:36px; border-radius:12px; background:${c.color}; display:flex; align-items:center; justify-content:center; font-size:16px; color:#fff;">
-                ${c.icon}
+      const grouped = { expense: [], income: [], transfer: [] };
+      categories.forEach(c => {
+        if (!grouped[c.type]) grouped[c.type] = [];
+        grouped[c.type].push(c);
+      });
+
+      const renderGroup = (title, items) => {
+        if (!items || items.length === 0) return '';
+        return `
+          <h3 style="margin: 24px 0 12px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary);">${title}</h3>
+          <div class="card">
+            ${items.map(c => `
+              <div class="budget-item mod-style-dc3988" data-id="${c.id}">
+                <div class="budget-top mod-style-d0da85">
+                  <div class="name mod-style-7f8dc0">
+                    <div style="width:36px; height:36px; border-radius:12px; background:${c.color}; display:flex; align-items:center; justify-content:center; color:#fff;">
+                      ${c.icon}
+                    </div>
+                    <div class="mod-style-6cbc10">
+                      <span class="mod-style-957708">${c.name}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="mod-style-6cbc10">
-                <span class="mod-style-957708">${c.name}</span>
-                <span class="mod-style-98965b">${c.type}</span>
-              </div>
-            </div>
+            `).join('')}
           </div>
-        </div>
-      `).join('');
-      catList = `<div class="card">${catList}</div>`;
+        `;
+      };
+
+      catList = renderGroup('Expense', grouped.expense) +
+        renderGroup('Income', grouped.income) +
+        renderGroup('Transfer', grouped.transfer);
     }
 
     container.innerHTML = `
@@ -56,19 +72,20 @@ export async function render(container, params = {}) {
               <input type="text" id="cat-name" placeholder="e.g. Groceries" required>
             </div>
             
-            <div class="field-row">
+            <div class="field">
               <div class="field mod-style-d5e8c5">
                 <label>Type</label>
                 <select id="cat-type" required>
                   <option value="expense">Expense</option>
                   <option value="income">Income</option>
+                  <option value="transfer">Transfer</option>
                 </select>
               </div>
-              <div class="field mod-style-d5e8c5">
+              <div class="field">
                 <label>Icon</label>
-                <div class="mod-style-b9f40e" id="cat-icon-grid">
+                <div class="icon-grid-modern" id="cat-icon-grid">
                   ${Object.keys(ICONS).map(k => `
-                    <button class="icon-swatch-btn mod-style-36d50e" type="button"  data-svg='${ICONS[k].replace(/'/g, "&apos;")}' title="${k}">
+                    <button class="icon-swatch-btn" type="button"  data-svg='${ICONS[k].replace(/'/g, "&apos;")}' title="${k}">
                       ${ICONS[k]}
                     </button>
                   `).join('')}
@@ -81,10 +98,10 @@ export async function render(container, params = {}) {
               <label>Color Tag</label>
               <div class="mod-style-9551b6">
                 ${[
-                  { hex: '#6366f1' }, { hex: '#10b981' }, { hex: '#f43f5e' },
-                  { hex: '#f59e0b' }, { hex: '#0ea5e9' }, { hex: '#8b5cf6' },
-                  { hex: '#ec4899' }, { hex: '#14b8a6' }
-                ].map((c, i) => `
+        { hex: '#6366f1' }, { hex: '#10b981' }, { hex: '#f43f5e' },
+        { hex: '#f59e0b' }, { hex: '#0ea5e9' }, { hex: '#8b5cf6' },
+        { hex: '#ec4899' }, { hex: '#14b8a6' }
+      ].map((c, i) => `
                   <label class="mod-style-1034c1">
                     <input class="mod-style-628c86" type="radio" name="cat-color" value="${c.hex}" ${i === 0 ? 'checked' : ''}>
                     <div class="cat-color-swatch" style="width: 32px; height: 32px; border-radius: 50%; background: ${c.hex}; border: 2px solid transparent; transition: 0.2s;"></div>
@@ -111,20 +128,51 @@ export async function render(container, params = {}) {
           transform: scale(1.15);
           box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
+        .icon-grid-modern {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+          gap: 10px;
+          max-height: 180px;
+          overflow-y: auto;
+          padding: 12px;
+          background: var(--bg-surface-elevated);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-md);
+        }
+        .icon-swatch-btn {
+          width: 100%;
+          aspect-ratio: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 10px;
+          background: transparent;
+          border: 1px solid transparent;
+          color: var(--text-primary);
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .icon-swatch-btn:hover {
+          background: var(--bg-surface);
+          border-color: var(--border);
+        }
         .icon-swatch-btn.active {
-          border-color: var(--text-primary) !important;
-          background: rgba(100, 100, 100, 0.1) !important;
+          background: var(--color-primary) !important;
+          color: #fff !important;
+          border-color: var(--color-primary) !important;
+          transform: scale(1.05);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
       </style>
     `;
-    
+
     // Modal behavior
     const modalOverlay = document.getElementById('add-cat-modal');
     modalOverlay.addEventListener('click', (e) => {
-      if(e.target === modalOverlay) closeModal();
+      if (e.target === modalOverlay) closeModal();
     });
     document.getElementById('close-cat-modal').addEventListener('click', closeModal);
-    
+
     function openModal() {
       modalOverlay.classList.add('open');
     }
@@ -134,20 +182,20 @@ export async function render(container, params = {}) {
 
     document.getElementById('categories-list').addEventListener('click', async (e) => {
       const row = e.target.closest('.budget-item');
-      if(!row) return;
+      if (!row) return;
       const id = Number(row.dataset.id);
       const cat = categories.find(c => c.id === id);
       if (cat) {
         document.getElementById('cat-id').value = cat.id;
         document.getElementById('cat-name').value = cat.name;
         document.getElementById('cat-type').value = cat.type;
-        
+
         // Icon
         document.getElementById('cat-icon').value = cat.icon;
         document.querySelectorAll('.icon-swatch-btn').forEach(btn => {
           btn.classList.toggle('active', btn.dataset.svg === cat.icon);
         });
-        
+
         // Color
         const colorInput = document.querySelector(`input[name="cat-color"][value="${cat.color}"]`);
         if (colorInput) {
@@ -163,7 +211,7 @@ export async function render(container, params = {}) {
             document.querySelector('input[name="cat-color"]').checked = true;
           }
         }
-        
+
         document.getElementById('delete-cat-btn').style.display = 'block';
         openModal();
       }
@@ -173,7 +221,7 @@ export async function render(container, params = {}) {
     const customRadio = document.querySelector('input[name="cat-color"][value="custom"]');
     const customInput = document.getElementById('cat-custom-color-input');
     const customBtn = document.querySelector('.custom-swatch-btn');
-    
+
     if (customRadio && customInput) {
       customRadio.addEventListener('change', () => {
         if (customRadio.checked) {
@@ -181,14 +229,14 @@ export async function render(container, params = {}) {
           customInput.click();
         }
       });
-      
+
       customInput.addEventListener('input', (e) => {
         customRadio.value = e.target.value;
         customBtn.style.background = e.target.value;
         customRadio.checked = true;
       });
     }
-    
+
     // Icon grid bindings
     document.querySelectorAll('.icon-swatch-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -207,11 +255,11 @@ export async function render(container, params = {}) {
         render(container);
       }
     });
-    
+
     document.getElementById('add-cat-btn').addEventListener('click', () => {
       document.getElementById('add-cat-form').reset();
       document.getElementById('cat-id').value = '';
-      
+
       // Default icon
       const firstIconBtn = document.querySelector('.icon-swatch-btn');
       if (firstIconBtn) {
@@ -219,38 +267,38 @@ export async function render(container, params = {}) {
         firstIconBtn.classList.add('active');
         document.getElementById('cat-icon').value = firstIconBtn.dataset.svg;
       }
-      
+
       // Default color to first
       document.querySelector('input[name="cat-color"]').checked = true;
       if (customRadio) {
         customRadio.value = 'custom';
         customBtn.style.background = 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)';
       }
-      
+
       document.getElementById('delete-cat-btn').style.display = 'none';
       openModal();
     });
-    
+
     document.getElementById('add-cat-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const payload = {
         name: document.getElementById('cat-name').value,
         type: document.getElementById('cat-type').value,
         icon: document.getElementById('cat-icon').value,
         color: document.querySelector('input[name="cat-color"]:checked').value
       };
-      
+
       const idStr = document.getElementById('cat-id').value;
       if (idStr) payload.id = Number(idStr);
-      
+
       await saveCategory(payload);
       closeModal();
       render(container);
     });
-    
+
   } catch (err) {
     container.innerHTML = `<p class="mod-style-f479d1">Error: ${err.message}</p>`;
   }
 }
-export function destroy() {}
+export function destroy() { }
