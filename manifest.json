@@ -1,6 +1,7 @@
 {
   "name": "WealthDeck",
   "short_name": "WealthDeck",
+  "version": "1.0.0",
   "description": "Your Financial Life. Privately Yours.",
   "start_url": "./index.html",
   "display": "standalone",
