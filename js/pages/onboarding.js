@@ -1,4 +1,4 @@
-import { restoreFromDrive, backupToDrive, isDriveConfigured } from '../services/googleDriveService.js';
+import { restoreFromDrive, backupToDrive, isDriveConfigured, initGoogleDrive } from '../services/googleDriveService.js';
 
 export async function render(container, params = {}) {
   const accentColors = [
@@ -17,91 +17,91 @@ export async function render(container, params = {}) {
     
     if (currentStep === 1) {
       stepContent = `
-        <div style="text-align: center; margin-bottom: 40px;">
-          <img src="./assets/icon-192.png" alt="WealthDeck" style="width: 80px; height: 80px; border-radius: 20px; margin-bottom: 24px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);">
-          <h1 style="font-size: 28px; margin-bottom: 12px;">Welcome to WealthDeck</h1>
-          <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.5; margin-bottom: 32px;">Securely sync your financial data across devices using your own Google Drive. No servers, complete privacy.</p>
+        <div class="mod-style-2a8646">
+          <img class="mod-style-a0c50f" src="./assets/icon-192.png" alt="WealthDeck">
+          <h1 class="mod-style-a02548">Welcome to WealthDeck</h1>
+          <p class="mod-style-73ca12">Securely sync your financial data across devices using your own Google Drive. No servers, complete privacy.</p>
           
-          <div style="display: flex; flex-direction: column; gap: 16px;">
-            <button type="button" class="btn" id="ob-btn-sync" style="padding: 16px; font-size: 16px; display: flex; justify-content: center; align-items: center; gap: 12px;">
+          <div class="mod-style-269ea7">
+            <button class="btn mod-style-1e27b8" type="button"  id="ob-btn-sync">
               <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.1,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.25,22C17.6,22 21.5,18.33 21.5,12.91C21.5,11.76 21.35,11.1 21.35,11.1V11.1Z"/></svg>
               Continue with Google
             </button>
-            <button type="button" class="btn btn--secondary" id="ob-btn-skip" style="padding: 16px; font-size: 16px; background: transparent; border: none; color: var(--text-secondary);">Skip for now</button>
+            <button class="btn btn--secondary mod-style-5ad467" type="button"  id="ob-btn-skip">Skip for now</button>
           </div>
         </div>
       `;
     } else if (currentStep === 2) {
       stepContent = `
-        <div style="text-align: center; margin-bottom: 32px;">
-          <h2 style="font-size: 24px; margin-bottom: 8px;">Your Profile</h2>
-          <p style="color: var(--text-secondary);">Let's set up the basics.</p>
+        <div class="mod-style-c19f7f">
+          <h2 class="mod-style-9cc6e2">Your Profile</h2>
+          <p class="mod-style-35042d">Let's set up the basics.</p>
         </div>
         <form id="onboarding-form-2">
-          <div class="field" style="margin-bottom: 24px;">
-            <label style="font-size: 15px; font-weight: 500; margin-bottom: 8px; display: block;">What should we call you?</label>
-            <input type="text" id="ob-name" class="input" placeholder="Your name" required style="padding: 14px; font-size: 16px;">
+          <div class="field mod-style-dc2cb2">
+            <label class="mod-style-6766fb">What should we call you?</label>
+            <input class="input mod-style-5bf267" type="text" id="ob-name"  placeholder="Your name" required>
           </div>
-          <div class="field" style="margin-bottom: 32px;">
-            <label style="font-size: 15px; font-weight: 500; margin-bottom: 8px; display: block;">Primary Currency</label>
-            <select id="ob-currency" class="input" required style="padding: 14px; font-size: 16px;">
+          <div class="field mod-style-91e2ae">
+            <label class="mod-style-6766fb">Primary Currency</label>
+            <select class="input mod-style-5bf267" id="ob-currency"  required>
               <option value="USD">USD ($)</option>
               <option value="INR">INR (₹)</option>
               <option value="EUR">EUR (€)</option>
               <option value="GBP">GBP (£)</option>
             </select>
           </div>
-          <button type="submit" class="btn" style="padding: 16px; font-size: 16px; width: 100%;">Next</button>
+          <button class="btn mod-style-77eabe" type="submit">Next</button>
         </form>
       `;
     } else if (currentStep === 3) {
       stepContent = `
-        <div style="text-align: center; margin-bottom: 32px;">
-          <h2 style="font-size: 24px; margin-bottom: 8px;">Personalize</h2>
-          <p style="color: var(--text-secondary);">Make WealthDeck yours.</p>
+        <div class="mod-style-c19f7f">
+          <h2 class="mod-style-9cc6e2">Personalize</h2>
+          <p class="mod-style-35042d">Make WealthDeck yours.</p>
         </div>
         <form id="onboarding-form-3">
-          <div class="field" style="margin-bottom: 24px;">
-            <label style="font-size: 15px; font-weight: 500; margin-bottom: 12px; display: block;">Theme</label>
-            <select id="ob-theme" class="input" style="padding: 14px; font-size: 16px;">
+          <div class="field mod-style-dc2cb2">
+            <label class="mod-style-03f9f4">Theme</label>
+            <select class="input mod-style-5bf267" id="ob-theme">
               <option value="system">System Default</option>
               <option value="light">Light</option>
               <option value="dark">Dark</option>
             </select>
           </div>
-          <div class="field" style="margin-bottom: 40px;">
-            <label style="font-size: 15px; font-weight: 500; margin-bottom: 12px; display: block;">Accent Color</label>
-            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <div class="field mod-style-138f8f">
+            <label class="mod-style-03f9f4">Accent Color</label>
+            <div class="mod-style-e75308">
               ${accentColors.map((c, i) => `
-                <label style="cursor: pointer; position: relative;">
-                  <input type="radio" name="accent" value="${c.hex}" ${i === 0 ? 'checked' : ''} style="position: absolute; opacity: 0;">
+                <label class="mod-style-1034c1">
+                  <input class="mod-style-628c86" type="radio" name="accent" value="${c.hex}" ${i === 0 ? 'checked' : ''}>
                   <div class="color-swatch" style="width: 48px; height: 48px; border-radius: 50%; background: ${c.hex}; border: 3px solid transparent; transition: 0.2s;"></div>
                 </label>
               `).join('')}
-              <label style="cursor: pointer; position: relative;" title="Custom Color">
-                <input type="radio" name="accent" value="custom" style="position: absolute; opacity: 0;">
-                <div class="color-swatch custom-swatch-btn" style="width: 48px; height: 48px; border-radius: 50%; background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); border: 3px solid transparent; transition: 0.2s; display: flex; align-items: center; justify-content: center;"></div>
-                <input type="color" id="ob-custom-color-input" style="position: absolute; opacity: 0; width: 0; height: 0;">
+              <label class="mod-style-1034c1" title="Custom Color">
+                <input class="mod-style-628c86" type="radio" name="accent" value="custom">
+                <div class="color-swatch custom-swatch-btn mod-style-2bf4ef"></div>
+                <input class="mod-style-2a85bc" type="color" id="ob-custom-color-input">
               </label>
             </div>
           </div>
-          <div class="field" style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-surface-elevated); border-radius: 12px; border: 1px solid var(--border);">
+          <div class="field mod-style-ee3c34">
             <div>
-              <label style="margin:0; font-size:15px; font-weight:500;">Biometric App Lock</label>
-              <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Use FaceID, TouchID, or PIN to open app</div>
+              <label class="mod-style-135cbc">Biometric App Lock</label>
+              <div class="mod-style-d464c9">Use FaceID, TouchID, or PIN to open app</div>
             </div>
-            <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 28px;">
-              <input type="checkbox" id="ob-biometric-toggle" style="opacity: 0; width: 0; height: 0;">
-              <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; border-radius: 34px;"></span>
+            <label class="switch mod-style-2b10cb">
+              <input class="mod-style-5e19e2" type="checkbox" id="ob-biometric-toggle">
+              <span class="slider mod-style-2bc522"></span>
             </label>
           </div>
-          <button type="submit" class="btn" id="ob-btn-finish" style="padding: 16px; font-size: 16px; width: 100%;">Finish Setup</button>
+          <button class="btn mod-style-77eabe" type="submit"  id="ob-btn-finish">Finish Setup</button>
         </form>
       `;
     }
 
     container.innerHTML = `
-      <div style="max-width: 400px; margin: 40px auto; padding: 20px;">
+      <div class="mod-style-6805bc">
         ${stepContent}
       </div>
       <style>
@@ -135,14 +135,22 @@ export async function render(container, params = {}) {
         
         btnSync.innerHTML = 'Connecting...';
         btnSync.disabled = true;
-        const restored = await restoreFromDrive();
-        if (restored) {
-          // restoreFromDrive automatically reloads on success
-        } else {
-          // No backup found or failed
-          wantsDriveSync = true;
-          currentStep = 2;
-          drawStep();
+        try {
+          await initGoogleDrive();
+          const restored = await restoreFromDrive();
+          if (restored) {
+            // restoreFromDrive automatically reloads on success
+          } else {
+            // No backup found or failed
+            wantsDriveSync = true;
+            currentStep = 2;
+            drawStep();
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Failed to connect to Google Drive.');
+          btnSync.innerHTML = 'Continue with Google';
+          btnSync.disabled = false;
         }
       });
       
@@ -152,6 +160,16 @@ export async function render(container, params = {}) {
         drawStep();
       });
     } else if (currentStep === 2) {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      let guessed = 'USD';
+      if (tz.includes('Kolkata') || tz.includes('India')) guessed = 'INR';
+      else if (tz.includes('Europe/London')) guessed = 'GBP';
+      else if (tz.includes('Europe/')) guessed = 'EUR';
+      else if (tz.includes('Australia/')) guessed = 'AUD';
+      
+      const currSelect = document.getElementById('ob-currency');
+      if (currSelect) currSelect.value = guessed;
+
       document.getElementById('onboarding-form-2').addEventListener('submit', (e) => {
         e.preventDefault();
         localStorage.setItem('wealthdeck_name', document.getElementById('ob-name').value);
@@ -210,21 +228,24 @@ export async function render(container, params = {}) {
             const userId = new Uint8Array(16);
             crypto.getRandomValues(userId);
             
-            await navigator.credentials.create({
-              publicKey: {
-                challenge: challenge,
-                rp: { name: "WealthDeck", id: location.hostname },
-                user: { id: userId, name: "user@wealthdeck.local", displayName: "WealthDeck User" },
-                pubKeyCredParams: [{type: "public-key", alg: -7}, {type: "public-key", alg: -257}],
-                authenticatorSelection: { userVerification: "required" },
-                timeout: 60000,
-                attestation: "none"
-              }
-            });
+            if (window.isSecureContext && navigator.credentials) {
+              await navigator.credentials.create({
+                publicKey: {
+                  challenge: challenge,
+                  rp: { name: "WealthDeck" },
+                  user: { id: userId, name: "user@wealthdeck.local", displayName: "WealthDeck User" },
+                  pubKeyCredParams: [{type: "public-key", alg: -7}, {type: "public-key", alg: -257}],
+                  authenticatorSelection: { userVerification: "required" },
+                  timeout: 60000,
+                  attestation: "none"
+                }
+              });
+            } else {
+              console.warn('WebAuthn not supported. Simulating App Lock.');
+            }
             localStorage.setItem('wealthdeck_biometric', 'true');
           } catch (err) {
             console.error(err);
-            alert("Failed to enable Biometric App Lock. Continuing without it.");
             localStorage.removeItem('wealthdeck_biometric');
           }
         }

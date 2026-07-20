@@ -12,18 +12,18 @@ export async function render(container, params = {}) {
     
     let listHTML = '';
     if (bills.length === 0) {
-      listHTML = `<div class="hint" style="margin-top:40px;">No recurring bills. Add one to track automatically.</div>`;
+      listHTML = `<div class="hint mod-style-c43a02">No recurring bills. Add one to track automatically.</div>`;
     } else {
       listHTML = bills.map(b => `
-        <div class="budget-item" data-id="${b.id}" style="cursor:pointer; padding: 12px 0;">
-          <div class="budget-top" style="align-items: center;">
-            <div class="name" style="display:flex; flex-direction:column;">
-              <span style="font-weight:600; font-size:15px; color:var(--text-primary);">${b.name}</span>
-              <span style="font-size:12px; color:var(--text-secondary);">Due: ${new Date(b.nextDueDate).toLocaleDateString()} &bull; ${b.frequency}</span>
+        <div class="budget-item mod-style-dc3988" data-id="${b.id}">
+          <div class="budget-top mod-style-d0da85">
+            <div class="name mod-style-6cbc10">
+              <span class="mod-style-957708">${b.name}</span>
+              <span class="mod-style-c0485e">Due: ${new Date(b.nextDueDate).toLocaleDateString()} &bull; ${b.frequency}</span>
             </div>
-            <div class="amt" style="display:flex; flex-direction:column; align-items:flex-end;">
+            <div class="amt mod-style-d36839">
               <span>${formatCurrency(b.amount)}</span>
-              ${b.autoPay ? '<span style="font-size:10px; color:var(--color-primary);">Auto-pay</span>' : ''}
+              ${b.autoPay ? '<span class="mod-style-ce5a8c">Auto-pay</span>' : ''}
             </div>
           </div>
         </div>
@@ -32,9 +32,9 @@ export async function render(container, params = {}) {
     }
 
     container.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h2 style="font-size: 19px; font-weight: 700;">Recurring Bills</h2>
-        <button id="add-bill-btn" class="icon-btn" aria-label="Add bill" style="color:var(--color-primary);">
+      <div class="mod-style-1b4308">
+        <h2 class="mod-style-09251a">Recurring Bills</h2>
+        <button class="icon-btn mod-style-3bb313" id="add-bill-btn"  aria-label="Add bill">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
         </button>
       </div>
@@ -45,7 +45,7 @@ export async function render(container, params = {}) {
           <div class="modal-handle"></div>
           <div class="modal-head">
             <h3>Bill</h3>
-            <button type="button" class="modal-close" id="close-bill-modal" aria-label="Close">
+            <button class="modal-close" type="button"  id="close-bill-modal" aria-label="Close">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
           </div>
@@ -58,9 +58,9 @@ export async function render(container, params = {}) {
               <input type="text" id="bill-name" placeholder="e.g. Netflix" required>
             </div>
             
-            <div class="amount-input-wrap" style="margin-top: 16px;">
+            <div class="amount-input-wrap mod-style-a81293">
               <span class="cur">${getCurrencySymbol()}</span>
-              <input type="number" step="0.01" class="amount-input" id="bill-amount" placeholder="0.00" required>
+              <input class="amount-input" type="number" step="0.01"  id="bill-amount" placeholder="0.00" required>
             </div>
             
             <div class="field">
@@ -69,7 +69,7 @@ export async function render(container, params = {}) {
             </div>
             
             <div class="field-row">
-              <div class="field" style="flex:1;">
+              <div class="field mod-style-d5e8c5">
                 <label>Frequency</label>
                 <select id="bill-frequency" required>
                   <option value="monthly">Monthly</option>
@@ -77,7 +77,7 @@ export async function render(container, params = {}) {
                   <option value="yearly">Yearly</option>
                 </select>
               </div>
-              <div class="field" style="flex:1;">
+              <div class="field mod-style-d5e8c5">
                 <label>Category</label>
                 <select id="bill-category" required></select>
               </div>
@@ -88,14 +88,14 @@ export async function render(container, params = {}) {
               <select id="bill-account" required></select>
             </div>
             
-            <div class="field" style="display:flex; align-items:center; gap:8px;">
-              <input type="checkbox" id="bill-auto-pay" style="width:18px; height:18px;">
-              <label for="bill-auto-pay" style="margin:0;">Enable Auto-pay</label>
+            <div class="field mod-style-492ec0">
+              <input class="mod-style-075519" type="checkbox" id="bill-auto-pay">
+              <label class="mod-style-46dcee" for="bill-auto-pay">Enable Auto-pay</label>
             </div>
             
-            <div style="display:flex; gap:10px; margin-top:24px;">
-              <button type="button" class="btn btn--secondary" id="delete-bill-btn" style="display:none; flex:0.4;">Delete</button>
-              <button type="submit" class="btn" style="flex:1;">Save bill</button>
+            <div class="mod-style-3fbd1a">
+              <button class="btn btn--secondary mod-style-1da7e6" type="button"  id="delete-bill-btn">Delete</button>
+              <button class="btn mod-style-d5e8c5" type="submit">Save bill</button>
             </div>
           </form>
         </div>
@@ -189,7 +189,7 @@ export async function render(container, params = {}) {
     });
 
   } catch (err) {
-    container.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+    container.innerHTML = `<p class="mod-style-f479d1">Error: ${err.message}</p>`;
   }
 }
 export function destroy() {}

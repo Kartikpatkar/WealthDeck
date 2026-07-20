@@ -9,65 +9,65 @@ export async function render(container, params = {}) {
   const signedIn = isDriveSignedIn();
   
   const lastSyncText = lastSync ? 
-    `<span style="color:var(--color-income); font-weight:600;">Last synced: ${lastSync.toLocaleDateString()} at ${lastSync.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>` : 
+    `<span class="mod-style-228149">Last synced: ${lastSync.toLocaleDateString()} at ${lastSync.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>` : 
     'Securely backup and restore your financial data to your personal Google Drive.';
 
   container.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+    <div class="mod-style-4cdf23">
       <h1>Sync & Backup</h1>
     </div>
     
-    <div class="card" style="margin-bottom: var(--spacing-lg);">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:24px; height:24px; color:#4285F4;"><path d="M12 2L2 22h20L12 2z"/><path d="M12 2L2 22h10l10-20H12z" opacity="0.3"/></svg>
-          <h2 style="margin:0;">Google Drive Sync</h2>
+    <div class="card mod-style-840a08">
+      <div class="mod-style-c0b9e8">
+        <div class="mod-style-7f8dc0">
+          <svg class="mod-style-8ec4f0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 22h20L12 2z"/><path d="M12 2L2 22h10l10-20H12z" opacity="0.3"/></svg>
+          <h2 class="mod-style-46dcee">Google Drive Sync</h2>
         </div>
-        ${signedIn ? `<button id="drive-signout-btn" style="background:none; border:none; color:var(--text-secondary); font-size:12px; cursor:pointer; text-decoration:underline;">Sign Out</button>` : ''}
+        ${signedIn ? `<button class="mod-style-68ee44" id="drive-signout-btn">Sign Out</button>` : ''}
       </div>
-      <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md); font-size: 14px;">
+      <p class="mod-style-0f62e6">
         ${lastSyncText}
       </p>
       
       ${driveConfigured ? `
-        <div style="display:flex; flex-direction:column; gap:var(--spacing-sm);">
-          <button id="drive-backup-btn" class="btn btn--primary" style="display:flex; align-items:center; justify-content:center; gap:8px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div class="mod-style-b4832f">
+          <button class="btn btn--primary mod-style-752897" id="drive-backup-btn">
+            <svg class="mod-style-a2f16e" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             Backup to Drive
           </button>
-          <button id="drive-restore-btn" class="btn btn--secondary" style="display:flex; align-items:center; justify-content:center; gap:8px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <button class="btn btn--secondary mod-style-752897" id="drive-restore-btn">
+            <svg class="mod-style-a2f16e" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Restore from Drive
           </button>
         </div>
       ` : `
-        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; font-size: 13px; color: var(--text-secondary); display:flex; align-items:flex-start; gap:8px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px; flex-shrink:0; margin-top:2px; color:var(--color-expense);"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div class="mod-style-86a849">
+          <svg class="mod-style-5620c3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <div>Google Drive Client ID is missing. Open <code>js/services/googleDriveService.js</code> to configure it.</div>
         </div>
       `}
     </div>
 
     <div class="card">
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom: 12px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:24px; height:24px; color:var(--text-primary);"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-        <h2 style="margin:0;">Local Backup</h2>
+      <div class="mod-style-28b841">
+        <svg class="mod-style-b770e8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        <h2 class="mod-style-46dcee">Local Backup</h2>
       </div>
-      <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md); font-size: 14px;">
+      <p class="mod-style-0f62e6">
         Manually export your entire database to a JSON file, or restore from a previous file.
       </p>
       
-      <div style="display:flex; flex-direction:column; gap:var(--spacing-sm);">
-        <button id="export-json-btn" class="btn btn--secondary" style="display:flex; align-items:center; justify-content:center; gap:8px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <div class="mod-style-b4832f">
+        <button class="btn btn--secondary mod-style-752897" id="export-json-btn">
+          <svg class="mod-style-a2f16e" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Download JSON File
         </button>
         
-        <label for="import-json-file" class="btn btn--secondary" style="display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; margin:0;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <label class="btn btn--secondary mod-style-868922" for="import-json-file">
+          <svg class="mod-style-a2f16e" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Restore from JSON File
         </label>
-        <input type="file" id="import-json-file" accept=".json" style="display:none;">
+        <input class="mod-style-93b8ea" type="file" id="import-json-file" accept=".json">
       </div>
     </div>
   `;

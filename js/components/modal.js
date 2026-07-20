@@ -8,9 +8,9 @@ export function confirmModal(title, message) {
       <div class="prompt-modal">
         <h3>${title}</h3>
         <p>${message}</p>
-        <div class="prompt-actions" style="margin-top: 24px;">
+        <div class="prompt-actions mod-style-5c2918">
           <button class="btn btn--secondary prompt-cancel confirm-cancel">Cancel</button>
-          <button class="btn prompt-ok confirm-ok" style="background: var(--color-expense);">Confirm</button>
+          <button class="btn prompt-ok confirm-ok mod-style-4c091c">Confirm</button>
         </div>
       </div>
     `;
@@ -34,7 +34,7 @@ export function promptModal(title, message, placeholder = '') {
       <div class="prompt-modal">
         <h3>${title}</h3>
         <p>${message}</p>
-        <input type="text" class="input prompt-input" placeholder="${placeholder}">
+        <input class="input prompt-input" type="text"  placeholder="${placeholder}">
         <div class="prompt-actions">
           <button class="btn btn--secondary prompt-cancel">Cancel</button>
           <button class="btn prompt-ok">Save</button>

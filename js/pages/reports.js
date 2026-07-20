@@ -51,10 +51,10 @@ export async function render(container, params = {}) {
       const data = Object.values(summary).map(v => v / 100);
 
       container.innerHTML = `
-        <div class="page-head" style="flex-direction: column; align-items: stretch; gap: 12px; margin-bottom: 24px;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="margin: 0;">Reports</h2>
-            <select id="report-filter" class="input" style="width: auto; margin-bottom: 0; padding: 8px 12px;">
+        <div class="page-head mod-style-b785d2">
+          <div class="mod-style-948e6d">
+            <h2 class="mod-style-e2b74b">Reports</h2>
+            <select class="input mod-style-5d9ae9" id="report-filter">
               <option value="this-month" ${currentFilter === 'this-month' ? 'selected' : ''}>This Month</option>
               <option value="last-month" ${currentFilter === 'last-month' ? 'selected' : ''}>Last Month</option>
               <option value="all-time" ${currentFilter === 'all-time' ? 'selected' : ''}>All Time</option>
@@ -62,24 +62,24 @@ export async function render(container, params = {}) {
             </select>
           </div>
           ${currentFilter === 'custom' ? `
-            <div style="display: flex; gap: 12px; margin-top: 8px;">
-              <div class="field" style="flex:1; margin:0;"><label style="font-size:12px;">From</label><input type="date" class="input" id="custom-start" value="${customStartDate}" style="padding:10px;"></div>
-              <div class="field" style="flex:1; margin:0;"><label style="font-size:12px;">To</label><input type="date" class="input" id="custom-end" value="${customEndDate}" style="padding:10px;"></div>
+            <div class="mod-style-92c164">
+              <div class="field mod-style-55f1d3"><label class="mod-style-9bd93d">From</label><input class="input mod-style-f91e21" type="date"  id="custom-start" value="${customStartDate}"></div>
+              <div class="field mod-style-55f1d3"><label class="mod-style-9bd93d">To</label><input class="input mod-style-f91e21" type="date"  id="custom-end" value="${customEndDate}"></div>
             </div>
           ` : ''}
         </div>
 
         
-        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Expense Breakdown</p>
+        <p class="mod-style-b01af8">Expense Breakdown</p>
         
-        <div class="card" style="display:flex; align-items:center; justify-content:center;">
-          ${expenses.length === 0 ? '<p style="height:400px; display:flex; align-items:center;">No expense data available for this period.</p>' : '<div style="position: relative; height: 400px; width: 100%; overflow: hidden;"><canvas id="reports-chart" style="width: 100%; height: 100%;"></canvas></div>'}
+        <div class="card mod-style-2dcfa4">
+          ${expenses.length === 0 ? '<p class="mod-style-2fa0c0">No expense data available for this period.</p>' : '<div class="mod-style-c76d4a"><canvas class="mod-style-a898fd" id="reports-chart"></canvas></div>'}
         </div>
         
-        <div class="card" style="margin-top: var(--spacing-md);">
+        <div class="card mod-style-f636ca">
           <h3>Summary Table</h3>
           ${labels.length === 0 ? '<p>No data</p>' : labels.map((l, i) => `
-            <div style="display:flex; justify-content:space-between; padding: var(--spacing-sm) 0; border-bottom:1px solid var(--border-light);">
+            <div class="mod-style-a03ccd">
               <span>${l}</span>
               <span class="mono">${formatCurrency(Object.values(summary)[i])}</span>
             </div>
@@ -137,7 +137,7 @@ export async function render(container, params = {}) {
       }
 
     } catch (err) {
-      container.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+      container.innerHTML = `<p class="mod-style-f479d1">Error: ${err.message}</p>`;
     }
   }
   

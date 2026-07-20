@@ -11,33 +11,33 @@ export async function render(container, params = {}) {
     <h1>Smart Import Wizard</h1>
     <p>Upload CSV statements to automatically categorize and import transactions.</p>
     
-    <div class="card" style="margin-top: var(--spacing-lg);">
-      <label for="csv-file" class="btn btn--secondary" style="display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; margin-bottom:12px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <div class="card mod-style-afaa4e">
+      <label class="btn btn--secondary mod-style-498793" for="csv-file">
+        <svg class="mod-style-a2f16e" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         <span id="csv-file-name">Select CSV File</span>
       </label>
-      <input type="file" id="csv-file" accept=".csv" style="display:none;">
-      <button id="parse-btn" class="btn btn--primary" style="width:100%;">Analyze</button>
+      <input class="mod-style-93b8ea" type="file" id="csv-file" accept=".csv">
+      <button class="btn btn--primary mod-style-8588e4" id="parse-btn">Analyze</button>
     </div>
 
-    <div id="import-wizard" style="display:none; margin-top: var(--spacing-lg);">
+    <div class="mod-style-d7a3fd" id="import-wizard">
       <div class="card">
         <h3>Step 1: Confirm Columns</h3>
-        <div id="mapping-fields" style="display:flex; gap: var(--spacing-sm); margin: var(--spacing-md) 0;"></div>
+        <div class="mod-style-3bc384" id="mapping-fields"></div>
         
         <h3>Step 2: Target Account</h3>
-        <select id="target-account" class="input" style="margin-bottom: var(--spacing-md);"></select>
+        <select class="input mod-style-322817" id="target-account"></select>
         <br>
         
-        <button id="process-btn" class="btn btn--primary">Preview Transactions</button>
+        <button class="btn btn--primary" id="process-btn">Preview Transactions</button>
       </div>
     </div>
     
-    <div id="import-preview" style="display:none; margin-top: var(--spacing-lg);">
+    <div class="mod-style-d7a3fd" id="import-preview">
       <div class="card">
         <h3>Step 3: Review & Import</h3>
-        <div id="preview-list" style="margin: var(--spacing-md) 0; max-height: 400px; overflow-y: auto;"></div>
-        <button id="confirm-import-btn" class="btn btn--primary" style="width:100%;">Import Selected</button>
+        <div class="mod-style-999211" id="preview-list"></div>
+        <button class="btn btn--primary mod-style-8588e4" id="confirm-import-btn">Import Selected</button>
       </div>
     </div>
   `;
@@ -64,7 +64,7 @@ export async function render(container, params = {}) {
       const selectHtml = (id, selected) => `
         <div>
           <label>${id}</label><br>
-          <select id="map-${id}" class="input">
+          <select class="input" id="map-${id}">
             ${headers.map(h => `<option value="${h}" ${h===selected?'selected':''}>${h}</option>`).join('')}
           </select>
         </div>
@@ -94,7 +94,7 @@ export async function render(container, params = {}) {
     processedData = await processTransactions(rawData, mapping);
     
     const previewHtml = processedData.slice(0, 50).map((t, i) => `
-      <div style="display:flex; justify-content:space-between; padding:var(--spacing-sm) 0; border-bottom:1px solid var(--border-light);">
+      <div class="mod-style-9fea0e">
         <div>
           <strong>${t.merchant}</strong><br>
           <small>${new Date(t.date).toLocaleDateString()}</small>

@@ -11,7 +11,7 @@ export async function render(container, params = {}) {
     
     let listHTML = '';
     if (budgets.length === 0) {
-      listHTML = `<div class="hint" style="margin-top:40px;">No budgets set. Create your first budget limit.</div>`;
+      listHTML = `<div class="hint mod-style-c43a02">No budgets set. Create your first budget limit.</div>`;
     } else {
       listHTML = budgets.map((b, idx) => {
         const spent = b.spent || 0;
@@ -21,7 +21,7 @@ export async function render(container, params = {}) {
         const isOver = spent > b.amount;
         
         return `
-          <div class="budget-item" data-id="${b.id}" style="cursor:pointer; padding: 12px 0;">
+          <div class="budget-item mod-style-dc3988" data-id="${b.id}">
             <div class="budget-top">
               <div class="name"><div class="dot" style="width:8px;height:8px;border-radius:50%;background:${c}"></div>${b.categoryName || 'Category #' + b.categoryId}</div>
               <div class="amt">${formatCurrency(spent)} / ${formatCurrency(b.amount)}</div>
@@ -29,7 +29,7 @@ export async function render(container, params = {}) {
             <div class="bar-track">
               <div class="bar-fill" style="width:${pct}%;background:${isOver ? 'var(--color-expense)' : c}"></div>
             </div>
-            <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Month: ${b.month}</div>
+            <div class="mod-style-4e756c">Month: ${b.month}</div>
           </div>
         `;
       }).join('');
@@ -38,9 +38,9 @@ export async function render(container, params = {}) {
     }
 
     container.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h2 style="font-size: 19px; font-weight: 700;">Budgets</h2>
-        <button id="add-budget-btn" class="icon-btn" aria-label="Add budget" style="color:var(--color-primary);">
+      <div class="mod-style-1b4308">
+        <h2 class="mod-style-09251a">Budgets</h2>
+        <button class="icon-btn mod-style-3bb313" id="add-budget-btn"  aria-label="Add budget">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
         </button>
       </div>
@@ -53,7 +53,7 @@ export async function render(container, params = {}) {
           <div class="modal-handle"></div>
           <div class="modal-head">
             <h3>Budget</h3>
-            <button type="button" class="modal-close" id="close-budget-modal" aria-label="Close">
+            <button class="modal-close" type="button"  id="close-budget-modal" aria-label="Close">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
           </div>
@@ -66,9 +66,9 @@ export async function render(container, params = {}) {
               <select id="budget-category" required></select>
             </div>
             
-            <div class="amount-input-wrap" style="margin-top: 16px;">
+            <div class="amount-input-wrap mod-style-a81293">
               <span class="cur">${getCurrencySymbol()}</span>
-              <input type="number" step="0.01" class="amount-input" id="budget-amount" placeholder="0.00" required>
+              <input class="amount-input" type="number" step="0.01"  id="budget-amount" placeholder="0.00" required>
             </div>
             
             <div class="field">
@@ -76,9 +76,9 @@ export async function render(container, params = {}) {
               <input type="month" id="budget-month" required>
             </div>
 
-            <div style="display:flex; gap:10px; margin-top:24px;">
-              <button type="button" class="btn btn--secondary" id="delete-budget-btn" style="display:none; flex:0.4;">Delete</button>
-              <button type="submit" class="btn" style="flex:1;">Save budget</button>
+            <div class="mod-style-3fbd1a">
+              <button class="btn btn--secondary mod-style-1da7e6" type="button"  id="delete-budget-btn">Delete</button>
+              <button class="btn mod-style-d5e8c5" type="submit">Save budget</button>
             </div>
           </form>
         </div>
@@ -155,7 +155,7 @@ export async function render(container, params = {}) {
     });
 
   } catch (err) {
-    container.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+    container.innerHTML = `<p class="mod-style-f479d1">Error: ${err.message}</p>`;
   }
 }
 export function destroy() {}

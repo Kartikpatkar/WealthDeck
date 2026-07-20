@@ -10,20 +10,20 @@ export async function render(container, params = {}) {
     
     let listHTML = '';
     if (goals.length === 0) {
-      listHTML = `<div class="hint" style="margin-top:40px;">No savings goals. Create your first goal to track your progress.</div>`;
+      listHTML = `<div class="hint mod-style-c43a02">No savings goals. Create your first goal to track your progress.</div>`;
     } else {
       listHTML = goals.map(g => {
         const percent = Math.min(((g.savedAmount || 0) / g.targetAmount) * 100, 100);
         return `
-        <div class="budget-item" data-id="${g.id}" style="cursor:pointer; padding: 12px 0;">
-          <div class="budget-top" style="align-items: center; margin-bottom: 8px;">
-            <div class="name" style="display:flex; flex-direction:column;">
-              <span style="font-weight:600; font-size:15px; color:var(--text-primary);">${g.name}</span>
-              <span style="font-size:12px; color:var(--text-secondary);">Target: ${formatCurrency(g.targetAmount)} &bull; ${formatDate(g.targetDate)}</span>
+        <div class="budget-item mod-style-dc3988" data-id="${g.id}">
+          <div class="budget-top mod-style-ec5554">
+            <div class="name mod-style-6cbc10">
+              <span class="mod-style-957708">${g.name}</span>
+              <span class="mod-style-c0485e">Target: ${formatCurrency(g.targetAmount)} &bull; ${formatDate(g.targetDate)}</span>
             </div>
-            <div class="amt" style="display:flex; flex-direction:column; align-items:flex-end;">
-              <span style="color:var(--color-income);">${formatCurrency(g.savedAmount || 0)}</span>
-              <span style="font-size:11px; color:var(--text-secondary);">${percent.toFixed(0)}%</span>
+            <div class="amt mod-style-d36839">
+              <span class="mod-style-88e69f">${formatCurrency(g.savedAmount || 0)}</span>
+              <span class="mod-style-19b310">${percent.toFixed(0)}%</span>
             </div>
           </div>
           <div class="bar-track">
@@ -35,9 +35,9 @@ export async function render(container, params = {}) {
     }
 
     container.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h2 style="font-size: 19px; font-weight: 700;">Savings Goals</h2>
-        <button id="add-goal-btn" class="icon-btn" aria-label="Add goal" style="color:var(--color-primary);">
+      <div class="mod-style-1b4308">
+        <h2 class="mod-style-09251a">Savings Goals</h2>
+        <button class="icon-btn mod-style-3bb313" id="add-goal-btn"  aria-label="Add goal">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
         </button>
       </div>
@@ -48,7 +48,7 @@ export async function render(container, params = {}) {
           <div class="modal-handle"></div>
           <div class="modal-head">
             <h3>Goal</h3>
-            <button type="button" class="modal-close" id="close-goal-modal" aria-label="Close">
+            <button class="modal-close" type="button"  id="close-goal-modal" aria-label="Close">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
           </div>
@@ -60,16 +60,16 @@ export async function render(container, params = {}) {
               <input type="text" id="goal-name" placeholder="e.g. New Car" required>
             </div>
             
-            <div style="text-align:center; color:var(--text-secondary); font-size:12px; font-weight:600; margin-top:16px;">Target Amount</div>
-            <div class="amount-input-wrap" style="margin-top: 4px;">
+            <div class="mod-style-638270">Target Amount</div>
+            <div class="amount-input-wrap mod-style-57eca1">
               <span class="cur">${getCurrencySymbol()}</span>
-              <input type="number" step="0.01" class="amount-input" id="goal-target" placeholder="0.00" required>
+              <input class="amount-input" type="number" step="0.01"  id="goal-target" placeholder="0.00" required>
             </div>
             
-            <div style="text-align:center; color:var(--text-secondary); font-size:12px; font-weight:600;">Already Saved (Optional)</div>
-            <div class="amount-input-wrap" style="margin-top: 4px;">
+            <div class="mod-style-4b5815">Already Saved (Optional)</div>
+            <div class="amount-input-wrap mod-style-57eca1">
               <span class="cur">${getCurrencySymbol()}</span>
-              <input type="number" step="0.01" class="amount-input" id="goal-current" placeholder="0.00" style="color:var(--color-income);">
+              <input class="amount-input mod-style-88e69f" type="number" step="0.01"  id="goal-current" placeholder="0.00">
             </div>
             
             <div class="field">
@@ -77,9 +77,9 @@ export async function render(container, params = {}) {
               <input type="date" id="goal-date" required>
             </div>
             
-            <div style="display:flex; gap:10px; margin-top:24px;">
-              <button type="button" class="btn btn--secondary" id="delete-goal-btn" style="display:none; flex:0.4;">Delete</button>
-              <button type="submit" class="btn" style="flex:1;">Save goal</button>
+            <div class="mod-style-3fbd1a">
+              <button class="btn btn--secondary mod-style-1da7e6" type="button"  id="delete-goal-btn">Delete</button>
+              <button class="btn mod-style-d5e8c5" type="submit">Save goal</button>
             </div>
           </form>
         </div>
@@ -153,7 +153,7 @@ export async function render(container, params = {}) {
     });
 
   } catch (err) {
-    container.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+    container.innerHTML = `<p class="mod-style-f479d1">Error: ${err.message}</p>`;
   }
 }
 export function destroy() {}

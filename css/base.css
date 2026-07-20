@@ -24,15 +24,19 @@ body {
   position: relative;
   user-select: none;
 }
+.privacy-masked .amount *,
+.privacy-masked .tx-amt *,
+.privacy-masked .amt *,
+.privacy-masked .v *,
+.privacy-masked .budget-val * {
+  display: none !important;
+}
 .privacy-masked .amount::after,
 .privacy-masked .tx-amt::after,
 .privacy-masked .amt::after,
 .privacy-masked .v::after,
 .privacy-masked .budget-val::after {
   content: '***';
-  position: absolute;
-  left: 0;
-  top: 0;
   color: var(--text-primary);
   font-family: var(--font-family-mono);
   font-size: inherit;

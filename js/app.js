@@ -26,10 +26,10 @@ async function bootstrap() {
       
       if (!authSuccess) {
         document.getElementById('main-content').innerHTML = `
-          <div style="padding: 40px 20px; text-align: center; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 64px; height: 64px; margin-bottom: 16px; color: var(--color-expense);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <div class="mod-style-d7bd88">
+            <svg class="mod-style-a37da4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             <h2>App Locked</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 24px;">Biometric authentication is required to access WealthDeck.</p>
+            <p class="mod-style-75410b">Biometric authentication is required to access WealthDeck.</p>
             <button class="btn" onclick="window.location.reload()">Try Again</button>
           </div>
         `;
@@ -108,7 +108,7 @@ async function bootstrap() {
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 import('./components/toast.js').then(m => {
-                  m.showToast('New update available! <a href="#" onclick="window.location.reload(); return false;" style="color:#fff;text-decoration:underline;margin-left:8px;font-weight:bold;">Refresh</a>', 'info', 10000);
+                  m.showToast('New update available! <a class="mod-style-9843f8" href="#" onclick="window.location.reload(); return false;">Refresh</a>', 'info', 10000);
                 });
               }
             });
@@ -122,7 +122,7 @@ async function bootstrap() {
   } catch (err) {
     console.error('Failed to bootstrap app:', err);
     document.getElementById('main-content').innerHTML = `
-      <div style="padding: 20px; color: red;">
+      <div class="mod-style-e95ea0">
         <h2>Initialization Error</h2>
         <p>${err.message}</p>
       </div>

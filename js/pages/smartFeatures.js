@@ -13,15 +13,15 @@ export async function renderTimeline(container, params = {}) {
       const largestTxn = [...sorted].sort((a,b) => b.amount - a.amount)[0];
       
       html += `
-        <div style="margin-bottom: var(--spacing-md); position: relative;">
-          <div style="position: absolute; left: -25px; width: 16px; height: 16px; border-radius: 50%; background: var(--color-primary);"></div>
+        <div class="mod-style-504b4d">
+          <div class="mod-style-f7b6e1"></div>
           <h3>WealthDeck Journey Began</h3>
-          <p style="color: var(--text-secondary); font-size: 0.9em;">${formatDate(firstTxn.date)}</p>
+          <p class="mod-style-83ba7c">${formatDate(firstTxn.date)}</p>
         </div>
-        <div style="margin-bottom: var(--spacing-md); position: relative;">
-          <div style="position: absolute; left: -25px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg-surface); border: 2px solid var(--color-primary);"></div>
+        <div class="mod-style-504b4d">
+          <div class="mod-style-a9a858"></div>
           <h3>Largest Transaction</h3>
-          <p style="color: var(--text-secondary); font-size: 0.9em;">${formatCurrency(largestTxn.amount)} at ${largestTxn.merchant} on ${formatDate(largestTxn.date)}</p>
+          <p class="mod-style-83ba7c">${formatCurrency(largestTxn.amount)} at ${largestTxn.merchant} on ${formatDate(largestTxn.date)}</p>
         </div>
       `;
     } else {
@@ -30,9 +30,9 @@ export async function renderTimeline(container, params = {}) {
 
     container.innerHTML = `
       <h1>Financial Timeline</h1>
-      <p style="color: var(--text-secondary);">Your financial life as a continuous story.</p>
+      <p class="mod-style-35042d">Your financial life as a continuous story.</p>
       
-      <div style="margin-top: var(--spacing-lg); border-left: 2px solid var(--color-primary); padding-left: var(--spacing-md);">
+      <div class="mod-style-a06e75">
         ${html}
       </div>
     `;
@@ -62,17 +62,17 @@ export async function renderMonthlyReplay(container, params = {}) {
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     
     container.innerHTML = `
-      <div style="text-align: center; margin-top: 10vh;">
-        <h1 style="font-size: 3em; background: linear-gradient(to right, var(--color-primary), var(--color-accent)); -webkit-background-clip: text; color: transparent;">${monthNames[now.getMonth()]} Replay</h1>
-        <p style="font-size: 1.2em; color: var(--text-secondary); margin: var(--spacing-md) 0;">Let's see how you did this month.</p>
+      <div class="mod-style-cf36a7">
+        <h1 class="mod-style-e91824">${monthNames[now.getMonth()]} Replay</h1>
+        <p class="mod-style-b2c4ed">Let's see how you did this month.</p>
         
-        <div class="card" style="margin: var(--spacing-lg) auto; max-width: 400px; padding: var(--spacing-lg);">
+        <div class="card mod-style-fac2b8">
           <h3>Top Merchant</h3>
-          <h2 class="mono" style="color: var(--color-primary); font-size: 2em; margin: var(--spacing-sm) 0;">${topMerchant.name}</h2>
+          <h2 class="mono mod-style-3ac970">${topMerchant.name}</h2>
           <p>You spent <strong>${formatCurrency(topMerchant.amount)}</strong> here in ${topMerchant.count} orders.</p>
         </div>
         
-        <button id="next-slide-btn" class="btn btn--primary" style="font-size: 1.1em; padding: var(--spacing-sm) var(--spacing-lg);">Play Next Slide</button>
+        <button class="btn btn--primary mod-style-e114b4" id="next-slide-btn">Play Next Slide</button>
       </div>
     `;
     
@@ -100,23 +100,23 @@ export async function renderAnalyzers(container, params = {}) {
     container.innerHTML = `
       <h1>Analyzers & Challenges</h1>
       
-      <div class="card" style="margin-top: var(--spacing-lg); border-left: 4px solid var(--color-warning);">
+      <div class="card mod-style-af5efe">
         <h3>⚠️ Oops Detector</h3>
-        <p style="color: var(--text-secondary);">Your transactions are being analyzed for unusual patterns.</p>
+        <p class="mod-style-35042d">Your transactions are being analyzed for unusual patterns.</p>
       </div>
       
-      <div class="card" style="margin-top: var(--spacing-md); border-left: 4px solid var(--color-primary);">
+      <div class="card mod-style-537d0f">
         <h3>🎯 No Spend Challenge</h3>
-        <p style="color: var(--text-secondary);">Status: <strong>${hasSpentToday ? 'Broken 😢' : 'On Track 🚀'}</strong></p>
-        <div style="background: var(--bg-primary); border-radius: 4px; height: 8px; margin-top: 8px;">
+        <p class="mod-style-35042d">Status: <strong>${hasSpentToday ? 'Broken 😢' : 'On Track 🚀'}</strong></p>
+        <div class="mod-style-11e612">
           <div style="width: ${hasSpentToday ? 0 : 28}%; height: 100%; background: var(--color-primary);"></div>
         </div>
-        <p style="font-size: 0.8em; margin-top: var(--spacing-xs); color: var(--text-secondary);">Goal: 7 Days without unnecessary spending</p>
+        <p class="mod-style-4b0946">Goal: 7 Days without unnecessary spending</p>
       </div>
       
-      <div class="card" style="margin-top: var(--spacing-md); border-left: 4px solid var(--color-accent);">
+      <div class="card mod-style-f9cf13">
         <h3>🔄 Subscription Analyzer</h3>
-        <p style="color: var(--text-secondary);">We detected ${subCount} possible subscriptions. Review them to save money!</p>
+        <p class="mod-style-35042d">We detected ${subCount} possible subscriptions. Review them to save money!</p>
       </div>
     `;
   } catch(e) {

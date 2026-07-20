@@ -35,7 +35,7 @@ export async function render(container, params = {}) {
           <div class="modal-handle"></div>
           <div class="modal-head">
             <h3>Add transaction</h3>
-            <button type="button" class="modal-close" id="close-txn-modal" aria-label="Close">
+            <button class="modal-close" type="button"  id="close-txn-modal" aria-label="Close">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
           </div>
@@ -44,7 +44,7 @@ export async function render(container, params = {}) {
             <input type="hidden" id="txn-id">
             
             <div class="segmented" id="typeSeg">
-              <button type="button" class="active" data-type="expense">Expense</button>
+              <button class="active" type="button"  data-type="expense">Expense</button>
               <button type="button" data-type="income">Income</button>
               <button type="button" data-type="transfer">Transfer</button>
             </div>
@@ -52,7 +52,7 @@ export async function render(container, params = {}) {
 
             <div class="amount-input-wrap">
               <span class="cur">${getCurrencySymbol()}</span>
-              <input type="number" step="0.01" class="amount-input expense-mode" id="txn-amount" inputmode="decimal" placeholder="0.00" required>
+              <input class="amount-input expense-mode" type="number" step="0.01"  id="txn-amount" inputmode="decimal" placeholder="0.00" required>
             </div>
 
             <div class="field">
@@ -64,13 +64,13 @@ export async function render(container, params = {}) {
               <div class="field">
                 <label>Account</label>
                 <div class="d-flex gap-8">
-                  <select id="txn-account" required class="flex-1"><option value="">From Account</option></select>
-                  <button type="button" id="quick-add-account" class="icon-btn flex-shrink-0" style="height: 50px; width: 50px; border-radius: 12px;" aria-label="Add new account">
+                  <select class="flex-1" id="txn-account" required><option value="">From Account</option></select>
+                  <button class="icon-btn flex-shrink-0 mod-style-53f114" type="button" id="quick-add-account"   aria-label="Add new account">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
                   </button>
                 </div>
               </div>
-              <div class="field" id="txn-to-account-wrap" style="display:none;">
+              <div class="field mod-style-93b8ea" id="txn-to-account-wrap">
                 <label>To Account</label>
                 <select id="txn-to-account"><option value="">To Account</option></select>
               </div>
@@ -81,9 +81,9 @@ export async function render(container, params = {}) {
               <input type="date" id="txn-date" required>
             </div>
 
-            <button type="button" class="more-toggle" id="more-toggle-btn">
+            <button class="more-toggle" type="button"  id="more-toggle-btn">
               <span>More details</span>
-              <svg class="svg-icon" id="more-toggle-icon" style="transition:transform .2s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+              <svg class="svg-icon mod-style-e47283" id="more-toggle-icon"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
             </button>
             
             <div class="more-fields" id="moreFields">
@@ -93,8 +93,8 @@ export async function render(container, params = {}) {
             </div>
 
             <div class="d-flex gap-12 mt-24">
-              <button type="button" class="btn btn--secondary flex-1" id="delete-txn-btn" style="display:none;">Delete</button>
-              <button type="submit" class="btn flex-2">Save transaction</button>
+              <button class="btn btn--secondary flex-1 mod-style-93b8ea" type="button"  id="delete-txn-btn">Delete</button>
+              <button class="btn flex-2" type="submit">Save transaction</button>
             </div>
           </form>
         </div>
@@ -193,7 +193,7 @@ export async function render(container, params = {}) {
       
       let html = '';
       if (filtered.length === 0) {
-        html = '<div class="hint" style="margin-top:40px;">No transactions found.</div>';
+        html = '<div class="hint mod-style-c43a02">No transactions found.</div>';
       } else {
         const grouped = {};
         filtered.forEach(t => {
@@ -205,19 +205,19 @@ export async function render(container, params = {}) {
         const sortedDates = Object.keys(grouped).sort((a,b) => new Date(b) - new Date(a));
         sortedDates.forEach(date => {
           html += `<div class="date-header">${formatDate(date)}</div>`;
-          html += `<div class="card" style="padding: 4px 16px;">`;
+          html += `<div class="card mod-style-0e2a7e">`;
           grouped[date].forEach(t => {
             const isIncome = t.type === 'income';
             html += `
               <div class="tx-row" data-id="${t.id}">
-                <div class="tx-icon ${isIncome ? 'income' : (t.type === 'transfer' ? 'transfer' : 'expense')}">
+                <div class="tx-icon ${isIncome ?" income' : (t.type === 'transfer' ? 'transfer' : 'expense')}">
                   ${t.categoryId ? (categories.find(c => c.id === t.categoryId)?.icon || '💰') : '💰'}
                 </div>
                 <div class="tx-info">
                   <div class="m">${escapeHTML(t.merchant) || 'Transaction'}</div>
                   <div class="c">${t.categoryId ? (categories.find(c => c.id === t.categoryId)?.name || 'Uncategorized') : 'Uncategorized'}</div>
                 </div>
-                <div class="tx-amt ${isIncome ? 'income' : (t.type === 'transfer' ? 'transfer' : 'expense')}">
+                <div class="tx-amt ${isIncome ?" income' : (t.type === 'transfer' ? 'transfer' : 'expense')}">
                   ${isIncome ? '+' : (t.type === 'transfer' ? '' : '-')}${formatCurrency(t.amount)}
                 </div>
               </div>

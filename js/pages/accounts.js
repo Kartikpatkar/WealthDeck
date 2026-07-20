@@ -16,7 +16,7 @@ export async function render(container, params = {}) {
     
     let accountsList = '';
     if (accounts.length === 0) {
-      accountsList = `<div class="hint" style="margin-top:40px;">No accounts yet. Add your first one.</div>`;
+      accountsList = `<div class="hint mod-style-c43a02">No accounts yet. Add your first one.</div>`;
     } else {
       accountsList = accounts.map(a => {
         const bal = (a.balance || 0) / 100;
@@ -33,9 +33,9 @@ export async function render(container, params = {}) {
     }
 
     container.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h2 style="font-size: 19px; font-weight: 700;">Accounts</h2>
-        <button id="add-account-btn" class="icon-btn" aria-label="Add account" style="color:var(--color-primary);">
+      <div class="mod-style-1b4308">
+        <h2 class="mod-style-09251a">Accounts</h2>
+        <button class="icon-btn mod-style-3bb313" id="add-account-btn"  aria-label="Add account">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
         </button>
       </div>
@@ -50,7 +50,7 @@ export async function render(container, params = {}) {
           <div class="modal-handle"></div>
           <div class="modal-head">
             <h3>Account</h3>
-            <button type="button" class="modal-close" id="close-acc-modal" aria-label="Close">
+            <button class="modal-close" type="button"  id="close-acc-modal" aria-label="Close">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
           </div>
@@ -86,37 +86,37 @@ export async function render(container, params = {}) {
             </div>
             
             <div class="field-row">
-              <div class="field" style="flex: 1;">
+              <div class="field mod-style-49cdf8">
                 <label>Initial Balance</label>
                 <input type="number" step="0.01" id="acc-balance" placeholder="0.00">
               </div>
             </div>
             
-            <div class="field" style="margin-bottom: 24px;">
+            <div class="field mod-style-dc2cb2">
               <label>Color</label>
-              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <div class="mod-style-9551b6">
                 ${accountColors.map((c, i) => `
-                  <label style="cursor: pointer; position: relative;">
-                    <input type="radio" name="acc-color" value="${c.hex}" ${i === 0 ? 'checked' : ''} style="position: absolute; opacity: 0;">
+                  <label class="mod-style-1034c1">
+                    <input class="mod-style-628c86" type="radio" name="acc-color" value="${c.hex}" ${i === 0 ? 'checked' : ''}>
                     <div class="acc-color-swatch" style="width: 32px; height: 32px; border-radius: 50%; background: ${c.hex}; border: 2px solid transparent; transition: 0.2s;"></div>
                   </label>
                 `).join('')}
-                <label style="cursor: pointer; position: relative;" title="Custom Color">
-                  <input type="radio" name="acc-color" value="custom" style="position: absolute; opacity: 0;">
-                  <div class="acc-color-swatch custom-swatch-btn" style="width: 32px; height: 32px; border-radius: 50%; background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); border: 2px solid transparent; transition: 0.2s; display: flex; align-items: center; justify-content: center;"></div>
-                  <input type="color" id="acc-custom-color-input" style="position: absolute; opacity: 0; width: 0; height: 0;">
+                <label class="mod-style-1034c1" title="Custom Color">
+                  <input class="mod-style-628c86" type="radio" name="acc-color" value="custom">
+                  <div class="acc-color-swatch custom-swatch-btn mod-style-e93ae7"></div>
+                  <input class="mod-style-2a85bc" type="color" id="acc-custom-color-input">
                 </label>
               </div>
             </div>
             
-            <div class="field" style="display:flex; align-items:center; gap:8px;">
-              <input type="checkbox" id="acc-default" style="width:18px; height:18px;">
-              <label for="acc-default" style="margin:0;">Set as Default Account</label>
+            <div class="field mod-style-492ec0">
+              <input class="mod-style-075519" type="checkbox" id="acc-default">
+              <label class="mod-style-46dcee" for="acc-default">Set as Default Account</label>
             </div>
 
-            <div style="display:flex; gap:10px; margin-top:24px;">
-              <button type="button" class="btn btn--secondary" id="delete-acc-btn" style="display:none; flex:0.4;">Delete</button>
-              <button type="submit" class="btn" style="flex:1;">Save account</button>
+            <div class="mod-style-3fbd1a">
+              <button class="btn btn--secondary mod-style-1da7e6" type="button"  id="delete-acc-btn">Delete</button>
+              <button class="btn mod-style-d5e8c5" type="submit">Save account</button>
             </div>
           </form>
         </div>
@@ -251,7 +251,7 @@ export async function render(container, params = {}) {
     });
 
   } catch (err) {
-    container.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+    container.innerHTML = `<p class="mod-style-f479d1">Error: ${err.message}</p>`;
   }
 }
 

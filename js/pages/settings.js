@@ -19,7 +19,7 @@ export async function render(container) {
       <div class="section-title">Profile</div>
       <div class="field">
         <label>Your Name</label>
-        <input type="text" id="name-input" class="input" value="${currentName}" placeholder="Enter your name">
+        <input class="input" type="text" id="name-input"  value="${currentName}" placeholder="Enter your name">
       </div>
     </div>
     
@@ -38,8 +38,8 @@ export async function render(container) {
         <div class="d-flex gap-12 flex-wrap" id="accent-picker">
           ${accentColors.map(c => `
             <label class="cursor-pointer relative">
-              <input type="radio" name="accent" value="${c.hex}" ${currentAccent === c.hex ? 'checked' : ''} class="sr-only">
-              <div class="color-swatch ${currentAccent === c.hex ? 'active' : ''}" style="background: ${c.hex};"></div>
+              <input class="sr-only" type="radio" name="accent" value="${c.hex}" ${currentAccent === c.hex ? 'checked' : ''}>
+              <div class="color-swatch ${currentAccent === c.hex ?" active' : ''}" style="background: ${c.hex};"></div>
             </label>
           `).join('')}
         </div>
@@ -64,26 +64,26 @@ export async function render(container) {
     
     <div class="card mt-16">
       <div class="section-title">Security</div>
-      <div class="field" style="display: flex; justify-content: space-between; align-items: center;">
+      <div class="field mod-style-948e6d">
         <div>
-          <label style="margin:0; font-size:15px;">Biometric App Lock</label>
-          <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Use FaceID, TouchID, or device PIN to open app</div>
+          <label class="mod-style-e3b1f7">Biometric App Lock</label>
+          <div class="mod-style-d464c9">Use FaceID, TouchID, or device PIN to open app</div>
         </div>
-        <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 28px;">
-          <input type="checkbox" id="biometric-toggle" style="opacity: 0; width: 0; height: 0;" ${localStorage.getItem('wealthdeck_biometric') === 'true' ? 'checked' : ''}>
-          <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; border-radius: 34px;"></span>
+        <label class="switch mod-style-2b10cb">
+          <input class="mod-style-5e19e2" type="checkbox" id="biometric-toggle"  ${localStorage.getItem('wealthdeck_biometric') === 'true' ? 'checked' : ''}>
+          <span class="slider mod-style-2bc522"></span>
         </label>
       </div>
     </div>
     
-    <div class="card mt-16" style="border-color: #ef444433; background: #ef44440a;">
+    <div class="card mt-16 mod-style-8bcdab">
       <div class="section-title text-danger">Danger Zone</div>
-      <div class="field" style="display: flex; justify-content: space-between; align-items: center;">
+      <div class="field mod-style-948e6d">
         <div>
-          <label style="margin:0; font-size:15px;" class="text-danger">Clear All Data</label>
-          <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Permanently delete all your local accounts, transactions, and settings</div>
+          <label class="mod-style-e3b1f7 text-danger">Clear All Data</label>
+          <div class="mod-style-d464c9">Permanently delete all your local accounts, transactions, and settings</div>
         </div>
-        <button id="clear-data-btn" class="btn btn--secondary" style="background: #fee2e2; color: #ef4444; border-color: transparent;">Reset App</button>
+        <button class="btn btn--secondary mod-style-c61a87" id="clear-data-btn">Reset App</button>
       </div>
     </div>
     
@@ -182,17 +182,30 @@ export async function render(container) {
   document.getElementById('clear-data-btn').addEventListener('click', async () => {
     const { confirmModal } = await import('../components/modal.js');
     if (await confirmModal('Clear All Data?', 'Are you absolutely sure? This will delete all your accounts, transactions, and settings. This cannot be undone.')) {
-      const req = indexedDB.deleteDatabase('wealthdeck');
-      req.onsuccess = () => {
-        localStorage.clear();
+      localStorage.clear();
+      try {
+        const { getDB } = await import('../db/database.js');
+        const db = getDB();
+        if (db) {
+          const tx = db.transaction(['transactions', 'accounts'], 'readwrite');
+          tx.objectStore('transactions').clear();
+          tx.objectStore('accounts').clear();
+          tx.oncomplete = () => {
+            window.location.href = '/';
+            window.location.reload();
+          };
+          tx.onerror = () => {
+            window.location.href = '/';
+            window.location.reload();
+          }
+        } else {
+          window.location.href = '/';
+          window.location.reload();
+        }
+      } catch (err) {
         window.location.href = '/';
         window.location.reload();
-      };
-      req.onerror = () => {
-        localStorage.clear();
-        window.location.href = '/';
-        window.location.reload();
-      };
+      }
     }
   });
 }
