@@ -218,12 +218,11 @@ export async function render(container, params = {}) {
     // Form Submit
     document.getElementById('add-account-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
       const colorVal = document.querySelector('input[name="acc-color"]:checked').value;
       const payload = {
         name: document.getElementById('acc-name').value,
         type: document.getElementById('acc-type').value,
-        balance: parseFloat(document.getElementById('acc-balance').value) * 100 || 0,
+        balance: parseFloat(document.getElementById('acc-balance').value) || 0,
         currency: document.getElementById('acc-currency').value,
         color: colorVal === 'custom' ? document.getElementById('acc-custom-color-input').value : colorVal,
         isDefault: document.getElementById('acc-default').checked,
