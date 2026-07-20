@@ -23,7 +23,7 @@ export async function render(container, params = {}) {
         return `
           <div class="budget-item mod-style-dc3988" data-id="${b.id}">
             <div class="budget-top">
-              <div class="name"><div class="dot" style="width:8px;height:8px;border-radius:50%;background:${c}"></div>${b.categoryName || 'Category #' + b.categoryId}</div>
+              <div class="name"><div class="dot" style="background:${c}"></div>${b.categoryName || 'Category #' + b.categoryId}</div>
               <div class="amt">${formatCurrency(spent)} / ${formatCurrency(b.amount)}</div>
             </div>
             <div class="bar-track">

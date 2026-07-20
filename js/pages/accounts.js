@@ -98,7 +98,7 @@ export async function render(container, params = {}) {
                 ${accountColors.map((c, i) => `
                   <label class="mod-style-1034c1">
                     <input class="mod-style-628c86" type="radio" name="acc-color" value="${c.hex}" ${i === 0 ? 'checked' : ''}>
-                    <div class="acc-color-swatch" style="width: 32px; height: 32px; border-radius: 50%; background: ${c.hex}; border: 2px solid transparent; transition: 0.2s;"></div>
+                    <div class="acc-color-swatch color-swatch-sm" style="background: ${c.hex};"></div>
                   </label>
                 `).join('')}
                 <label class="mod-style-1034c1" title="Custom Color">
@@ -121,13 +121,6 @@ export async function render(container, params = {}) {
           </form>
         </div>
       </div>
-      <style>
-        input[name="acc-color"]:checked + .acc-color-swatch {
-          border-color: var(--text-primary) !important;
-          transform: scale(1.15);
-          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-      </style>
     `;
 
     // Row click -> Edit

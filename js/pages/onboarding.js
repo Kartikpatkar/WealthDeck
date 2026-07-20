@@ -75,7 +75,7 @@ export async function render(container, params = {}) {
               ${accentColors.map((c, i) => `
                 <label class="mod-style-1034c1">
                   <input class="mod-style-628c86" type="radio" name="accent" value="${c.hex}" ${i === 0 ? 'checked' : ''}>
-                  <div class="color-swatch" style="width: 48px; height: 48px; border-radius: 50%; background: ${c.hex}; border: 3px solid transparent; transition: 0.2s;"></div>
+                  <div class="color-swatch color-swatch-lg" style="background: ${c.hex};"></div>
                 </label>
               `).join('')}
               <label class="mod-style-1034c1" title="Custom Color">
@@ -104,16 +104,6 @@ export async function render(container, params = {}) {
       <div class="mod-style-6805bc">
         ${stepContent}
       </div>
-      <style>
-        input[type="radio"]:checked + .color-swatch {
-          border-color: var(--text-primary) !important;
-          transform: scale(1.1);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .switch input:checked + .slider { background-color: var(--color-primary); }
-        .switch .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        .switch input:checked + .slider:before { transform: translateX(22px); }
-      </style>
     `;
     
     bindEvents();

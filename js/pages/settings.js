@@ -86,12 +86,6 @@ export async function render(container) {
         <button class="btn btn--secondary mod-style-c61a87" id="clear-data-btn">Reset App</button>
       </div>
     </div>
-    
-    <style>
-      .switch input:checked + .slider { background-color: var(--color-primary); }
-      .switch .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-      .switch input:checked + .slider:before { transform: translateX(22px); }
-    </style>
   `;
   
   // Handlers

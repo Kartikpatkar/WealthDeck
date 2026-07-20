@@ -21,13 +21,13 @@ export async function render(container, params = {}) {
       const renderGroup = (title, items) => {
         if (!items || items.length === 0) return '';
         return `
-          <h3 style="margin: 24px 0 12px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary);">${title}</h3>
+          <h3 class="category-group-title">${title}</h3>
           <div class="card">
             ${items.map(c => `
               <div class="budget-item mod-style-dc3988" data-id="${c.id}">
                 <div class="budget-top mod-style-d0da85">
                   <div class="name mod-style-7f8dc0">
-                    <div style="width:36px; height:36px; border-radius:12px; background:${c.color}; display:flex; align-items:center; justify-content:center; color:#fff;">
+                    <div class="category-icon-badge" style="background:${c.color};">
                       ${c.icon}
                     </div>
                     <div class="mod-style-6cbc10">
@@ -104,7 +104,7 @@ export async function render(container, params = {}) {
       ].map((c, i) => `
                   <label class="mod-style-1034c1">
                     <input class="mod-style-628c86" type="radio" name="cat-color" value="${c.hex}" ${i === 0 ? 'checked' : ''}>
-                    <div class="cat-color-swatch" style="width: 32px; height: 32px; border-radius: 50%; background: ${c.hex}; border: 2px solid transparent; transition: 0.2s;"></div>
+                    <div class="cat-color-swatch color-swatch-sm" style="background: ${c.hex};"></div>
                   </label>
                 `).join('')}
                 <label class="mod-style-1034c1" title="Custom Color">
@@ -122,48 +122,6 @@ export async function render(container, params = {}) {
           </form>
         </div>
       </div>
-      <style>
-        input[name="cat-color"]:checked + .cat-color-swatch {
-          border-color: var(--text-primary) !important;
-          transform: scale(1.15);
-          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        .icon-grid-modern {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
-          gap: 10px;
-          max-height: 180px;
-          overflow-y: auto;
-          padding: 12px;
-          background: var(--bg-surface-elevated);
-          border: 1px solid var(--border);
-          border-radius: var(--radius-md);
-        }
-        .icon-swatch-btn {
-          width: 100%;
-          aspect-ratio: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 10px;
-          background: transparent;
-          border: 1px solid transparent;
-          color: var(--text-primary);
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-        .icon-swatch-btn:hover {
-          background: var(--bg-surface);
-          border-color: var(--border);
-        }
-        .icon-swatch-btn.active {
-          background: var(--color-primary) !important;
-          color: #fff !important;
-          border-color: var(--color-primary) !important;
-          transform: scale(1.05);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-      </style>
     `;
 
     // Modal behavior
