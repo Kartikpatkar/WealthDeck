@@ -61,6 +61,26 @@ export async function render(container) {
         </select>
       </div>
     </div>
+    
+    <div class="card mt-16">
+      <div class="section-title">Security</div>
+      <div class="field" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <label style="margin:0; font-size:15px;">Biometric App Lock</label>
+          <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Use FaceID, TouchID, or device PIN to open app</div>
+        </div>
+        <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 28px;">
+          <input type="checkbox" id="biometric-toggle" style="opacity: 0; width: 0; height: 0;" ${localStorage.getItem('wealthdeck_biometric') === 'true' ? 'checked' : ''}>
+          <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; border-radius: 34px;"></span>
+        </label>
+      </div>
+    </div>
+    
+    <style>
+      .switch input:checked + .slider { background-color: var(--color-primary); }
+      .switch .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+      .switch input:checked + .slider:before { transform: translateX(22px); }
+    </style>
   `;
   
   // Handlers
@@ -103,6 +123,46 @@ export async function render(container) {
       import('../components/toast.js').then(m => m.showToast('Accent color updated'));
     });
   });
+
+  const bioToggle = document.getElementById('biometric-toggle');
+  if (bioToggle) {
+    bioToggle.addEventListener('change', async (e) => {
+      if (e.target.checked) {
+        try {
+          const challenge = new Uint8Array(32);
+          crypto.getRandomValues(challenge);
+          const userId = new Uint8Array(16);
+          crypto.getRandomValues(userId);
+          
+          await navigator.credentials.create({
+            publicKey: {
+              challenge: challenge,
+              rp: { name: "WealthDeck", id: location.hostname },
+              user: {
+                id: userId,
+                name: "user@wealthdeck.local",
+                displayName: "WealthDeck User"
+              },
+              pubKeyCredParams: [{type: "public-key", alg: -7}, {type: "public-key", alg: -257}],
+              authenticatorSelection: { userVerification: "required" },
+              timeout: 60000,
+              attestation: "none"
+            }
+          });
+          
+          localStorage.setItem('wealthdeck_biometric', 'true');
+          import('../components/toast.js').then(m => m.showToast('App Lock Enabled'));
+        } catch (err) {
+          console.error(err);
+          e.target.checked = false; // Revert
+          import('../components/toast.js').then(m => m.showToast('Failed to enable App Lock. Your device may not support it.', 'error'));
+        }
+      } else {
+        localStorage.removeItem('wealthdeck_biometric');
+        import('../components/toast.js').then(m => m.showToast('App Lock Disabled'));
+      }
+    });
+  }
 }
 
 export function destroy() {

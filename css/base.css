@@ -14,6 +14,17 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
+/* Privacy Masking */
+.privacy-masked .amount,
+.privacy-masked .tx-amt,
+.privacy-masked .amt,
+.privacy-masked .v,
+.privacy-masked .budget-val {
+  filter: blur(5px);
+  user-select: none;
+  transition: filter 0.2s ease;
+}
+
 .mono {
   font-family: var(--font-family-mono);
 }

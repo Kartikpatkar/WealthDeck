@@ -66,15 +66,36 @@ export async function render(container, params = {}) {
               </div>
               <div class="field" style="flex:1;">
                 <label>Icon</label>
-                <select id="cat-icon" required>
-                  ${Object.keys(ICONS).map(k => `<option value='${ICONS[k].replace(/'/g, "&apos;")}'>${k}</option>`).join('')}
-                </select>
+                <div id="cat-icon-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 8px; max-height: 150px; overflow-y: auto; padding: 4px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-surface);">
+                  ${Object.keys(ICONS).map(k => `
+                    <button type="button" class="icon-swatch-btn" data-svg='${ICONS[k].replace(/'/g, "&apos;")}' title="${k}" style="width: 40px; height: 40px; border-radius: 8px; background: transparent; border: 2px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-primary); transition: 0.2s;">
+                      ${ICONS[k]}
+                    </button>
+                  `).join('')}
+                </div>
+                <input type="hidden" id="cat-icon" required>
               </div>
             </div>
             
             <div class="field">
               <label>Color Tag</label>
-              <input type="color" id="cat-color" value="#6366f1" required style="height: 44px; padding: 2px;">
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                ${[
+                  { hex: '#6366f1' }, { hex: '#10b981' }, { hex: '#f43f5e' },
+                  { hex: '#f59e0b' }, { hex: '#0ea5e9' }, { hex: '#8b5cf6' },
+                  { hex: '#ec4899' }, { hex: '#14b8a6' }
+                ].map((c, i) => `
+                  <label style="cursor: pointer; position: relative;">
+                    <input type="radio" name="cat-color" value="${c.hex}" ${i === 0 ? 'checked' : ''} style="position: absolute; opacity: 0;">
+                    <div class="cat-color-swatch" style="width: 32px; height: 32px; border-radius: 50%; background: ${c.hex}; border: 2px solid transparent; transition: 0.2s;"></div>
+                  </label>
+                `).join('')}
+                <label style="cursor: pointer; position: relative;" title="Custom Color">
+                  <input type="radio" name="cat-color" value="custom" style="position: absolute; opacity: 0;">
+                  <div class="cat-color-swatch custom-swatch-btn" style="width: 32px; height: 32px; border-radius: 50%; background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); border: 2px solid transparent; transition: 0.2s; display: flex; align-items: center; justify-content: center;"></div>
+                  <input type="color" id="cat-custom-color-input" style="position: absolute; opacity: 0; width: 0; height: 0;">
+                </label>
+              </div>
             </div>
 
             <div style="display:flex; gap:10px; margin-top:24px;">
@@ -84,6 +105,17 @@ export async function render(container, params = {}) {
           </form>
         </div>
       </div>
+      <style>
+        input[name="cat-color"]:checked + .cat-color-swatch {
+          border-color: var(--text-primary) !important;
+          transform: scale(1.15);
+          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .icon-swatch-btn.active {
+          border-color: var(--text-primary) !important;
+          background: rgba(100, 100, 100, 0.1) !important;
+        }
+      </style>
     `;
     
     // Modal behavior
@@ -109,11 +141,62 @@ export async function render(container, params = {}) {
         document.getElementById('cat-id').value = cat.id;
         document.getElementById('cat-name').value = cat.name;
         document.getElementById('cat-type').value = cat.type;
+        
+        // Icon
         document.getElementById('cat-icon').value = cat.icon;
-        document.getElementById('cat-color').value = cat.color || '#6366f1';
+        document.querySelectorAll('.icon-swatch-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.svg === cat.icon);
+        });
+        
+        // Color
+        const colorInput = document.querySelector(`input[name="cat-color"][value="${cat.color}"]`);
+        if (colorInput) {
+          colorInput.checked = true;
+        } else {
+          // Custom color
+          const customRadio = document.querySelector('input[name="cat-color"][value="custom"]');
+          if (customRadio) {
+            customRadio.value = cat.color;
+            customRadio.checked = true;
+            document.querySelector('.custom-swatch-btn').style.background = cat.color;
+          } else {
+            document.querySelector('input[name="cat-color"]').checked = true;
+          }
+        }
+        
         document.getElementById('delete-cat-btn').style.display = 'block';
         openModal();
       }
+    });
+
+    // Custom color picker bindings
+    const customRadio = document.querySelector('input[name="cat-color"][value="custom"]');
+    const customInput = document.getElementById('cat-custom-color-input');
+    const customBtn = document.querySelector('.custom-swatch-btn');
+    
+    if (customRadio && customInput) {
+      customRadio.addEventListener('change', () => {
+        if (customRadio.checked) {
+          customRadio.value = 'custom';
+          customInput.click();
+        }
+      });
+      
+      customInput.addEventListener('input', (e) => {
+        customRadio.value = e.target.value;
+        customBtn.style.background = e.target.value;
+        customRadio.checked = true;
+      });
+    }
+    
+    // Icon grid bindings
+    document.querySelectorAll('.icon-swatch-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelectorAll('.icon-swatch-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('cat-icon').value = btn.dataset.svg;
+      });
     });
 
     document.getElementById('delete-cat-btn').addEventListener('click', async () => {
@@ -128,6 +211,22 @@ export async function render(container, params = {}) {
     document.getElementById('add-cat-btn').addEventListener('click', () => {
       document.getElementById('add-cat-form').reset();
       document.getElementById('cat-id').value = '';
+      
+      // Default icon
+      const firstIconBtn = document.querySelector('.icon-swatch-btn');
+      if (firstIconBtn) {
+        document.querySelectorAll('.icon-swatch-btn').forEach(b => b.classList.remove('active'));
+        firstIconBtn.classList.add('active');
+        document.getElementById('cat-icon').value = firstIconBtn.dataset.svg;
+      }
+      
+      // Default color to first
+      document.querySelector('input[name="cat-color"]').checked = true;
+      if (customRadio) {
+        customRadio.value = 'custom';
+        customBtn.style.background = 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)';
+      }
+      
       document.getElementById('delete-cat-btn').style.display = 'none';
       openModal();
     });
@@ -139,7 +238,7 @@ export async function render(container, params = {}) {
         name: document.getElementById('cat-name').value,
         type: document.getElementById('cat-type').value,
         icon: document.getElementById('cat-icon').value,
-        color: document.getElementById('cat-color').value
+        color: document.querySelector('input[name="cat-color"]:checked').value
       };
       
       const idStr = document.getElementById('cat-id').value;

@@ -101,6 +101,11 @@ export async function render(container, params = {}) {
                     <div class="acc-color-swatch" style="width: 32px; height: 32px; border-radius: 50%; background: ${c.hex}; border: 2px solid transparent; transition: 0.2s;"></div>
                   </label>
                 `).join('')}
+                <label style="cursor: pointer; position: relative;" title="Custom Color">
+                  <input type="radio" name="acc-color" value="custom" style="position: absolute; opacity: 0;">
+                  <div class="acc-color-swatch custom-swatch-btn" style="width: 32px; height: 32px; border-radius: 50%; background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); border: 2px solid transparent; transition: 0.2s; display: flex; align-items: center; justify-content: center;"></div>
+                  <input type="color" id="acc-custom-color-input" style="position: absolute; opacity: 0; width: 0; height: 0;">
+                </label>
               </div>
             </div>
             
@@ -142,7 +147,15 @@ export async function render(container, params = {}) {
         if (colorInput) {
           colorInput.checked = true;
         } else {
-          document.querySelector('input[name="acc-color"]').checked = true; // Fallback to first
+          // It's a custom color
+          const customRadio = document.querySelector('input[name="acc-color"][value="custom"]');
+          if (customRadio) {
+            customRadio.value = acc.color;
+            customRadio.checked = true;
+            document.querySelector('.custom-swatch-btn').style.background = acc.color;
+          } else {
+            document.querySelector('input[name="acc-color"]').checked = true; // Fallback to first
+          }
         }
         document.getElementById('acc-default').checked = acc.isDefault || false;
         
@@ -150,6 +163,26 @@ export async function render(container, params = {}) {
         openModal();
       }
     });
+
+    // Handle Custom Color Picker
+    const customRadio = document.querySelector('input[name="acc-color"][value="custom"]');
+    const customInput = document.getElementById('acc-custom-color-input');
+    const customBtn = document.querySelector('.custom-swatch-btn');
+    
+    if (customRadio && customInput) {
+      customRadio.addEventListener('change', () => {
+        if (customRadio.checked) {
+          customRadio.value = 'custom'; // reset value so it triggers properly
+          customInput.click();
+        }
+      });
+      
+      customInput.addEventListener('input', (e) => {
+        customRadio.value = e.target.value;
+        customBtn.style.background = e.target.value;
+        customRadio.checked = true;
+      });
+    }
 
     // Delete Button
     document.getElementById('delete-acc-btn').addEventListener('click', async () => {
@@ -184,6 +217,10 @@ export async function render(container, params = {}) {
       const randomColor = accountColors[Math.floor(Math.random() * accountColors.length)].hex;
       const colorInput = document.querySelector(`input[name="acc-color"][value="${randomColor}"]`);
       if (colorInput) colorInput.checked = true;
+      if (customRadio) {
+        customRadio.value = 'custom';
+        customBtn.style.background = 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)';
+      }
 
       document.getElementById('acc-currency').value = localStorage.getItem('wealthdeck_currency') || 'USD';
       document.getElementById('delete-acc-btn').style.display = 'none';

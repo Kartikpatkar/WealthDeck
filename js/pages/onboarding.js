@@ -78,6 +78,11 @@ export async function render(container, params = {}) {
                   <div class="color-swatch" style="width: 48px; height: 48px; border-radius: 50%; background: ${c.hex}; border: 3px solid transparent; transition: 0.2s;"></div>
                 </label>
               `).join('')}
+              <label style="cursor: pointer; position: relative;" title="Custom Color">
+                <input type="radio" name="accent" value="custom" style="position: absolute; opacity: 0;">
+                <div class="color-swatch custom-swatch-btn" style="width: 48px; height: 48px; border-radius: 50%; background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); border: 3px solid transparent; transition: 0.2s; display: flex; align-items: center; justify-content: center;"></div>
+                <input type="color" id="ob-custom-color-input" style="position: absolute; opacity: 0; width: 0; height: 0;">
+              </label>
             </div>
           </div>
           <button type="submit" class="btn" id="ob-btn-finish" style="padding: 16px; font-size: 16px; width: 100%;">Finish Setup</button>
@@ -143,10 +148,25 @@ export async function render(container, params = {}) {
       });
     } else if (currentStep === 3) {
       const radios = document.querySelectorAll('input[name="accent"]');
+      const customRadio = document.querySelector('input[name="accent"][value="custom"]');
+      const customInput = document.getElementById('ob-custom-color-input');
+      const customBtn = document.querySelector('.custom-swatch-btn');
+
       radios.forEach(r => {
         r.addEventListener('change', (e) => {
-          document.documentElement.style.setProperty('--color-primary', e.target.value);
+          if (e.target.value !== 'custom') {
+            document.documentElement.style.setProperty('--color-primary', e.target.value);
+          } else {
+            customInput.click();
+          }
         });
+      });
+      
+      customInput.addEventListener('input', (e) => {
+        customRadio.value = e.target.value;
+        customBtn.style.background = e.target.value;
+        customRadio.checked = true;
+        document.documentElement.style.setProperty('--color-primary', e.target.value);
       });
       
       document.getElementById('ob-theme').addEventListener('change', (e) => {

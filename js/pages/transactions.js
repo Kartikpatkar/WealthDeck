@@ -335,7 +335,10 @@ export async function render(container, params = {}) {
       
       await saveTransaction(payload);
       closeModal();
-      render(container); // Re-render list
+      
+      if (!params.openModal) {
+        render(container); // Re-render list only if staying on page
+      }
     });
 
     // Open Modal via router param (e.g. from FAB)
