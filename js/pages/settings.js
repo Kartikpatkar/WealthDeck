@@ -76,6 +76,17 @@ export async function render(container) {
       </div>
     </div>
     
+    <div class="card mt-16" style="border-color: #ef444433; background: #ef44440a;">
+      <div class="section-title text-danger">Danger Zone</div>
+      <div class="field" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <label style="margin:0; font-size:15px;" class="text-danger">Clear All Data</label>
+          <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Permanently delete all your local accounts, transactions, and settings</div>
+        </div>
+        <button id="clear-data-btn" class="btn btn--secondary" style="background: #fee2e2; color: #ef4444; border-color: transparent;">Reset App</button>
+      </div>
+    </div>
+    
     <style>
       .switch input:checked + .slider { background-color: var(--color-primary); }
       .switch .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
@@ -163,6 +174,15 @@ export async function render(container) {
       }
     });
   }
+
+  document.getElementById('clear-data-btn').addEventListener('click', async () => {
+    const { confirmModal } = await import('../components/modal.js');
+    if (await confirmModal('Clear All Data?', 'Are you absolutely sure? This will delete all your accounts, transactions, and settings. This cannot be undone.')) {
+      localStorage.clear();
+      window.location.href = '/';
+      window.location.reload();
+    }
+  });
 }
 
 export function destroy() {

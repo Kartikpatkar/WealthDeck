@@ -20,9 +20,24 @@ body {
 .privacy-masked .amt,
 .privacy-masked .v,
 .privacy-masked .budget-val {
-  filter: blur(5px);
+  color: transparent !important;
+  position: relative;
   user-select: none;
-  transition: filter 0.2s ease;
+}
+.privacy-masked .amount::after,
+.privacy-masked .tx-amt::after,
+.privacy-masked .amt::after,
+.privacy-masked .v::after,
+.privacy-masked .budget-val::after {
+  content: '***';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--text-primary);
+  font-family: var(--font-family-mono);
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: 2px;
 }
 
 .mono {
@@ -44,8 +59,6 @@ body {
   padding: 20px 12px;
   border-right: 1px solid var(--border);
   background: var(--bg-surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   position: sticky;
   top: 0;
   height: 100vh;
@@ -82,11 +95,11 @@ body {
 }
 
 .topbar {
-  display: none;
+  display: flex;
   align-items: center; justify-content: space-between;
-  padding: 20px 32px; border-bottom: 1px solid var(--border);
+  padding: 16px; border-bottom: 1px solid var(--border);
 }
-@media (min-width: 768px) { .topbar { display: flex; } }
+@media (min-width: 768px) { .topbar { padding: 20px 32px; } }
 .topbar h1 { font-size: 20px; font-weight: 700; margin: 0; }
 .topbar-actions { display: flex; align-items: center; gap: 12px; }
 

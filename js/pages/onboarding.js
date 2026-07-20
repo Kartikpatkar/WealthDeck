@@ -85,6 +85,16 @@ export async function render(container, params = {}) {
               </label>
             </div>
           </div>
+          <div class="field" style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-surface-elevated); border-radius: 12px; border: 1px solid var(--border);">
+            <div>
+              <label style="margin:0; font-size:15px; font-weight:500;">Biometric App Lock</label>
+              <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Use FaceID, TouchID, or PIN to open app</div>
+            </div>
+            <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 28px;">
+              <input type="checkbox" id="ob-biometric-toggle" style="opacity: 0; width: 0; height: 0;">
+              <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; border-radius: 34px;"></span>
+            </label>
+          </div>
           <button type="submit" class="btn" id="ob-btn-finish" style="padding: 16px; font-size: 16px; width: 100%;">Finish Setup</button>
         </form>
       `;
@@ -100,6 +110,9 @@ export async function render(container, params = {}) {
           transform: scale(1.1);
           box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
+        .switch input:checked + .slider { background-color: var(--color-primary); }
+        .switch .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        .switch input:checked + .slider:before { transform: translateX(22px); }
       </style>
     `;
     
@@ -181,15 +194,40 @@ export async function render(container, params = {}) {
       
       document.getElementById('onboarding-form-3').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const finishBtn = document.getElementById('ob-btn-finish');
-        finishBtn.innerHTML = 'Saving...';
-        finishBtn.disabled = true;
+        const selectedAccent = document.querySelector('input[name="accent"]:checked').value;
+        const finalAccent = selectedAccent === 'custom' ? customInput.value : selectedAccent;
+        localStorage.setItem('wealthdeck_accent', finalAccent);
+        localStorage.setItem('wealthdeck_theme', document.getElementById('ob-theme').value);
         
-        const accent = document.querySelector('input[name="accent"]:checked').value;
-        const theme = document.getElementById('ob-theme').value;
-        
-        localStorage.setItem('wealthdeck_accent', accent);
-        localStorage.setItem('wealthdeck_theme', theme);
+        const btnFinish = document.getElementById('ob-btn-finish');
+        btnFinish.innerHTML = 'Saving...';
+        btnFinish.disabled = true;
+
+        if (document.getElementById('ob-biometric-toggle').checked) {
+          try {
+            const challenge = new Uint8Array(32);
+            crypto.getRandomValues(challenge);
+            const userId = new Uint8Array(16);
+            crypto.getRandomValues(userId);
+            
+            await navigator.credentials.create({
+              publicKey: {
+                challenge: challenge,
+                rp: { name: "WealthDeck", id: location.hostname },
+                user: { id: userId, name: "user@wealthdeck.local", displayName: "WealthDeck User" },
+                pubKeyCredParams: [{type: "public-key", alg: -7}, {type: "public-key", alg: -257}],
+                authenticatorSelection: { userVerification: "required" },
+                timeout: 60000,
+                attestation: "none"
+              }
+            });
+            localStorage.setItem('wealthdeck_biometric', 'true');
+          } catch (err) {
+            console.error(err);
+            alert("Failed to enable Biometric App Lock. Continuing without it.");
+            localStorage.removeItem('wealthdeck_biometric');
+          }
+        }
         
         if (wantsDriveSync) {
           await backupToDrive();

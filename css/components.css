@@ -2,9 +2,7 @@
 .bottom-nav {
   position: fixed; left: 12px; right: 12px; bottom: 12px;
   display: flex; align-items: center; justify-content: space-around;
-  background: var(--bg-surface-elevated);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 24px;
   padding: 8px 6px;
@@ -55,8 +53,6 @@
 /* ---------- Cards / glass ---------- */
 .card {
   background: var(--bg-surface);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 20px;
@@ -66,8 +62,7 @@
 
 /* ---------- Modal ---------- */
 .modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  position: fixed; inset: 0; background: rgba(0,0,0,.65);
   display: none; align-items: flex-end; justify-content: center; z-index: var(--z-modal);
 }
 .modal-overlay.open { display: flex; }

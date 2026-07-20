@@ -54,7 +54,7 @@ export async function render(container, params = {}) {
         <div class="page-head" style="flex-direction: column; align-items: stretch; gap: 12px; margin-bottom: 24px;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2 style="margin: 0;">Reports</h2>
-            <select id="report-filter" style="width: auto; margin-bottom:0; font-size:13px; padding: 6px 10px;">
+            <select id="report-filter" class="input" style="width: auto; margin-bottom: 0; padding: 8px 12px;">
               <option value="this-month" ${currentFilter === 'this-month' ? 'selected' : ''}>This Month</option>
               <option value="last-month" ${currentFilter === 'last-month' ? 'selected' : ''}>Last Month</option>
               <option value="all-time" ${currentFilter === 'all-time' ? 'selected' : ''}>All Time</option>
@@ -62,9 +62,9 @@ export async function render(container, params = {}) {
             </select>
           </div>
           ${currentFilter === 'custom' ? `
-            <div style="display: flex; gap: 12px; padding-top: 12px; border-top: 1px solid var(--border-light);">
-              <div class="field" style="flex:1; margin:0;"><label style="font-size:11px;">From</label><input type="date" id="custom-start" value="${customStartDate}" style="padding:6px; font-size:13px;"></div>
-              <div class="field" style="flex:1; margin:0;"><label style="font-size:11px;">To</label><input type="date" id="custom-end" value="${customEndDate}" style="padding:6px; font-size:13px;"></div>
+            <div style="display: flex; gap: 12px; margin-top: 8px;">
+              <div class="field" style="flex:1; margin:0;"><label style="font-size:12px;">From</label><input type="date" class="input" id="custom-start" value="${customStartDate}" style="padding:10px;"></div>
+              <div class="field" style="flex:1; margin:0;"><label style="font-size:12px;">To</label><input type="date" class="input" id="custom-end" value="${customEndDate}" style="padding:10px;"></div>
             </div>
           ` : ''}
         </div>
