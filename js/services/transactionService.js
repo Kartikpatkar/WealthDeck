@@ -7,7 +7,10 @@ export async function getAllTransactions() {
     const store = transaction.objectStore('transactions');
     const request = store.getAll();
     request.onsuccess = () => {
-      const sorted = request.result.sort((a, b) => new Date(b.date) - new Date(a.date));
+      const sorted = request.result.sort((a, b) => {
+        const dDiff = new Date(b.date) - new Date(a.date);
+        return dDiff !== 0 ? dDiff : b.id - a.id;
+      });
       resolve(sorted);
     };
     request.onerror = () => reject(request.error);

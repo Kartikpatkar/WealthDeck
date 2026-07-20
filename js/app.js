@@ -3,18 +3,28 @@ import { initRouter } from './router.js';
 
 async function bootstrap() {
   try {
-    // Check Biometric Lock First
     if (localStorage.getItem('wealthdeck_biometric') === 'true') {
-      try {
-        const challenge = new Uint8Array(32);
-        crypto.getRandomValues(challenge);
-        await navigator.credentials.get({
-          publicKey: {
-            challenge: challenge,
-            userVerification: "required"
-          }
-        });
-      } catch (err) {
+      let authSuccess = false;
+      if (window.isSecureContext && navigator.credentials) {
+        try {
+          const challenge = new Uint8Array(32);
+          crypto.getRandomValues(challenge);
+          await navigator.credentials.get({
+            publicKey: {
+              challenge: challenge,
+              userVerification: "required"
+            }
+          });
+          authSuccess = true;
+        } catch(err) {
+          authSuccess = false;
+        }
+      } else {
+        const pin = prompt('App Locked (Simulated Biometric).\nPress OK to unlock or Cancel to stay locked.');
+        if (pin !== null) authSuccess = true;
+      }
+      
+      if (!authSuccess) {
         document.getElementById('main-content').innerHTML = `
           <div style="padding: 40px 20px; text-align: center; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 64px; height: 64px; margin-bottom: 16px; color: var(--color-expense);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>

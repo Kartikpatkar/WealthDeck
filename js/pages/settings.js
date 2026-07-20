@@ -145,21 +145,25 @@ export async function render(container) {
           const userId = new Uint8Array(16);
           crypto.getRandomValues(userId);
           
-          await navigator.credentials.create({
-            publicKey: {
-              challenge: challenge,
-              rp: { name: "WealthDeck", id: location.hostname },
-              user: {
-                id: userId,
-                name: "user@wealthdeck.local",
-                displayName: "WealthDeck User"
-              },
-              pubKeyCredParams: [{type: "public-key", alg: -7}, {type: "public-key", alg: -257}],
-              authenticatorSelection: { userVerification: "required" },
-              timeout: 60000,
-              attestation: "none"
-            }
-          });
+          if (window.isSecureContext && navigator.credentials) {
+            await navigator.credentials.create({
+              publicKey: {
+                challenge: challenge,
+                rp: { name: "WealthDeck" },
+                user: {
+                  id: userId,
+                  name: "user@wealthdeck.local",
+                  displayName: "WealthDeck User"
+                },
+                pubKeyCredParams: [{type: "public-key", alg: -7}, {type: "public-key", alg: -257}],
+                authenticatorSelection: { userVerification: "required" },
+                timeout: 60000,
+                attestation: "none"
+              }
+            });
+          } else {
+            console.warn('WebAuthn not supported. Simulating Biometric Lock.');
+          }
           
           localStorage.setItem('wealthdeck_biometric', 'true');
           import('../components/toast.js').then(m => m.showToast('App Lock Enabled'));
@@ -178,9 +182,17 @@ export async function render(container) {
   document.getElementById('clear-data-btn').addEventListener('click', async () => {
     const { confirmModal } = await import('../components/modal.js');
     if (await confirmModal('Clear All Data?', 'Are you absolutely sure? This will delete all your accounts, transactions, and settings. This cannot be undone.')) {
-      localStorage.clear();
-      window.location.href = '/';
-      window.location.reload();
+      const req = indexedDB.deleteDatabase('wealthdeck');
+      req.onsuccess = () => {
+        localStorage.clear();
+        window.location.href = '/';
+        window.location.reload();
+      };
+      req.onerror = () => {
+        localStorage.clear();
+        window.location.href = '/';
+        window.location.reload();
+      };
     }
   });
 }
