@@ -74,6 +74,42 @@ body {
 .sidebar .brand .mark { width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); flex-shrink: 0; }
 .sidebar .brand span { font-weight: 700; font-size: 16px; opacity: 0; transition: opacity 0.2s; }
 
+[data-theme="dark"] {
+  --bg-primary: #121212;
+  --bg-surface: #1e1e1e;
+  --bg-surface-elevated: #2c2c2c;
+  --border: #333333;
+  --border-light: #2c2c2c;
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --color-expense: #f87171;
+  --color-income: #34d399;
+}
+
+[data-theme="amoled"] {
+  --bg-primary: #000000;
+  --bg-surface: #0a0a0a;
+  --bg-surface-elevated: #141414;
+  --border: #222222;
+  --border-light: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #a3a3a3;
+  --color-expense: #ef4444;
+  --color-income: #10b981;
+}
+
+[data-theme="midnight"] {
+  --bg-primary: #0b0f19;
+  --bg-surface: #111827;
+  --bg-surface-elevated: #1f2937;
+  --border: #374151;
+  --border-light: #1f2937;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --color-expense: #f87171;
+  --color-income: #34d399;
+}
+
 .sidebar .nav-item {
   display: flex; align-items: center; gap: 12px;
   padding: 11px 10px; border-radius: 12px;

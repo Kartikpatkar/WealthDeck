@@ -28,8 +28,11 @@ export async function render(container) {
       <div class="field">
         <label>Theme</label>
         <select id="theme-select">
-          <option value="dark" ${currentTheme === 'dark' ? 'selected' : ''}>Dark</option>
+          <option value="system" ${currentTheme === 'system' ? 'selected' : ''}>System Default</option>
           <option value="light" ${currentTheme === 'light' ? 'selected' : ''}>Light</option>
+          <option value="dark" ${currentTheme === 'dark' ? 'selected' : ''}>Dark</option>
+          <option value="amoled" ${currentTheme === 'amoled' ? 'selected' : ''}>Amoled Dark</option>
+          <option value="midnight" ${currentTheme === 'midnight' ? 'selected' : ''}>Midnight Blue</option>
         </select>
       </div>
       
@@ -42,6 +45,11 @@ export async function render(container) {
               <div class="color-swatch ${currentAccent === c.hex ? 'active' : ''}" style="background: ${c.hex};"></div>
             </label>
           `).join('')}
+          <label class="cursor-pointer relative" title="Custom Color" style="position:relative;">
+            <input class="sr-only" type="radio" name="accent" value="custom" ${!accentColors.some(c => c.hex === currentAccent) ? 'checked' : ''}>
+            <div class="color-swatch custom-swatch-btn ${!accentColors.some(c => c.hex === currentAccent) ? 'active' : ''}" style="background: ${!accentColors.some(c => c.hex === currentAccent) ? currentAccent : 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)'};"></div>
+            <input class="sr-only" type="color" id="settings-custom-color-input" style="opacity:0; position:absolute; inset:0; width:100%; height:100%; cursor:pointer;">
+          </label>
         </div>
       </div>
     </div>
@@ -108,19 +116,30 @@ export async function render(container) {
   });
   
   const radios = document.querySelectorAll('input[name="accent"]');
+  const customInput = document.getElementById('settings-custom-color-input');
+  const customBtn = document.querySelector('.custom-swatch-btn');
+  const customRadio = document.querySelector('input[name="accent"][value="custom"]');
+
   radios.forEach(r => {
     r.addEventListener('change', (e) => {
-      const val = e.target.value;
+      let val = e.target.value;
+      if (val === 'custom') {
+        customInput.click();
+        return;
+      }
+
       localStorage.setItem('wealthdeck_accent', val);
       document.documentElement.style.setProperty('--color-primary', val);
       
       // Update UI active states
       document.querySelectorAll('.color-swatch').forEach(sw => {
+        sw.classList.remove('active');
         sw.style.borderColor = 'transparent';
         sw.style.transform = 'none';
         sw.style.boxShadow = 'none';
       });
       const activeSwatch = e.target.nextElementSibling;
+      activeSwatch.classList.add('active');
       activeSwatch.style.borderColor = 'var(--text-primary)';
       activeSwatch.style.transform = 'scale(1.1)';
       activeSwatch.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
@@ -128,6 +147,27 @@ export async function render(container) {
       import('../components/toast.js').then(m => m.showToast('Accent color updated'));
     });
   });
+
+  if (customInput && customRadio) {
+    customInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+      customBtn.style.background = val;
+      customRadio.checked = true;
+      localStorage.setItem('wealthdeck_accent', val);
+      document.documentElement.style.setProperty('--color-primary', val);
+      
+      document.querySelectorAll('.color-swatch').forEach(sw => {
+        sw.classList.remove('active');
+        sw.style.borderColor = 'transparent';
+        sw.style.transform = 'none';
+        sw.style.boxShadow = 'none';
+      });
+      customBtn.classList.add('active');
+      customBtn.style.borderColor = 'var(--text-primary)';
+      customBtn.style.transform = 'scale(1.1)';
+      customBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+    });
+  }
 
   const bioToggle = document.getElementById('biometric-toggle');
   if (bioToggle) {

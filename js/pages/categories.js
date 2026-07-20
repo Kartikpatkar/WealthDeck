@@ -107,10 +107,10 @@ export async function render(container, params = {}) {
                     <div class="cat-color-swatch color-swatch-sm" style="background: ${c.hex};"></div>
                   </label>
                 `).join('')}
-                <label class="mod-style-1034c1" title="Custom Color">
+                <label class="mod-style-1034c1" title="Custom Color" style="position:relative;">
                   <input class="mod-style-628c86" type="radio" name="cat-color" value="custom">
-                  <div class="cat-color-swatch custom-swatch-btn mod-style-e93ae7"></div>
-                  <input class="mod-style-2a85bc" type="color" id="cat-custom-color-input">
+                  <div class="cat-color-swatch color-swatch-sm custom-swatch-btn mod-style-e93ae7" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);"></div>
+                  <input class="mod-style-2a85bc" type="color" id="cat-custom-color-input" style="opacity:0; position:absolute; inset:0; width:100%; height:100%; cursor:pointer;">
                 </label>
               </div>
             </div>
@@ -162,8 +162,8 @@ export async function render(container, params = {}) {
           // Custom color
           const customRadio = document.querySelector('input[name="cat-color"][value="custom"]');
           if (customRadio) {
-            customRadio.value = cat.color;
             customRadio.checked = true;
+            document.getElementById('cat-custom-color-input').value = cat.color;
             document.querySelector('.custom-swatch-btn').style.background = cat.color;
           } else {
             document.querySelector('input[name="cat-color"]').checked = true;
@@ -183,13 +183,11 @@ export async function render(container, params = {}) {
     if (customRadio && customInput) {
       customRadio.addEventListener('change', () => {
         if (customRadio.checked) {
-          customRadio.value = 'custom';
           customInput.click();
         }
       });
 
       customInput.addEventListener('input', (e) => {
-        customRadio.value = e.target.value;
         customBtn.style.background = e.target.value;
         customRadio.checked = true;
       });
@@ -240,11 +238,12 @@ export async function render(container, params = {}) {
     document.getElementById('add-cat-form').addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      const colorVal = document.querySelector('input[name="cat-color"]:checked').value;
       const payload = {
         name: document.getElementById('cat-name').value,
         type: document.getElementById('cat-type').value,
         icon: document.getElementById('cat-icon').value,
-        color: document.querySelector('input[name="cat-color"]:checked').value
+        color: colorVal === 'custom' ? document.getElementById('cat-custom-color-input').value : colorVal
       };
 
       const idStr = document.getElementById('cat-id').value;

@@ -49,6 +49,9 @@ export async function render(container, params = {}) {
               <option value="INR">INR (₹)</option>
               <option value="EUR">EUR (€)</option>
               <option value="GBP">GBP (£)</option>
+              <option value="AUD">AUD (A$)</option>
+              <option value="CAD">CAD (C$)</option>
+              <option value="JPY">JPY (¥)</option>
             </select>
           </div>
           <button class="btn mod-style-77eabe" type="submit">Next</button>
@@ -67,6 +70,8 @@ export async function render(container, params = {}) {
               <option value="system">System Default</option>
               <option value="light">Light</option>
               <option value="dark">Dark</option>
+              <option value="amoled">Amoled Dark</option>
+              <option value="midnight">Midnight Blue</option>
             </select>
           </div>
           <div class="field mod-style-138f8f">
@@ -78,10 +83,10 @@ export async function render(container, params = {}) {
                   <div class="color-swatch color-swatch-lg" style="background: ${c.hex};"></div>
                 </label>
               `).join('')}
-              <label class="mod-style-1034c1" title="Custom Color">
+              <label class="mod-style-1034c1" title="Custom Color" style="position:relative;">
                 <input class="mod-style-628c86" type="radio" name="accent" value="custom">
-                <div class="color-swatch custom-swatch-btn mod-style-2bf4ef"></div>
-                <input class="mod-style-2a85bc" type="color" id="ob-custom-color-input">
+                <div class="color-swatch color-swatch-lg custom-swatch-btn mod-style-2bf4ef" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);"></div>
+                <input class="mod-style-2a85bc" type="color" id="ob-custom-color-input" style="opacity:0; position:absolute; inset:0; width:100%; height:100%; cursor:pointer;">
               </label>
             </div>
           </div>
@@ -152,13 +157,24 @@ export async function render(container, params = {}) {
     } else if (currentStep === 2) {
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
       let guessed = 'USD';
-      if (tz.includes('Kolkata') || tz.includes('India')) guessed = 'INR';
-      else if (tz.includes('Europe/London')) guessed = 'GBP';
+      if (tz.includes('Kolkata') || tz.includes('India') || tz.includes('Colombo') || tz.includes('Dhaka')) guessed = 'INR';
+      else if (tz.includes('Europe/London') || tz.includes('Belfast')) guessed = 'GBP';
       else if (tz.includes('Europe/')) guessed = 'EUR';
       else if (tz.includes('Australia/')) guessed = 'AUD';
+      else if (tz.includes('Canada/')) guessed = 'CAD';
+      else if (tz.includes('Tokyo')) guessed = 'JPY';
       
       const currSelect = document.getElementById('ob-currency');
-      if (currSelect) currSelect.value = guessed;
+      if (currSelect) {
+        let optionExists = Array.from(currSelect.options).some(opt => opt.value === guessed);
+        if (!optionExists) {
+          const newOpt = document.createElement('option');
+          newOpt.value = guessed;
+          newOpt.text = guessed;
+          currSelect.appendChild(newOpt);
+        }
+        currSelect.value = guessed;
+      }
 
       document.getElementById('onboarding-form-2').addEventListener('submit', (e) => {
         e.preventDefault();
@@ -184,7 +200,6 @@ export async function render(container, params = {}) {
       });
       
       customInput.addEventListener('input', (e) => {
-        customRadio.value = e.target.value;
         customBtn.style.background = e.target.value;
         customRadio.checked = true;
         document.documentElement.style.setProperty('--color-primary', e.target.value);

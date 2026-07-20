@@ -63,6 +63,14 @@ export async function seedDefaultCategories() {
         changed = true;
       }
     }
+    
+    // Migration: Add transfer categories if none exist
+    const hasTransfer = existing.some(c => c.type === 'transfer');
+    if (!hasTransfer) {
+      for (const cat of defaults.filter(c => c.type === 'transfer')) {
+        await saveCategory(cat);
+      }
+    }
   }
 }
 
