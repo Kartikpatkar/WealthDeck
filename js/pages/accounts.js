@@ -3,6 +3,12 @@ import { confirmModal } from '../components/modal.js';
 import { formatCurrency } from '../utils/format.js';
 
 export async function render(container, params = {}) {
+  const accountColors = [
+    { hex: '#6366f1' }, { hex: '#10b981' }, { hex: '#f43f5e' },
+    { hex: '#f59e0b' }, { hex: '#0ea5e9' }, { hex: '#8b5cf6' },
+    { hex: '#ec4899' }, { hex: '#14b8a6' }
+  ];
+
   container.innerHTML = `<div class="loading">Loading Accounts...</div>`;
   
   try {
@@ -80,13 +86,21 @@ export async function render(container, params = {}) {
             </div>
             
             <div class="field-row">
-              <div class="field" style="flex: 2;">
+              <div class="field" style="flex: 1;">
                 <label>Initial Balance</label>
                 <input type="number" step="0.01" id="acc-balance" placeholder="0.00">
               </div>
-              <div class="field" style="flex: 1;">
-                <label>Color</label>
-                <input type="color" id="acc-color" value="#6366f1" required style="height:44px; padding:2px;">
+            </div>
+            
+            <div class="field" style="margin-bottom: 24px;">
+              <label>Color</label>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                ${accountColors.map((c, i) => `
+                  <label style="cursor: pointer; position: relative;">
+                    <input type="radio" name="acc-color" value="${c.hex}" ${i === 0 ? 'checked' : ''} style="position: absolute; opacity: 0;">
+                    <div class="acc-color-swatch" style="width: 32px; height: 32px; border-radius: 50%; background: ${c.hex}; border: 2px solid transparent; transition: 0.2s;"></div>
+                  </label>
+                `).join('')}
               </div>
             </div>
             
@@ -102,6 +116,13 @@ export async function render(container, params = {}) {
           </form>
         </div>
       </div>
+      <style>
+        input[name="acc-color"]:checked + .acc-color-swatch {
+          border-color: var(--text-primary) !important;
+          transform: scale(1.15);
+          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+      </style>
     `;
 
     // Row click -> Edit
@@ -117,7 +138,12 @@ export async function render(container, params = {}) {
         document.getElementById('acc-type').value = acc.type;
         document.getElementById('acc-balance').value = ((acc.balance || 0) / 100).toFixed(2);
         document.getElementById('acc-currency').value = acc.currency || localStorage.getItem('wealthdeck_currency') || 'USD';
-        document.getElementById('acc-color').value = acc.color || '#6366f1';
+        const colorInput = document.querySelector(`input[name="acc-color"][value="${acc.color}"]`);
+        if (colorInput) {
+          colorInput.checked = true;
+        } else {
+          document.querySelector('input[name="acc-color"]').checked = true; // Fallback to first
+        }
         document.getElementById('acc-default').checked = acc.isDefault || false;
         
         document.getElementById('delete-acc-btn').style.display = 'block';
@@ -150,9 +176,15 @@ export async function render(container, params = {}) {
     }
     
     // FAB Click
-    document.getElementById('add-account-btn').addEventListener('click', () => {
+      document.getElementById('add-account-btn').addEventListener('click', () => {
       document.getElementById('add-account-form').reset();
       document.getElementById('acc-id').value = '';
+      
+      // Select a random color for a new account so it doesn't match the accent or first color every time
+      const randomColor = accountColors[Math.floor(Math.random() * accountColors.length)].hex;
+      const colorInput = document.querySelector(`input[name="acc-color"][value="${randomColor}"]`);
+      if (colorInput) colorInput.checked = true;
+
       document.getElementById('acc-currency').value = localStorage.getItem('wealthdeck_currency') || 'USD';
       document.getElementById('delete-acc-btn').style.display = 'none';
       openModal();
@@ -167,7 +199,7 @@ export async function render(container, params = {}) {
         type: document.getElementById('acc-type').value,
         balance: parseFloat(document.getElementById('acc-balance').value) || 0,
         currency: document.getElementById('acc-currency').value,
-        color: document.getElementById('acc-color').value,
+        color: document.querySelector('input[name="acc-color"]:checked').value,
         isDefault: document.getElementById('acc-default').checked,
         icon: 'default-icon',
         isArchived: false

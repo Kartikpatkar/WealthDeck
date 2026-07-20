@@ -105,7 +105,8 @@ export async function render(container, params = {}) {
     const accounts = await getAllAccounts();
     document.getElementById('txn-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
     document.getElementById('txn-to-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-    document.getElementById('txn-category').innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    let allCategories = categories;
+    document.getElementById('txn-category').innerHTML = allCategories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     
     document.getElementById('quick-add-account').addEventListener('click', async () => {
       const name = await promptModal('New Account', 'Enter the name of your new account:', 'e.g. Chase Checking');
@@ -148,6 +149,17 @@ export async function render(container, params = {}) {
       } else {
         toAccountWrap.style.display = 'none';
         toAccountSelect.required = false;
+      }
+      
+      // Update category dropdown
+      if (allCategories && allCategories.length > 0) {
+        let filteredCats = allCategories;
+        if (type === 'income') {
+          filteredCats = allCategories.filter(c => c.type === 'income');
+        } else if (type === 'expense') {
+          filteredCats = allCategories.filter(c => c.type === 'expense');
+        }
+        document.getElementById('txn-category').innerHTML = filteredCats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
       }
     }
     
@@ -280,8 +292,11 @@ export async function render(container, params = {}) {
     }
     function closeModal() {
       modalOverlay.classList.remove('open');
+      if (params.openModal) {
+        const prevRoute = localStorage.getItem('wealthdeck_prev_route') || '/dashboard';
+        window.location.hash = '#' + prevRoute;
+      }
     }
-    
     // Form Submit
     document.getElementById('add-txn-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -337,7 +352,7 @@ export async function render(container, params = {}) {
       document.getElementById('delete-txn-btn').style.display = 'none';
       document.getElementById('txn-date').valueAsDate = new Date();
       openModal();
-      history.replaceState(null, null, '#/transactions'); // Reset hash without triggering re-render
+      // Don't replace state, because we handle navigation manually on close
     }
 
   } catch (err) {

@@ -101,6 +101,11 @@ async function handleRoute() {
     currentPageModule.destroy();
   }
   
+  // Track previous route if it's not a modal opening route
+  if (!path.startsWith('/transaction/new')) {
+    localStorage.setItem('wealthdeck_prev_route', path);
+  }
+  
   let matchedRoute = routes.find(r => r.path.test(path)) || routes[0];
   let params = { ...matchedRoute.params };
   

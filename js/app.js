@@ -4,8 +4,13 @@ import { initRouter } from './router.js';
 async function bootstrap() {
   try {
     // 0. Apply Theme & Accent
-    const theme = localStorage.getItem('wealthdeck_theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', theme);
+    const theme = localStorage.getItem('wealthdeck_theme') || 'system';
+    if (theme !== 'system') {
+      document.documentElement.setAttribute('data-theme', theme);
+    } else {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    }
     
     const accent = localStorage.getItem('wealthdeck_accent');
     if (accent) {
