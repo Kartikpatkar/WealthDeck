@@ -20,9 +20,7 @@ body {
 .privacy-masked .amt,
 .privacy-masked .v,
 .privacy-masked .budget-val {
-  color: transparent !important;
-  position: relative;
-  user-select: none;
+  font-size: 0 !important;
 }
 .privacy-masked .amount *,
 .privacy-masked .tx-amt *,
@@ -39,10 +37,13 @@ body {
   content: '***';
   color: var(--text-primary);
   font-family: var(--font-family-mono);
-  font-size: inherit;
-  font-weight: inherit;
   letter-spacing: 2px;
 }
+.privacy-masked .amount::after { font-size: clamp(32px, 7vw, 48px); }
+.privacy-masked .tx-amt::after { font-size: 14px; }
+.privacy-masked .amt::after { font-size: 20px; }
+.privacy-masked .v::after { font-size: 15px; }
+.privacy-masked .budget-val::after { font-size: 12px; }
 
 .mono {
   font-family: var(--font-family-mono);
