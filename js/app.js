@@ -160,3 +160,45 @@ function setupOfflineListeners() {
   // Initial check
   updateBanner();
 }
+
+// PWA Install Prompt Logic
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  
+  const lastPrompt = localStorage.getItem('wealthdeck_install_prompt_time');
+  const now = Date.now();
+  
+  // Prompt every 7 days if they haven't installed
+  if (!lastPrompt || (now - parseInt(lastPrompt)) > 7 * 24 * 60 * 60 * 1000) {
+    import('./components/toast.js').then(m => {
+      m.showToast(
+        '<div style="display:flex; align-items:center; justify-content:space-between; gap:16px; width:100%;"><span>Install WealthDeck for offline access!</span> <button id="install-pwa-btn" class="btn" style="margin:0; padding:6px 12px; font-size:14px; white-space:nowrap; flex-shrink:0; background:rgba(255,255,255,0.2); color:white; border:none; border-radius:4px;">Install</button></div>',
+        'info',
+        15000 // Show for 15 seconds
+      );
+      
+      setTimeout(() => {
+        const installBtn = document.getElementById('install-pwa-btn');
+        if (installBtn) {
+          installBtn.addEventListener('click', async (btnEvent) => {
+            btnEvent.preventDefault();
+            if (deferredPrompt) {
+              deferredPrompt.prompt();
+              const { outcome } = await deferredPrompt.userChoice;
+              console.log('Install prompt outcome:', outcome);
+              deferredPrompt = null;
+              
+              // Hide the toast early
+              installBtn.closest('.toast').style.opacity = '0';
+              setTimeout(() => installBtn.closest('.toast').remove(), 300);
+            }
+          });
+        }
+      }, 100);
+      
+      localStorage.setItem('wealthdeck_install_prompt_time', now.toString());
+    });
+  }
+});
