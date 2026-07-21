@@ -171,6 +171,9 @@
   padding: 12px;
   border-radius: 12px;
   font-size: 15px;
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
 }
 
 .prompt-modal .prompt-actions {

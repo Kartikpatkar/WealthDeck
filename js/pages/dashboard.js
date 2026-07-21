@@ -57,9 +57,16 @@ export async function render(container, params = {}) {
     else if (hour < 17) greeting = 'Good afternoon';
 
     container.innerHTML = `
-      <div class="page-header-left">
-        <h1 class="page-title">Welcome back${userName ? `, ${userName}` : ''} 👋</h1>
-        <p class="page-subtitle">Here's what's happening with your finances.</p>
+      <div class="page-header-left" style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h1 class="page-title">Welcome back${userName ? `, ${userName}` : ''} 👋</h1>
+          <p class="page-subtitle">Here's what's happening with your finances.</p>
+        </div>
+        <button class="icon-btn privacy-toggle-btn mobile-only" aria-label="Toggle privacy" style="background:var(--bg-surface-elevated); padding:8px; border-radius:12px; border:1px solid var(--border);">
+          <svg class="privacy-icon-path" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px; height:20px;">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
       </div>
 
       <div class="balance-card">
@@ -109,6 +116,11 @@ export async function render(container, params = {}) {
     
     // Draw CSS Donut
     drawDonut(transactions, catMap);
+    
+    // Apply privacy state to dashboard mask icon
+    if (window.app && window.app.applyPrivacyState) {
+      window.app.applyPrivacyState();
+    }
 
   } catch (err) {
     container.innerHTML = `<p class="text-danger">Error loading dashboard: ${err.message}</p>`;

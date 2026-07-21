@@ -3,7 +3,7 @@ import { importDataJSON } from './exportService.js';
 import { showToast } from '../components/toast.js';
 
 // PLACEHOLDER: User needs to replace this with their actual Client ID from Google Cloud Console
-const CLIENT_ID = '[YOUR_CLIENT_ID_HERE]';
+const CLIENT_ID = '388767949571-ovgshl6mmvvv84naocsu0669ncm390s6.apps.googleusercontent.com';
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
 const SCOPES = 'https://www.googleapis.com/auth/drive.file';
 
@@ -14,7 +14,7 @@ let gapiInited = false;
 let gisInited = false;
 
 export function isDriveConfigured() {
-  return CLIENT_ID !== 'YOUR_CLIENT_ID_HERE';
+  return CLIENT_ID !== '[YOUR_CLIENT_ID_HERE]' && CLIENT_ID.trim() !== '';
 }
 
 export function isDriveSignedIn() {

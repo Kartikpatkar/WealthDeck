@@ -348,7 +348,9 @@ export async function render(container, params = {}) {
       }
       
       document.getElementById('delete-txn-btn').style.display = 'none';
-      document.getElementById('txn-date').valueAsDate = new Date();
+      const tzDate = new Date();
+      const localDate = new Date(tzDate.getTime() - (tzDate.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+      document.getElementById('txn-date').value = localDate;
       openModal();
       // Don't replace state, because we handle navigation manually on close
     }
