@@ -2,8 +2,22 @@ import { initDB } from './db/database.js';
 import { initRouter } from './router.js';
 import { getSetting, saveSetting } from './services/settingsService.js';
 
+async function verifyNetwork() {
+  try {
+    const res = await fetch('/', { 
+      headers: { 'X-Ping': '1' },
+      cache: 'no-store'
+    });
+    if (res.status !== 200) throw new Error('Offline');
+  } catch (e) {
+    // Force native API to return false globally
+    Object.defineProperty(navigator, 'onLine', { get: () => false });
+  }
+}
+
 async function bootstrap() {
   try {
+    await verifyNetwork();
     await initDB();
     
     // Migration: Move localstorage to IndexedDB
@@ -110,6 +124,9 @@ async function bootstrap() {
     
     const { seedDefaultAccount } = await import('./services/accountService.js');
     await seedDefaultAccount();
+    
+    const { processAutoPayBills } = await import('./services/billService.js');
+    await processAutoPayBills();
 
     // 2. Register Service Worker for PWA
     if ('serviceWorker' in navigator) {

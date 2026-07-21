@@ -1,6 +1,7 @@
 import { getBudgetsWithSpent, saveBudget, deleteBudget } from '../services/budgetService.js';
 import { confirmModal } from '../components/modal.js';
 import { getAllCategories } from '../services/categoryService.js';
+import { getAllTransactions } from '../services/transactionService.js';
 import { formatCurrency, getCurrencySymbol } from '../utils/format.js';
 
 export async function render(container, params = {}) {
@@ -9,40 +10,69 @@ export async function render(container, params = {}) {
   try {
     const budgets = await getBudgetsWithSpent();
     
+    const txns = await getAllTransactions();
+    
+    // Calculate Ready To Assign for the current month
+    const now = new Date();
+    const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    
+    // Filter budgets for the current month
+    const currentBudgets = budgets.filter(b => b.month === currentMonthStr);
+    
+    let totalIncome = 0;
+    txns.forEach(t => {
+      if (t.type === 'income' && new Date(t.date).toISOString().startsWith(currentMonthStr)) {
+        totalIncome += t.amount;
+      }
+    });
+    
+    let totalAssigned = 0;
+    currentBudgets.forEach(b => {
+      totalAssigned += b.amount;
+    });
+    
+    const readyToAssign = totalIncome - totalAssigned;
+    const isOverAssigned = readyToAssign < 0;
+    
     let listHTML = '';
-    if (budgets.length === 0) {
-      listHTML = `<div class="hint mod-style-c43a02">No budgets set. Create your first budget limit.</div>`;
+    if (currentBudgets.length === 0) {
+      listHTML = `<div class="hint mod-style-c43a02">No envelopes set for this month. Assign your income to categories.</div>`;
     } else {
-      listHTML = budgets.map((b, idx) => {
+      listHTML = currentBudgets.map((b, idx) => {
         const spent = b.spent || 0;
-        const pct = Math.min((spent / b.amount) * 100, 100);
+        const available = b.amount - spent;
         const colors = ['#6366f1', '#f87171', '#fbbf24', '#34d399', '#a78bfa', '#22d3ee'];
         const c = colors[idx % colors.length];
-        const isOver = spent > b.amount;
+        const isNegative = available < 0;
         
         return `
-          <div class="budget-item mod-style-dc3988" data-id="${b.id}">
-            <div class="budget-top">
-              <div class="name"><div class="dot" style="background:${c}"></div>${b.categoryName || 'Category #' + b.categoryId}</div>
-              <div class="amt">${formatCurrency(spent)} / ${formatCurrency(b.amount)}</div>
+          <div class="budget-item mod-style-dc3988" data-id="${b.id}" style="padding: 16px; border-bottom: 1px solid rgba(148,163,184,0.1); display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="name" style="font-weight: 600; font-size: 15px;"><div class="dot" style="background:${c}"></div>${b.categoryName || 'Category #' + b.categoryId}</div>
+              <div style="font-weight: 700; font-size: 16px; color: ${isNegative ? 'var(--color-expense)' : 'var(--color-income)'}">${formatCurrency(available)}</div>
             </div>
-            <div class="bar-track">
-              <div class="bar-fill" style="width:${pct}%;background:${isOver ? 'var(--color-expense)' : c}"></div>
+            <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary);">
+              <div>Assigned: ${formatCurrency(b.amount)}</div>
+              <div>Activity: ${formatCurrency(spent)}</div>
             </div>
-            <div class="mod-style-4e756c">Month: ${b.month}</div>
           </div>
         `;
       }).join('');
       
-      listHTML = `<div class="card">${listHTML}</div>`;
+      listHTML = `<div class="card" style="padding: 0;">${listHTML}</div>`;
     }
 
     container.innerHTML = `
       <div class="mod-style-1b4308">
-        <h2 class="mod-style-09251a">Budgets</h2>
-        <button class="icon-btn mod-style-3bb313" id="add-budget-btn"  aria-label="Add budget">
+        <h2 class="mod-style-09251a">Envelopes</h2>
+        <button class="icon-btn mod-style-3bb313" id="add-budget-btn"  aria-label="Assign money">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
         </button>
+      </div>
+      
+      <div class="card" style="background: ${isOverAssigned ? 'var(--color-expense)' : 'var(--color-primary)'}; color: white; text-align: center; padding: 24px; margin-bottom: 24px;">
+        <div style="font-size: 14px; opacity: 0.9; margin-bottom: 4px;">Ready to Assign</div>
+        <div style="font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">${formatCurrency(readyToAssign)}</div>
       </div>
       
       <div id="budgets-list">${listHTML}</div>
@@ -52,7 +82,7 @@ export async function render(container, params = {}) {
         <div class="modal">
           <div class="modal-handle"></div>
           <div class="modal-head">
-            <h3>Budget</h3>
+            <h3>Assign Money</h3>
             <button class="modal-close" type="button"  id="close-budget-modal" aria-label="Close">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
@@ -71,14 +101,14 @@ export async function render(container, params = {}) {
               <input class="amount-input" type="number" step="0.01"  id="budget-amount" placeholder="0.00" required>
             </div>
             
-            <div class="field">
+            <div class="field" style="display:none;">
               <label>Target Month</label>
               <input type="month" id="budget-month" required>
             </div>
 
             <div class="mod-style-3fbd1a">
               <button class="btn btn--secondary mod-style-1da7e6" type="button"  id="delete-budget-btn">Delete</button>
-              <button class="btn mod-style-d5e8c5" type="submit">Save budget</button>
+              <button class="btn mod-style-d5e8c5" type="submit">Assign</button>
             </div>
           </form>
         </div>
@@ -133,7 +163,7 @@ export async function render(container, params = {}) {
       document.getElementById('budget-id').value = '';
       const categories = await getAllCategories();
       document.getElementById('budget-category').innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-      document.getElementById('budget-month').value = new Date().toISOString().slice(0, 7);
+      document.getElementById('budget-month').value = currentMonthStr;
       document.getElementById('delete-budget-btn').style.display = 'none';
       openModal();
     });
