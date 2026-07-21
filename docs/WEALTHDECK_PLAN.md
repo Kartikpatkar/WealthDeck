@@ -12,38 +12,38 @@ Checklist for project completion based on architecture, roadmap, smart features,
 ## Checklist
 
 ### Phase 1: Foundation & Storage
-- [ ] Scaffold project structure (HTML, CSS, JS).
-- [ ] Setup Web App Manifest (manifest.json).
-- [ ] Setup Service Worker for offline-first caching.
-- [ ] Create base CSS design system (Mobile-first, Glassmorphism, CSS variables).
-- [ ] Implement IndexedDB local database service.
-- [ ] Build simple router for client-side navigation.
+- [x] Scaffold project structure (HTML, CSS, JS).
+- [x] Setup Web App Manifest (manifest.json).
+- [x] Setup Service Worker for offline-first caching.
+- [x] Create base CSS design system (Mobile-first, Glassmorphism, CSS variables).
+- [x] Implement IndexedDB local database service.
+- [x] Build simple router for client-side navigation.
 
 ### Phase 2: Core Modules (MVP)
-- [ ] Accounts: Create schema, UI, balance calculation.
-- [ ] Categories: Create schema, UI (custom icons/colors).
-- [ ] Transactions: Create schema, UI (income/expense/transfer, notes, tags, receipt attach).
-- [ ] Dashboard: Balance overview, summaries, recent transactions list.
-- [ ] Charts: Integrate Chart.js for dashboard visualizations.
+- [x] Accounts: Create schema, UI, balance calculation.
+- [x] Categories: Create schema, UI (custom icons/colors).
+- [x] Transactions: Create schema, UI (income/expense/transfer, notes, tags, receipt attach).
+- [x] Dashboard: Balance overview, summaries, recent transactions list.
+- [x] Charts: Integrate Chart.js for dashboard visualizations.
 
 ### Phase 3: Advanced MVP Features
-- [ ] Budgets: Monthly tracking, alerts.
-- [ ] Bills: Recurring payments logic, reminders.
-- [ ] Savings Goals: Visual progress tracking.
-- [ ] Reports: Filtering by date (daily/weekly/monthly/yearly), category, account.
-- [ ] Import/Export: Basic JSON backup and restore.
+- [x] Budgets: Monthly tracking, alerts.
+- [x] Bills: Recurring payments logic, reminders.
+- [x] Savings Goals: Visual progress tracking.
+- [x] Reports: Filtering by date (daily/weekly/monthly/yearly), category, account.
+- [x] Import/Export: Basic JSON backup and restore.
 
 ### Phase 4: Universal Import Engine
-- [ ] Integrate PapaParse for CSV handling.
-- [ ] Build Smart Import Wizard (auto-detect columns).
-- [ ] Implement Merchant Recognition & Local Learning Engine.
-- [ ] Implement Duplicate Detection & Bulk Categorization.
+- [x] Integrate PapaParse for CSV handling.
+- [x] Build Smart Import Wizard (auto-detect columns).
+- [x] Implement Merchant Recognition & Local Learning Engine.
+- [x] Implement Duplicate Detection & Bulk Categorization.
 
 ### Phase 5: Smart Features & Polish
-- [ ] Financial Timeline UI.
-- [ ] Monthly Replay (Spotify Wrapped style).
-- [ ] Gamification (No Spend Challenges).
-- [ ] Analyzers (Oops Detector, Subscription Analyzer).
+- [x] Financial Timeline UI.
+- [x] Monthly Replay (Spotify Wrapped style).
+- [x] Gamification (No Spend Challenges).
+- [x] Analyzers (Oops Detector, Subscription Analyzer).
 
 ## Verification Plan
 
