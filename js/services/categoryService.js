@@ -93,8 +93,40 @@ export async function saveCategory(category) {
 export async function deleteCategory(id) {
   const db = getDB();
   return new Promise((resolve, reject) => {
-    const req = db.transaction('categories', 'readwrite').objectStore('categories').delete(id);
-    req.onsuccess = () => resolve();
-    req.onerror = () => reject(req.error);
+    const transaction = db.transaction(['categories', 'transactions', 'budgets'], 'readwrite');
+    const catStore = transaction.objectStore('categories');
+    const txnStore = transaction.objectStore('transactions');
+    const budgetStore = transaction.objectStore('budgets');
+    
+    catStore.delete(Number(id));
+    
+    // Un-categorize associated transactions
+    const request = txnStore.openCursor();
+    request.onsuccess = (e) => {
+      const cursor = e.target.result;
+      if (cursor) {
+        const txn = cursor.value;
+        if (txn.categoryId === Number(id)) {
+          txn.categoryId = null; // or delete txn.categoryId
+          cursor.update(txn);
+        }
+        cursor.continue();
+      }
+    };
+    
+    // Delete associated budgets
+    const bReq = budgetStore.openCursor();
+    bReq.onsuccess = (e) => {
+      const cursor = e.target.result;
+      if (cursor) {
+        if (cursor.value.categoryId === Number(id)) {
+          cursor.delete();
+        }
+        cursor.continue();
+      }
+    };
+    
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
   });
 }

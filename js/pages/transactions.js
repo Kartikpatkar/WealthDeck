@@ -2,7 +2,7 @@ import { getAllTransactions, saveTransaction, deleteTransaction } from '../servi
 import { confirmModal, promptModal } from '../components/modal.js';
 import { getAllAccounts, seedDefaultAccount, saveAccount } from '../services/accountService.js';
 import { getAllCategories, seedDefaultCategories } from '../services/categoryService.js';
-import { formatCurrency, formatDate, escapeHTML, getCurrencySymbol } from '../utils/format.js';
+import { formatCurrency, formatDate, escapeHTML, getCurrencySymbol, parseLocalDate, getLocalMonthStr } from '../utils/format.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Transactions...</div>`;
@@ -170,6 +170,7 @@ export async function render(container, params = {}) {
 
     let currentFilter = 'all';
     let searchQuery = '';
+    let currentLimit = 50;
     
     function renderList() {
       const now = new Date();
@@ -190,11 +191,13 @@ export async function render(container, params = {}) {
       if (filtered.length === 0) {
         html = '<div class="hint mod-style-c43a02">No transactions found.</div>';
       } else {
+        const paged = filtered.slice(0, currentLimit);
         const grouped = {};
-        filtered.forEach(t => {
-          const d = new Date(t.date).toLocaleDateString('en-CA');
-          if (!grouped[d]) grouped[d] = [];
-          grouped[d].push(t);
+        paged.forEach(t => {
+          const d = parseLocalDate(t.date);
+          const dStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+          if (!grouped[dStr]) grouped[dStr] = [];
+          grouped[dStr].push(t);
         });
         
         const sortedDates = Object.keys(grouped).sort((a,b) => new Date(b) - new Date(a));
@@ -220,14 +223,27 @@ export async function render(container, params = {}) {
           });
           html += `</div>`;
         });
+        
+        if (filtered.length > currentLimit) {
+          html += `<div style="text-align:center; padding:16px;"><button class="btn btn--secondary" id="load-more-btn">Load More</button></div>`;
+        }
       }
       document.getElementById('tx-list').innerHTML = html;
+      
+      const loadMoreBtn = document.getElementById('load-more-btn');
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+          currentLimit += 50;
+          renderList();
+        });
+      }
     }
     
     renderList();
 
     document.getElementById('tx-search').addEventListener('input', (e) => {
       searchQuery = e.target.value;
+      currentLimit = 50;
       renderList();
     });
 
@@ -236,6 +252,7 @@ export async function render(container, params = {}) {
         document.querySelectorAll('#tx-filters .chip').forEach(c => c.classList.remove('active'));
         e.target.classList.add('active');
         currentFilter = e.target.dataset.filter;
+        currentLimit = 50;
         renderList();
       }
     });
@@ -251,7 +268,8 @@ export async function render(container, params = {}) {
         setType(txn.type);
         document.getElementById('txn-amount').value = (txn.amount / 100).toFixed(2);
         document.getElementById('txn-merchant').value = txn.merchant || '';
-        document.getElementById('txn-date').value = new Date(txn.date).toISOString().split('T')[0];
+        const d = parseLocalDate(txn.date);
+        document.getElementById('txn-date').value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         document.getElementById('txn-account').value = txn.accountId;
         if(txn.type === 'transfer') {
           document.getElementById('txn-to-account').value = txn.toAccountId;
@@ -348,7 +366,9 @@ export async function render(container, params = {}) {
       }
       
       document.getElementById('delete-txn-btn').style.display = 'none';
-      document.getElementById('txn-date').valueAsDate = new Date();
+      const tzDate = new Date();
+      const localDate = new Date(tzDate.getTime() - (tzDate.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+      document.getElementById('txn-date').value = localDate;
       openModal();
       // Don't replace state, because we handle navigation manually on close
     }

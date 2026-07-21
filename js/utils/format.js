@@ -30,9 +30,26 @@ export function getCurrencySymbol() {
   return symbols[currency] || '$';
 }
 
+export function parseLocalDate(dateStr) {
+  if (!dateStr) return new Date();
+  if (dateStr.includes('T')) {
+    return new Date(dateStr);
+  }
+  const parts = dateStr.split('-');
+  if (parts.length >= 3) {
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+  }
+  return new Date(dateStr);
+}
+
+export function getLocalMonthStr(dateStr) {
+  const d = parseLocalDate(dateStr);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
 export function formatDate(dateString) {
   const locale = getLocale();
-  return new Date(dateString).toLocaleDateString(locale, {
+  return parseLocalDate(dateString).toLocaleDateString(locale, {
     year: 'numeric', month: 'short', day: 'numeric'
   });
 }

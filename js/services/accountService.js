@@ -86,10 +86,26 @@ export async function saveAccount(account) {
 export async function deleteAccount(id) {
   const db = getDB();
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction('accounts', 'readwrite');
-    const store = transaction.objectStore('accounts');
-    const request = store.delete(Number(id));
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error);
+    const transaction = db.transaction(['accounts', 'transactions'], 'readwrite');
+    const accStore = transaction.objectStore('accounts');
+    const txnStore = transaction.objectStore('transactions');
+    
+    accStore.delete(Number(id));
+    
+    // Delete associated transactions
+    const request = txnStore.openCursor();
+    request.onsuccess = (e) => {
+      const cursor = e.target.result;
+      if (cursor) {
+        const txn = cursor.value;
+        if (txn.accountId === Number(id) || txn.toAccountId === Number(id)) {
+          cursor.delete();
+        }
+        cursor.continue();
+      }
+    };
+    
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
   });
 }

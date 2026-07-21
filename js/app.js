@@ -1,9 +1,34 @@
 import { initDB } from './db/database.js';
 import { initRouter } from './router.js';
+import { getSetting, saveSetting } from './services/settingsService.js';
+
+async function verifyNetwork() {
+  try {
+    const res = await fetch('/', { 
+      headers: { 'X-Ping': '1' },
+      cache: 'no-store'
+    });
+    if (res.status !== 200) throw new Error('Offline');
+  } catch (e) {
+    // Force native API to return false globally
+    Object.defineProperty(navigator, 'onLine', { get: () => false });
+  }
+}
 
 async function bootstrap() {
   try {
-    if (localStorage.getItem('wealthdeck_biometric') === 'true') {
+    await verifyNetwork();
+    await initDB();
+    
+    // Migration: Move localstorage to IndexedDB
+    const lsBio = localStorage.getItem('wealthdeck_biometric');
+    if (lsBio) {
+      await saveSetting('wealthdeck_biometric', lsBio);
+      localStorage.removeItem('wealthdeck_biometric');
+    }
+    
+    const bioEnabled = await getSetting('wealthdeck_biometric');
+    if (bioEnabled === 'true') {
       let authSuccess = false;
       if (window.isSecureContext && navigator.credentials) {
         try {
@@ -46,10 +71,8 @@ async function bootstrap() {
       document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
     }
     
-    const accent = localStorage.getItem('wealthdeck_accent');
-    if (accent) {
-      document.documentElement.style.setProperty('--color-primary', accent);
-    }
+    const accent = localStorage.getItem('wealthdeck_accent') || '#6366f1';
+    document.documentElement.style.setProperty('--color-primary', accent);
     
     window.app = window.app || {};
     window.app.toggleTheme = function() {
@@ -60,35 +83,40 @@ async function bootstrap() {
     };
 
     // Initialize Privacy Mode (Default Masked)
-    const privacyBtn = document.getElementById('privacy-toggle-btn');
-    const privacyIcon = document.getElementById('privacy-icon');
     let isMasked = localStorage.getItem('wealthdeck_privacy') !== 'false';
     
-    function applyPrivacyState() {
+    window.app.applyPrivacyState = function() {
       if (isMasked) {
         document.body.classList.add('privacy-masked');
-        privacyIcon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+        document.querySelectorAll('.privacy-icon-path').forEach(el => {
+          el.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+        });
       } else {
         document.body.classList.remove('privacy-masked');
-        privacyIcon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+        document.querySelectorAll('.privacy-icon-path').forEach(el => {
+          el.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+        });
       }
       localStorage.setItem('wealthdeck_privacy', isMasked);
-    }
+    };
     
-    applyPrivacyState();
+    window.app.togglePrivacy = function() {
+      isMasked = !isMasked;
+      window.app.applyPrivacyState();
+    };
     
-    if (privacyBtn) {
-      privacyBtn.addEventListener('click', () => {
-        isMasked = !isMasked;
-        applyPrivacyState();
-      });
-    }
+    window.app.applyPrivacyState();
+    
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.privacy-toggle-btn')) {
+        window.app.togglePrivacy();
+      }
+    });
 
     // 1. Setup offline/online listeners
     setupOfflineListeners();
 
-    // 2. Initialize IndexedDB
-    await initDB();
+    // 2. Database already initialized at start
     console.log('Database initialized');
 
     const { seedDefaultCategories } = await import('./services/categoryService.js');
@@ -96,6 +124,9 @@ async function bootstrap() {
     
     const { seedDefaultAccount } = await import('./services/accountService.js');
     await seedDefaultAccount();
+    
+    const { processAutoPayBills } = await import('./services/billService.js');
+    await processAutoPayBills();
 
     // 2. Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
@@ -160,3 +191,45 @@ function setupOfflineListeners() {
   // Initial check
   updateBanner();
 }
+
+// PWA Install Prompt Logic
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  
+  const lastPrompt = localStorage.getItem('wealthdeck_install_prompt_time');
+  const now = Date.now();
+  
+  // Prompt every 7 days if they haven't installed
+  if (!lastPrompt || (now - parseInt(lastPrompt)) > 7 * 24 * 60 * 60 * 1000) {
+    import('./components/toast.js').then(m => {
+      m.showToast(
+        '<div style="display:flex; align-items:center; justify-content:space-between; gap:16px; width:100%;"><span>Install WealthDeck for offline access!</span> <button id="install-pwa-btn" class="btn" style="margin:0; padding:6px 12px; font-size:14px; white-space:nowrap; flex-shrink:0; background:rgba(255,255,255,0.2); color:white; border:none; border-radius:4px;">Install</button></div>',
+        'info',
+        15000 // Show for 15 seconds
+      );
+      
+      setTimeout(() => {
+        const installBtn = document.getElementById('install-pwa-btn');
+        if (installBtn) {
+          installBtn.addEventListener('click', async (btnEvent) => {
+            btnEvent.preventDefault();
+            if (deferredPrompt) {
+              deferredPrompt.prompt();
+              const { outcome } = await deferredPrompt.userChoice;
+              console.log('Install prompt outcome:', outcome);
+              deferredPrompt = null;
+              
+              // Hide the toast early
+              installBtn.closest('.toast').style.opacity = '0';
+              setTimeout(() => installBtn.closest('.toast').remove(), 300);
+            }
+          });
+        }
+      }, 100);
+      
+      localStorage.setItem('wealthdeck_install_prompt_time', now.toString());
+    });
+  }
+});

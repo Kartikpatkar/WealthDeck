@@ -1,7 +1,8 @@
 import { getAllTransactions } from '../services/transactionService.js';
 import { getAllAccounts } from '../services/accountService.js';
 import { getAllCategories } from '../services/categoryService.js';
-import { formatCurrency, formatDate, escapeHTML, getCurrencySymbol, getLocale } from '../utils/format.js';
+import { getAllBills } from '../services/billService.js';
+import { formatCurrency, formatDate, escapeHTML, getCurrencySymbol, getLocale, parseLocalDate } from '../utils/format.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Dashboard...</div>`;
@@ -10,6 +11,7 @@ export async function render(container, params = {}) {
     const accounts = await getAllAccounts();
     const transactions = await getAllTransactions();
     const categories = await getAllCategories();
+    const bills = await getAllBills();
     
     // Calculate total balance
     const totalBalance = accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0) / 100;
@@ -19,7 +21,7 @@ export async function render(container, params = {}) {
     let expense = 0;
     const now = new Date();
     transactions.forEach(t => {
-      const d = new Date(t.date);
+      const d = parseLocalDate(t.date);
       if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
         if (t.type === 'income') income += t.amount;
         if (t.type === 'expense') expense += t.amount;
@@ -29,6 +31,10 @@ export async function render(container, params = {}) {
     // Category mapping for icons and names
     const catMap = categories.reduce((acc, c) => ({...acc, [c.id]: c}), {});
 
+    // Check for due bills
+    const todayStr = now.toISOString().split('T')[0];
+    const dueBills = bills.filter(b => b.nextDueDate && b.nextDueDate <= todayStr && b.status !== 'inactive');
+    
     // Recent Transactions
     const recentTxns = transactions.slice(0, 5).map(t => {
       const isIncome = t.type === 'income';
@@ -57,10 +63,31 @@ export async function render(container, params = {}) {
     else if (hour < 17) greeting = 'Good afternoon';
 
     container.innerHTML = `
-      <div class="page-header-left">
-        <h1 class="page-title">Welcome back${userName ? `, ${userName}` : ''} 👋</h1>
-        <p class="page-subtitle">Here's what's happening with your finances.</p>
+      <div class="page-header-left" style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h1 class="page-title">Welcome back${userName ? `, ${userName}` : ''} 👋</h1>
+          <p class="page-subtitle">Here's what's happening with your finances.</p>
+        </div>
+        <button class="icon-btn privacy-toggle-btn mobile-only" aria-label="Toggle privacy" style="background:var(--bg-surface-elevated); padding:8px; border-radius:12px; border:1px solid var(--border);">
+          <svg class="privacy-icon-path" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px; height:20px;">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
       </div>
+      
+      ${dueBills.length > 0 ? `
+      <div class="card mod-style-b2c6df" style="background: var(--color-expense); color: white; margin-bottom: 16px; cursor: pointer;" onclick="location.hash='#/bills'">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong>${dueBills.length} Bill${dueBills.length > 1 ? 's' : ''} Due</strong>
+            <div style="font-size: 13px; opacity: 0.9;">Tap here to pay them</div>
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </div>
+      ` : ''}
 
       <div class="balance-card">
         <div class="label">Total balance</div>
@@ -109,6 +136,11 @@ export async function render(container, params = {}) {
     
     // Draw CSS Donut
     drawDonut(transactions, catMap);
+    
+    // Apply privacy state to dashboard mask icon
+    if (window.app && window.app.applyPrivacyState) {
+      window.app.applyPrivacyState();
+    }
 
   } catch (err) {
     container.innerHTML = `<p class="text-danger">Error loading dashboard: ${err.message}</p>`;

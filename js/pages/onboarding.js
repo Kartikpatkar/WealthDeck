@@ -1,4 +1,6 @@
 import { restoreFromDrive, backupToDrive, isDriveConfigured, initGoogleDrive } from '../services/googleDriveService.js';
+import { seedDefaultAccount } from '../services/accountService.js';
+import { getSetting, saveSetting } from '../services/settingsService.js';
 
 export async function render(container, params = {}) {
   const accentColors = [
@@ -12,8 +14,20 @@ export async function render(container, params = {}) {
   let currentStep = 1;
   let wantsDriveSync = false;
   
+  function getGuessedCurrency() {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    if (tz.includes('Kolkata') || tz.includes('India') || tz.includes('Colombo') || tz.includes('Dhaka')) return 'INR';
+    if (tz.includes('Europe/London') || tz.includes('Belfast')) return 'GBP';
+    if (tz.includes('Europe/')) return 'EUR';
+    if (tz.includes('Australia/')) return 'AUD';
+    if (tz.includes('Canada/')) return 'CAD';
+    if (tz.includes('Tokyo')) return 'JPY';
+    return 'USD';
+  }
+  
   function drawStep() {
     let stepContent = '';
+    const guessedCurrency = getGuessedCurrency();
     
     if (currentStep === 1) {
       stepContent = `
@@ -44,17 +58,18 @@ export async function render(container, params = {}) {
           </div>
           <div class="field mod-style-91e2ae">
             <label class="mod-style-6766fb">Primary Currency</label>
-            <select class="input mod-style-5bf267" id="ob-currency"  required>
-              <option value="USD">USD ($)</option>
-              <option value="INR">INR (₹)</option>
-              <option value="EUR">EUR (€)</option>
-              <option value="GBP">GBP (£)</option>
-              <option value="AUD">AUD (A$)</option>
-              <option value="CAD">CAD (C$)</option>
-              <option value="JPY">JPY (¥)</option>
+            <select class="input mod-style-5bf267" id="ob-currency" required>
+              ${[
+                {v: 'USD', l: 'USD ($)'}, {v: 'INR', l: 'INR (₹)'}, {v: 'EUR', l: 'EUR (€)'},
+                {v: 'GBP', l: 'GBP (£)'}, {v: 'AUD', l: 'AUD (A$)'}, {v: 'CAD', l: 'CAD (C$)'},
+                {v: 'JPY', l: 'JPY (¥)'}
+              ].map(opt => `<option value="${opt.v}" ${opt.v === guessedCurrency ? 'selected' : ''}>${opt.l}</option>`).join('')}
             </select>
           </div>
-          <button class="btn mod-style-77eabe" type="submit">Next</button>
+          <div class="d-flex" style="gap:12px;">
+            <button class="btn btn--secondary" type="button" id="ob-btn-back-2">Back</button>
+            <button class="btn mod-style-77eabe" style="flex:1;" type="submit">Next</button>
+          </div>
         </form>
       `;
     } else if (currentStep === 3) {
@@ -100,7 +115,10 @@ export async function render(container, params = {}) {
               <span class="slider mod-style-2bc522"></span>
             </label>
           </div>
-          <button class="btn mod-style-77eabe" type="submit"  id="ob-btn-finish">Finish Setup</button>
+          <div class="d-flex" style="gap:12px;">
+            <button class="btn btn--secondary" type="button" id="ob-btn-back-3">Back</button>
+            <button class="btn mod-style-77eabe" style="flex:1;" type="submit" id="ob-btn-finish">Finish Setup</button>
+          </div>
         </form>
       `;
     }
@@ -155,26 +173,10 @@ export async function render(container, params = {}) {
         drawStep();
       });
     } else if (currentStep === 2) {
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-      let guessed = 'USD';
-      if (tz.includes('Kolkata') || tz.includes('India') || tz.includes('Colombo') || tz.includes('Dhaka')) guessed = 'INR';
-      else if (tz.includes('Europe/London') || tz.includes('Belfast')) guessed = 'GBP';
-      else if (tz.includes('Europe/')) guessed = 'EUR';
-      else if (tz.includes('Australia/')) guessed = 'AUD';
-      else if (tz.includes('Canada/')) guessed = 'CAD';
-      else if (tz.includes('Tokyo')) guessed = 'JPY';
-      
-      const currSelect = document.getElementById('ob-currency');
-      if (currSelect) {
-        let optionExists = Array.from(currSelect.options).some(opt => opt.value === guessed);
-        if (!optionExists) {
-          const newOpt = document.createElement('option');
-          newOpt.value = guessed;
-          newOpt.text = guessed;
-          currSelect.appendChild(newOpt);
-        }
-        currSelect.value = guessed;
-      }
+      document.getElementById('ob-btn-back-2').addEventListener('click', () => {
+        currentStep = 1;
+        drawStep();
+      });
 
       document.getElementById('onboarding-form-2').addEventListener('submit', (e) => {
         e.preventDefault();
@@ -184,6 +186,10 @@ export async function render(container, params = {}) {
         drawStep();
       });
     } else if (currentStep === 3) {
+      document.getElementById('ob-btn-back-3').addEventListener('click', () => {
+        currentStep = 2;
+        drawStep();
+      });
       const radios = document.querySelectorAll('input[name="accent"]');
       const customRadio = document.querySelector('input[name="accent"][value="custom"]');
       const customInput = document.getElementById('ob-custom-color-input');
@@ -248,10 +254,10 @@ export async function render(container, params = {}) {
             } else {
               console.warn('WebAuthn not supported. Simulating App Lock.');
             }
-            localStorage.setItem('wealthdeck_biometric', 'true');
+            await saveSetting('wealthdeck_biometric', 'true');
           } catch (err) {
             console.error(err);
-            localStorage.removeItem('wealthdeck_biometric');
+            await saveSetting('wealthdeck_biometric', null);
           }
         }
         

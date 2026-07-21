@@ -139,6 +139,29 @@ function updateNav(currentPath) {
       el.classList.remove('active');
     }
   });
+
+  const fab = document.querySelector('.fab');
+  if (fab) {
+    if (checkPath.startsWith('/accounts')) {
+      fab.removeAttribute('href');
+      fab.onclick = (e) => { e.preventDefault(); document.getElementById('add-account-btn')?.click(); };
+    } else if (checkPath.startsWith('/categories')) {
+      fab.removeAttribute('href');
+      fab.onclick = (e) => { e.preventDefault(); document.getElementById('add-cat-btn')?.click(); };
+    } else if (checkPath.startsWith('/budgets')) {
+      fab.removeAttribute('href');
+      fab.onclick = (e) => { e.preventDefault(); document.getElementById('add-budget-btn')?.click(); };
+    } else if (checkPath.startsWith('/goals')) {
+      fab.removeAttribute('href');
+      fab.onclick = (e) => { e.preventDefault(); document.getElementById('add-goal-btn')?.click(); };
+    } else if (checkPath.startsWith('/bills')) {
+      fab.removeAttribute('href');
+      fab.onclick = (e) => { e.preventDefault(); document.getElementById('add-bill-btn')?.click(); };
+    } else {
+      fab.setAttribute('href', '#/transaction/new');
+      fab.onclick = null;
+    }
+  }
 }
 
 function renderBottomNav() {

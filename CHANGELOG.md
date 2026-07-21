@@ -5,6 +5,18 @@ All notable changes to WealthDeck will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-07-22
+
+### Added
+- **Zero-Based Envelope Budgeting:** Completely overhauled the Budget UI. You now have a master "Ready to Assign" pool that tracks all income. Budgets act as true envelopes showing "Assigned", "Activity", and "Available" funds.
+- **Auto-Recurring Bills:** Bills can now be toggled to "Auto-Pay". When the app is opened, it automatically checks and creates expense transactions for any due bills, advancing their next due dates.
+- **Cascading Category Deletions:** Deleting a category will now gracefully orphan related transactions and automatically delete associated budgets to return funds to "Ready to Assign".
+- **Timezone Date Normalization:** Completely rewrote date parsing logic across Reports, Budgets, and Dashboard to prevent UTC-to-Local off-by-one-day rendering bugs.
+
+### Changed
+- Bumped PWA service worker cache version for smooth upgrading.
+- Pagination is now added to transactions list.
+
 ## [1.0.0] - 2026-07-21
 
 ### Added

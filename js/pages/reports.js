@@ -1,6 +1,6 @@
 import { getAllTransactions } from '../services/transactionService.js';
 import { getAllCategories } from '../services/categoryService.js';
-import { formatCurrency } from '../utils/format.js';
+import { formatCurrency, parseLocalDate } from '../utils/format.js';
 
 let chartInstance = null;
 
@@ -34,10 +34,12 @@ export async function render(container, params = {}) {
         endDate.setHours(23, 59, 59, 999); // Include full end day
       }
       
-      const expenses = transactions.filter(t => {
-        const d = new Date(t.date);
-        return t.type === 'expense' && (currentFilter === 'all-time' || (d >= startDate && d <= endDate));
+      const allFiltered = transactions.filter(t => {
+        const d = parseLocalDate(t.date);
+        return (currentFilter === 'all-time' || (d >= startDate && d <= endDate));
       });
+      
+      const expenses = allFiltered.filter(t => t.type === 'expense');
       
       const catMap = categories.reduce((map, c) => ({...map, [c.id]: c}), {});
       
@@ -60,6 +62,7 @@ export async function render(container, params = {}) {
               <option value="all-time" ${currentFilter === 'all-time' ? 'selected' : ''}>All Time</option>
               <option value="custom" ${currentFilter === 'custom' ? 'selected' : ''}>Custom Date...</option>
             </select>
+            <button class="btn" id="export-csv-btn">Export CSV</button>
           </div>
           ${currentFilter === 'custom' ? `
             <div class="mod-style-92c164">
@@ -100,6 +103,30 @@ export async function render(container, params = {}) {
         document.getElementById('custom-end').addEventListener('change', (e) => {
           customEndDate = e.target.value;
           draw();
+        });
+      }
+      
+      const btnExport = document.getElementById('export-csv-btn');
+      if (btnExport) {
+        btnExport.addEventListener('click', () => {
+          let csv = 'Date,Type,Category,Merchant,Amount,Notes\n';
+          allFiltered.forEach(t => {
+            const date = new Date(t.date).toLocaleDateString();
+            const type = t.type;
+            const category = catMap[t.categoryId]?.name || 'Uncategorized';
+            const merchant = (t.merchant || '').replace(/"/g, '""');
+            const amount = (t.amount / 100).toFixed(2);
+            const notes = (t.notes || '').replace(/"/g, '""');
+            csv += `"${date}","${type}","${category}","${merchant}","${amount}","${notes}"\n`;
+          });
+          
+          const blob = new Blob([csv], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `WealthDeck_Report_${new Date().toISOString().split('T')[0]}.csv`;
+          a.click();
+          URL.revokeObjectURL(url);
         });
       }
 

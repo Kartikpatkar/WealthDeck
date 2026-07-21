@@ -1,7 +1,7 @@
 # 💳 WealthDeck – Your Financial Life. Privately Yours.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg)](#)
+[![Version](https://img.shields.io/badge/Version-1.1.0-blue.svg)](#)
 [![Progressive Web App](https://img.shields.io/badge/PWA-Ready-green.svg)](#)
 [![Vanilla JS](https://img.shields.io/badge/Tech-Vanilla%20JS-F7DF1E.svg)](#)
 
@@ -31,9 +31,9 @@ Whether you're tracking daily expenses, building long-term financial goals, or m
 Organize your money across various tools:
 * Accounts (Cash, Bank, Credit Cards)
 * Transactions (Income, Expenses, Transfers)
-* Budgets (Monthly limits by category)
+* Budgets (Zero-Based Envelope System: "Ready to Assign" vs "Available")
 * Goals (Savings targets)
-* Bills (Recurring subscriptions and utilities)
+* Bills (Recurring subscriptions with Auto-Pay support)
 
 ### 🔒 Uncompromising Privacy
 WealthDeck stores everything directly on your device via IndexedDB. There are no middleman servers. When you are in public, you can instantly toggle **Privacy Masking** (`***`) to hide your sensitive balances from prying eyes.
