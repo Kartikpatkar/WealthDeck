@@ -1,4 +1,7 @@
+import { getSetting, saveSetting } from '../services/settingsService.js';
+
 export async function render(container) {
+  const bioEnabled = await getSetting('wealthdeck_biometric');
   const currentTheme = localStorage.getItem('wealthdeck_theme') || 'dark';
   const currentCurrency = localStorage.getItem('wealthdeck_currency') || 'USD';
   const currentName = localStorage.getItem('wealthdeck_name') || '';
@@ -78,7 +81,7 @@ export async function render(container) {
           <div class="mod-style-d464c9">Use FaceID, TouchID, or device PIN to open app</div>
         </div>
         <label class="switch mod-style-2b10cb">
-          <input class="mod-style-5e19e2" type="checkbox" id="biometric-toggle"  ${localStorage.getItem('wealthdeck_biometric') === 'true' ? 'checked' : ''}>
+          <input class="mod-style-5e19e2" type="checkbox" id="biometric-toggle"  ${bioEnabled === 'true' ? 'checked' : ''}>
           <span class="slider mod-style-2bc522"></span>
         </label>
       </div>
@@ -199,7 +202,7 @@ export async function render(container) {
             console.warn('WebAuthn not supported. Simulating Biometric Lock.');
           }
           
-          localStorage.setItem('wealthdeck_biometric', 'true');
+          await saveSetting('wealthdeck_biometric', 'true');
           import('../components/toast.js').then(m => m.showToast('App Lock Enabled'));
         } catch (err) {
           console.error(err);
@@ -207,7 +210,7 @@ export async function render(container) {
           import('../components/toast.js').then(m => m.showToast('Failed to enable App Lock. Your device may not support it.', 'error'));
         }
       } else {
-        localStorage.removeItem('wealthdeck_biometric');
+        await saveSetting('wealthdeck_biometric', null);
         import('../components/toast.js').then(m => m.showToast('App Lock Disabled'));
       }
     });

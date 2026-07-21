@@ -1,4 +1,6 @@
 import { restoreFromDrive, backupToDrive, isDriveConfigured, initGoogleDrive } from '../services/googleDriveService.js';
+import { seedDefaultAccount } from '../services/accountService.js';
+import { getSetting, saveSetting } from '../services/settingsService.js';
 
 export async function render(container, params = {}) {
   const accentColors = [
@@ -252,10 +254,10 @@ export async function render(container, params = {}) {
             } else {
               console.warn('WebAuthn not supported. Simulating App Lock.');
             }
-            localStorage.setItem('wealthdeck_biometric', 'true');
+            await saveSetting('wealthdeck_biometric', 'true');
           } catch (err) {
             console.error(err);
-            localStorage.removeItem('wealthdeck_biometric');
+            await saveSetting('wealthdeck_biometric', null);
           }
         }
         

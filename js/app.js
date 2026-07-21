@@ -1,9 +1,20 @@
 import { initDB } from './db/database.js';
 import { initRouter } from './router.js';
+import { getSetting, saveSetting } from './services/settingsService.js';
 
 async function bootstrap() {
   try {
-    if (localStorage.getItem('wealthdeck_biometric') === 'true') {
+    await initDB();
+    
+    // Migration: Move localstorage to IndexedDB
+    const lsBio = localStorage.getItem('wealthdeck_biometric');
+    if (lsBio) {
+      await saveSetting('wealthdeck_biometric', lsBio);
+      localStorage.removeItem('wealthdeck_biometric');
+    }
+    
+    const bioEnabled = await getSetting('wealthdeck_biometric');
+    if (bioEnabled === 'true') {
       let authSuccess = false;
       if (window.isSecureContext && navigator.credentials) {
         try {
@@ -46,10 +57,8 @@ async function bootstrap() {
       document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
     }
     
-    const accent = localStorage.getItem('wealthdeck_accent');
-    if (accent) {
-      document.documentElement.style.setProperty('--color-primary', accent);
-    }
+    const accent = localStorage.getItem('wealthdeck_accent') || '#6366f1';
+    document.documentElement.style.setProperty('--color-primary', accent);
     
     window.app = window.app || {};
     window.app.toggleTheme = function() {
@@ -93,8 +102,7 @@ async function bootstrap() {
     // 1. Setup offline/online listeners
     setupOfflineListeners();
 
-    // 2. Initialize IndexedDB
-    await initDB();
+    // 2. Database already initialized at start
     console.log('Database initialized');
 
     const { seedDefaultCategories } = await import('./services/categoryService.js');

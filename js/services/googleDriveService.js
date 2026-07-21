@@ -171,11 +171,19 @@ export async function restoreFromDrive() {
     });
 
     if (res.body) {
-      localStorage.setItem('wealthdeck_last_sync', new Date().toISOString());
-      await importDataJSON(res.body);
-      showToast('Restore successful! Reloading...', 'success');
-      setTimeout(() => window.location.reload(), 1500);
-      return true;
+      const data = JSON.parse(res.body);
+      const exportDate = new Date(data.exportDate).toLocaleString();
+      
+      const { confirmModal } = await import('../components/modal.js');
+      if (await confirmModal('Restore Backup?', `This backup was created on:\n${exportDate}\n\nRestoring will overwrite all your current local data. Continue?`)) {
+        localStorage.setItem('wealthdeck_last_sync', new Date().toISOString());
+        await importDataJSON(res.body);
+        showToast('Restore successful! Reloading...', 'success');
+        setTimeout(() => window.location.reload(), 1500);
+        return true;
+      } else {
+        return false;
+      }
     } else {
       throw new Error('Empty file');
     }

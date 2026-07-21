@@ -170,6 +170,7 @@ export async function render(container, params = {}) {
 
     let currentFilter = 'all';
     let searchQuery = '';
+    let currentLimit = 50;
     
     function renderList() {
       const now = new Date();
@@ -190,8 +191,9 @@ export async function render(container, params = {}) {
       if (filtered.length === 0) {
         html = '<div class="hint mod-style-c43a02">No transactions found.</div>';
       } else {
+        const paged = filtered.slice(0, currentLimit);
         const grouped = {};
-        filtered.forEach(t => {
+        paged.forEach(t => {
           const d = new Date(t.date).toLocaleDateString('en-CA');
           if (!grouped[d]) grouped[d] = [];
           grouped[d].push(t);
@@ -220,14 +222,27 @@ export async function render(container, params = {}) {
           });
           html += `</div>`;
         });
+        
+        if (filtered.length > currentLimit) {
+          html += `<div style="text-align:center; padding:16px;"><button class="btn btn--secondary" id="load-more-btn">Load More</button></div>`;
+        }
       }
       document.getElementById('tx-list').innerHTML = html;
+      
+      const loadMoreBtn = document.getElementById('load-more-btn');
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+          currentLimit += 50;
+          renderList();
+        });
+      }
     }
     
     renderList();
 
     document.getElementById('tx-search').addEventListener('input', (e) => {
       searchQuery = e.target.value;
+      currentLimit = 50;
       renderList();
     });
 
@@ -236,6 +251,7 @@ export async function render(container, params = {}) {
         document.querySelectorAll('#tx-filters .chip').forEach(c => c.classList.remove('active'));
         e.target.classList.add('active');
         currentFilter = e.target.dataset.filter;
+        currentLimit = 50;
         renderList();
       }
     });

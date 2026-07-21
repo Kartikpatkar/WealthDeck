@@ -1,6 +1,7 @@
 import { getAllTransactions } from '../services/transactionService.js';
 import { getAllAccounts } from '../services/accountService.js';
 import { getAllCategories } from '../services/categoryService.js';
+import { getAllBills } from '../services/billService.js';
 import { formatCurrency, formatDate, escapeHTML, getCurrencySymbol, getLocale } from '../utils/format.js';
 
 export async function render(container, params = {}) {
@@ -10,6 +11,7 @@ export async function render(container, params = {}) {
     const accounts = await getAllAccounts();
     const transactions = await getAllTransactions();
     const categories = await getAllCategories();
+    const bills = await getAllBills();
     
     // Calculate total balance
     const totalBalance = accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0) / 100;
@@ -29,6 +31,10 @@ export async function render(container, params = {}) {
     // Category mapping for icons and names
     const catMap = categories.reduce((acc, c) => ({...acc, [c.id]: c}), {});
 
+    // Check for due bills
+    const todayStr = now.toISOString().split('T')[0];
+    const dueBills = bills.filter(b => b.nextDueDate && b.nextDueDate <= todayStr && b.status !== 'inactive');
+    
     // Recent Transactions
     const recentTxns = transactions.slice(0, 5).map(t => {
       const isIncome = t.type === 'income';
@@ -68,6 +74,20 @@ export async function render(container, params = {}) {
           </svg>
         </button>
       </div>
+      
+      ${dueBills.length > 0 ? `
+      <div class="card mod-style-b2c6df" style="background: var(--color-expense); color: white; margin-bottom: 16px; cursor: pointer;" onclick="location.hash='#/bills'">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong>${dueBills.length} Bill${dueBills.length > 1 ? 's' : ''} Due</strong>
+            <div style="font-size: 13px; opacity: 0.9;">Tap here to pay them</div>
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </div>
+      ` : ''}
 
       <div class="balance-card">
         <div class="label">Total balance</div>
