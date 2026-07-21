@@ -2,7 +2,7 @@ import { getBudgetsWithSpent, saveBudget, deleteBudget } from '../services/budge
 import { confirmModal } from '../components/modal.js';
 import { getAllCategories } from '../services/categoryService.js';
 import { getAllTransactions } from '../services/transactionService.js';
-import { formatCurrency, getCurrencySymbol } from '../utils/format.js';
+import { formatCurrency, getCurrencySymbol, parseLocalDate, getLocalMonthStr } from '../utils/format.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Budgets...</div>`;
@@ -21,7 +21,7 @@ export async function render(container, params = {}) {
     
     let totalIncome = 0;
     txns.forEach(t => {
-      if (t.type === 'income' && new Date(t.date).toISOString().startsWith(currentMonthStr)) {
+      if (t.type === 'income' && getLocalMonthStr(t.date) === currentMonthStr) {
         totalIncome += t.amount;
       }
     });

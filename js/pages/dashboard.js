@@ -2,7 +2,7 @@ import { getAllTransactions } from '../services/transactionService.js';
 import { getAllAccounts } from '../services/accountService.js';
 import { getAllCategories } from '../services/categoryService.js';
 import { getAllBills } from '../services/billService.js';
-import { formatCurrency, formatDate, escapeHTML, getCurrencySymbol, getLocale } from '../utils/format.js';
+import { formatCurrency, formatDate, escapeHTML, getCurrencySymbol, getLocale, parseLocalDate } from '../utils/format.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Dashboard...</div>`;
@@ -21,7 +21,7 @@ export async function render(container, params = {}) {
     let expense = 0;
     const now = new Date();
     transactions.forEach(t => {
-      const d = new Date(t.date);
+      const d = parseLocalDate(t.date);
       if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
         if (t.type === 'income') income += t.amount;
         if (t.type === 'expense') expense += t.amount;

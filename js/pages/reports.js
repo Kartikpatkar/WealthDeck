@@ -1,6 +1,6 @@
 import { getAllTransactions } from '../services/transactionService.js';
 import { getAllCategories } from '../services/categoryService.js';
-import { formatCurrency } from '../utils/format.js';
+import { formatCurrency, parseLocalDate } from '../utils/format.js';
 
 let chartInstance = null;
 
@@ -35,7 +35,7 @@ export async function render(container, params = {}) {
       }
       
       const allFiltered = transactions.filter(t => {
-        const d = new Date(t.date);
+        const d = parseLocalDate(t.date);
         return (currentFilter === 'all-time' || (d >= startDate && d <= endDate));
       });
       

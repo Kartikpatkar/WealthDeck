@@ -1,4 +1,5 @@
 import { getDB } from '../db/database.js';
+import { getLocalMonthStr } from '../utils/format.js';
 
 export async function getAllBudgets() {
   const db = getDB();
@@ -27,7 +28,7 @@ export async function getBudgetsWithSpent() {
           
           budgets.forEach(b => {
             b.categoryName = catMap[b.categoryId];
-            const expenses = txns.filter(t => t.type === 'expense' && new Date(t.date).toISOString().startsWith(b.month));
+            const expenses = txns.filter(t => t.type === 'expense' && getLocalMonthStr(t.date) === b.month);
             b.spent = expenses.filter(t => t.categoryId === b.categoryId).reduce((sum, t) => sum + t.amount, 0);
           });
           resolve(budgets);

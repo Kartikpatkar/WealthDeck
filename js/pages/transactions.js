@@ -2,7 +2,7 @@ import { getAllTransactions, saveTransaction, deleteTransaction } from '../servi
 import { confirmModal, promptModal } from '../components/modal.js';
 import { getAllAccounts, seedDefaultAccount, saveAccount } from '../services/accountService.js';
 import { getAllCategories, seedDefaultCategories } from '../services/categoryService.js';
-import { formatCurrency, formatDate, escapeHTML, getCurrencySymbol } from '../utils/format.js';
+import { formatCurrency, formatDate, escapeHTML, getCurrencySymbol, parseLocalDate, getLocalMonthStr } from '../utils/format.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Transactions...</div>`;
@@ -194,9 +194,10 @@ export async function render(container, params = {}) {
         const paged = filtered.slice(0, currentLimit);
         const grouped = {};
         paged.forEach(t => {
-          const d = new Date(t.date).toLocaleDateString('en-CA');
-          if (!grouped[d]) grouped[d] = [];
-          grouped[d].push(t);
+          const d = parseLocalDate(t.date);
+          const dStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+          if (!grouped[dStr]) grouped[dStr] = [];
+          grouped[dStr].push(t);
         });
         
         const sortedDates = Object.keys(grouped).sort((a,b) => new Date(b) - new Date(a));
@@ -267,7 +268,8 @@ export async function render(container, params = {}) {
         setType(txn.type);
         document.getElementById('txn-amount').value = (txn.amount / 100).toFixed(2);
         document.getElementById('txn-merchant').value = txn.merchant || '';
-        document.getElementById('txn-date').value = new Date(txn.date).toISOString().split('T')[0];
+        const d = parseLocalDate(txn.date);
+        document.getElementById('txn-date').value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         document.getElementById('txn-account').value = txn.accountId;
         if(txn.type === 'transfer') {
           document.getElementById('txn-to-account').value = txn.toAccountId;
