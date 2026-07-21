@@ -2,7 +2,7 @@ import { getAllBills, saveBill, deleteBill } from '../services/billService.js';
 import { confirmModal } from '../components/modal.js';
 import { getAllCategories } from '../services/categoryService.js';
 import { getAllAccounts } from '../services/accountService.js';
-import { formatCurrency, getCurrencySymbol } from '../utils/format.js';
+import { formatCurrency, getCurrencySymbol, formatDate } from '../utils/format.js';
 
 export async function render(container, params = {}) {
   container.innerHTML = `<div class="loading">Loading Bills...</div>`;
@@ -19,7 +19,7 @@ export async function render(container, params = {}) {
           <div class="budget-top mod-style-d0da85">
             <div class="name mod-style-6cbc10">
               <span class="mod-style-957708">${b.name}</span>
-              <span class="mod-style-c0485e">Due: ${new Date(b.nextDueDate).toLocaleDateString()} &bull; ${b.frequency}</span>
+              <span class="mod-style-c0485e">Due: ${formatDate(b.nextDueDate)} &bull; ${b.frequency}</span>
             </div>
             <div class="amt mod-style-d36839">
               <span>${formatCurrency(b.amount)}</span>

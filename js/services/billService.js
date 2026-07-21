@@ -38,7 +38,7 @@ export async function deleteBill(id) {
 export async function processAutoPayBills() {
   const bills = await getAllBills();
   const today = new Date();
-  const todayStr = today.toISOString().split('T')[0];
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
   
   for (const bill of bills) {
     if (bill.autoPay && bill.nextDueDate <= todayStr) {
