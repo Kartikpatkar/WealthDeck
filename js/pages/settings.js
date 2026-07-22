@@ -1,6 +1,6 @@
 import { getSetting, saveSetting } from '../services/settingsService.js';
 import { getCurrency } from '../utils/format.js';
-import { isDriveConfigured, initGoogleDrive, backupToDrive, restoreFromDrive, getLastSyncDate, isDriveSignedIn, signOutFromDrive } from '../services/googleDriveService.js';
+import { isDriveConfigured, initGoogleDrive, signInToDrive, backupToDrive, restoreFromDrive, getLastSyncDate, isDriveSignedIn, signOutFromDrive } from '../services/googleDriveService.js';
 import { exportDataJSON, importDataJSON } from '../services/exportService.js';
 import { confirmModal } from '../components/modal.js';
 
@@ -269,8 +269,13 @@ export async function render(container) {
   // Sync & Backup Handlers
   const signInBtn = document.getElementById('drive-signin-btn');
   if (signInBtn) {
-    signInBtn.addEventListener('click', () => {
-      initGoogleDrive(() => render(container));
+    signInBtn.addEventListener('click', async () => {
+      try {
+        await signInToDrive();
+        render(container);
+      } catch (err) {
+        console.error('Sign in failed', err);
+      }
     });
   }
   

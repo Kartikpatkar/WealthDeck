@@ -65,6 +65,11 @@ function checkInit(resolve) {
   }
 }
 
+export async function signInToDrive() {
+  await initGoogleDrive();
+  await requireAuth(true);
+}
+
 async function requireAuth(interactive = true) {
   return new Promise((resolve, reject) => {
     if (accessToken && tokenExpiry && Date.now() < tokenExpiry) return resolve(true);

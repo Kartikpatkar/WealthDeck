@@ -68,7 +68,7 @@ export async function render(container, params = {}) {
           </div>
           <div class="btn-row mod-style-26b82d">
             <button class="btn btn-ghost" type="button" id="ob-btn-back-2">Back</button>
-            <button class="btn btn-primary" style="flex:1" type="button" id="ob-btn-next-2">Continue</button>
+            <button class="btn btn-primary" style="flex:1" type="submit" id="ob-btn-next-2">Continue</button>
           </div>
         </form>
       `;
