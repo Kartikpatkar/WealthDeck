@@ -45,7 +45,7 @@ export async function render(container) {
           ${accentColors.map(c => `
             <label class="cursor-pointer relative">
               <input class="sr-only" type="radio" name="accent" value="${c.hex}" ${currentAccent === c.hex ? 'checked' : ''}>
-              <div class="color-swatch ${currentAccent === c.hex ?" active' : ''}" style="background: ${c.hex};"></div>
+              <div class="color-swatch ${currentAccent === c.hex ? 'active' : ''}" style="background: ${c.hex};"></div>
             </label>
           `).join('')}
           <label class="cursor-pointer relative mod-style-4cb8ce" title="Custom Color">
