@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wealthdeck-v19';
+const CACHE_NAME = 'wealthdeck-v20';
 const PERSISTENT_CACHE_NAME = 'wealthdeck-persistent';
 
 const APP_SHELL = [
