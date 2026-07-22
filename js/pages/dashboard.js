@@ -63,24 +63,24 @@ export async function render(container, params = {}) {
     else if (hour < 17) greeting = 'Good afternoon';
 
     container.innerHTML = `
-      <div class="page-header-left" style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div class="page-header-left mod-style-786417">
         <div>
           <h1 class="page-title">Welcome back${userName ? `, ${userName}` : ''} 👋</h1>
           <p class="page-subtitle">Here's what's happening with your finances.</p>
         </div>
-        <button class="icon-btn privacy-toggle-btn mobile-only" aria-label="Toggle privacy" style="background:var(--bg-surface-elevated); padding:8px; border-radius:12px; border:1px solid var(--border);">
-          <svg class="privacy-icon-path" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px; height:20px;">
+        <button class="icon-btn privacy-toggle-btn mobile-only mod-style-610f69" aria-label="Toggle privacy">
+          <svg class="privacy-icon-path mod-style-28b50a" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
           </svg>
         </button>
       </div>
       
       ${dueBills.length > 0 ? `
-      <div class="card mod-style-b2c6df" style="background: var(--color-expense); color: white; margin-bottom: 16px; cursor: pointer;" onclick="location.hash='#/bills'">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div class="card mod-style-b2c6df mod-style-a9ba39" onclick="location.hash='#/bills'">
+        <div class="mod-style-948e6d">
           <div>
             <strong>${dueBills.length} Bill${dueBills.length > 1 ? 's' : ''} Due</strong>
-            <div style="font-size: 13px; opacity: 0.9;">Tap here to pay them</div>
+            <div class="mod-style-11ecc6">Tap here to pay them</div>
           </div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
             <polyline points="9 18 15 12 9 6"></polyline>

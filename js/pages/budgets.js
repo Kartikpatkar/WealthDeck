@@ -46,12 +46,12 @@ export async function render(container, params = {}) {
         const isNegative = available < 0;
         
         return `
-          <div class="budget-item mod-style-dc3988" data-id="${b.id}" style="padding: 16px; border-bottom: 1px solid rgba(148,163,184,0.1); display: flex; flex-direction: column; gap: 8px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <div class="name" style="font-weight: 600; font-size: 15px;"><div class="dot" style="background:${c}"></div>${b.categoryName || 'Category #' + b.categoryId}</div>
+          <div class="budget-item mod-style-dc3988 mod-style-0b680f" data-id="${b.id}">
+            <div class="mod-style-948e6d">
+              <div class="name mod-style-1e2cb1"><div class="dot" style="background:${c}"></div>${b.categoryName || 'Category #' + b.categoryId}</div>
               <div style="font-weight: 700; font-size: 16px; color: ${isNegative ? 'var(--color-expense)' : 'var(--color-income)'}">${formatCurrency(available)}</div>
             </div>
-            <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary);">
+            <div class="mod-style-c5499d">
               <div>Assigned: ${formatCurrency(b.amount)}</div>
               <div>Activity: ${formatCurrency(spent)}</div>
             </div>
@@ -59,7 +59,7 @@ export async function render(container, params = {}) {
         `;
       }).join('');
       
-      listHTML = `<div class="card" style="padding: 0;">${listHTML}</div>`;
+      listHTML = `<div class="card mod-style-b662f2">${listHTML}</div>`;
     }
 
     container.innerHTML = `
@@ -71,8 +71,8 @@ export async function render(container, params = {}) {
       </div>
       
       <div class="card" style="background: ${isOverAssigned ? 'var(--color-expense)' : 'var(--color-primary)'}; color: white; text-align: center; padding: 24px; margin-bottom: 24px;">
-        <div style="font-size: 14px; opacity: 0.9; margin-bottom: 4px;">Ready to Assign</div>
-        <div style="font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">${formatCurrency(readyToAssign)}</div>
+        <div class="mod-style-abf115">Ready to Assign</div>
+        <div class="mod-style-ea89fb">${formatCurrency(readyToAssign)}</div>
       </div>
       
       <div id="budgets-list">${listHTML}</div>
@@ -101,7 +101,7 @@ export async function render(container, params = {}) {
               <input class="amount-input" type="number" step="0.01"  id="budget-amount" placeholder="0.00" required>
             </div>
             
-            <div class="field" style="display:none;">
+            <div class="field mod-style-93b8ea">
               <label>Target Month</label>
               <input type="month" id="budget-month" required>
             </div>

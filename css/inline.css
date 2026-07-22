@@ -134,3 +134,40 @@
 .mod-style-009c24 { margin-top: var(--spacing-sm); }
 .mod-style-8fdce8 { text-decoration:none; }
 .mod-style-094dd7 { padding: 0 16px; margin: 12px 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); font-weight: 600; }
+.mod-style-1a655c { display:flex; align-items:center; justify-content:space-between; gap:16px; width:100%; }
+.mod-style-c68664 { margin:0; padding:6px 12px; font-size:14px; white-space:nowrap; flex-shrink:0; background:rgba(255,255,255,0.2); color:white; border:none; border-radius:4px; }
+.mod-style-4cb8ce { position:relative; }
+.mod-style-e91f89 { background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); }
+.mod-style-4fd600 { opacity:0; position:absolute; inset:0; width:100%; height:100%; cursor:pointer; }
+.mod-style-0b680f { padding: 16px; border-bottom: 1px solid rgba(148,163,184,0.1); display: flex; flex-direction: column; gap: 8px; }
+.mod-style-948e6d { display: flex; justify-content: space-between; align-items: center; }
+.mod-style-1e2cb1 { font-weight: 600; font-size: 15px; }
+.mod-style-c5499d { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); }
+.mod-style-b662f2 { padding: 0; }
+.mod-style-abf115 { font-size: 14px; opacity: 0.9; margin-bottom: 4px; }
+.mod-style-ea89fb { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; }
+.mod-style-93b8ea { display:none; }
+.mod-style-786417 { display:flex; justify-content:space-between; align-items:flex-start; }
+.mod-style-610f69 { background:var(--bg-surface-elevated); padding:8px; border-radius:12px; border:1px solid var(--border); }
+.mod-style-28b50a { width:20px; height:20px; }
+.mod-style-a9ba39 { background: var(--color-expense); color: white; margin-bottom: 16px; cursor: pointer; }
+.mod-style-11ecc6 { font-size: 13px; opacity: 0.9; }
+.mod-style-e62464 { padding-bottom: 80px; }
+.mod-style-374aad { line-height: 1.6; }
+.mod-style-f320a9 { color: var(--text-primary); margin: 16px 0 8px; }
+.mod-style-e4e422 { text-align:center;margin-top: 15px; }
+.mod-style-c75c0b { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+.mod-style-d32779 { margin-bottom: 16px; }
+.mod-style-919a76 { margin-bottom: 24px; font-size: 14px; }
+.mod-style-be8e63 { font-weight: 700; }
+.mod-style-768ab9 { justify-content:center; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+.mod-style-4e4223 { border-radius:20px; display:inline-flex; align-items:center; gap:8px; text-decoration:none; padding: 6px 16px; font-size: 14px; }
+.mod-style-494bc8 { border-top:1px solid var(--border-color); padding-top: 16px; font-size: 12px; color: var(--text-tertiary); }
+.mod-style-26b82d { gap:12px; }
+.mod-style-d5e8c5 { flex:1; }
+.mod-style-668074 { display:flex; justify-content:space-between; align-items:center; }
+.mod-style-8f2f77 { margin-bottom:2px; }
+.mod-style-c0485e { font-size:12px; color:var(--text-secondary); }
+.mod-style-53463d { margin-bottom:12px; }
+.mod-style-73e64d { color:var(--color-expense); border-color:var(--color-expense); }
+.mod-style-cdfe95 { text-align:center; padding:16px; }
