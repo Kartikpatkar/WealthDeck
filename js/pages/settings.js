@@ -75,26 +75,26 @@ export async function render(container) {
     
     <div class="card mt-16">
       <div class="section-title">Security</div>
-      <div class="field mod-style-948e6d">
+      <div class="field" style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <label class="mod-style-e3b1f7">Biometric App Lock</label>
-          <div class="mod-style-d464c9">Use FaceID, TouchID, or device PIN to open app</div>
+          <label style="margin-bottom:2px;">Biometric App Lock</label>
+          <div style="font-size:12px; color:var(--text-secondary);">Use FaceID, TouchID, or device PIN to open app</div>
         </div>
-        <label class="switch mod-style-2b10cb">
-          <input class="mod-style-5e19e2" type="checkbox" id="biometric-toggle"  ${bioEnabled === 'true' ? 'checked' : ''}>
-          <span class="slider mod-style-2bc522"></span>
+        <label class="switch">
+          <input type="checkbox" id="biometric-toggle"  ${bioEnabled === 'true' ? 'checked' : ''}>
+          <span class="slider"></span>
         </label>
       </div>
     </div>
     
-    <div class="card mt-16 mod-style-8bcdab">
+    <div class="card mt-16">
       <div class="section-title text-danger">Danger Zone</div>
-      <div class="field mod-style-948e6d">
-        <div>
-          <label class="mod-style-e3b1f7 text-danger">Clear All Data</label>
-          <div class="mod-style-d464c9">Permanently delete all your local accounts, transactions, and settings</div>
+      <div class="field">
+        <div style="margin-bottom:12px;">
+          <label class="text-danger" style="margin-bottom:2px;">Clear All Data</label>
+          <div style="font-size:12px; color:var(--text-secondary);">Permanently delete all your local accounts, transactions, and settings</div>
         </div>
-        <button class="btn btn--secondary mod-style-c61a87" id="clear-data-btn">Reset App</button>
+        <button class="btn btn--secondary" id="clear-data-btn" style="color:var(--color-expense); border-color:var(--color-expense);">Reset App</button>
       </div>
     </div>
   `;
