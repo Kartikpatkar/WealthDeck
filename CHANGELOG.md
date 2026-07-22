@@ -5,6 +5,22 @@ All notable changes to WealthDeck will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-07-22
+
+### Fixed
+- **Biometric App Lock:** Enforced platform authenticator (`residentKey` and `authenticatorAttachment: "platform"`) to prevent the WebAuthn API from mistakenly prompting for external USB security keys.
+- **Auto-Pay Catchup Loop:** Replaced the `if` statement with a `while` loop in `billService.js`. If you don't open the app for months, it will now correctly iterate and catch up on *all* missed auto-pay transactions instantly.
+- **Cascading Bill Deletions:** Deleting an Account now fully deletes associated auto-pay bills to prevent orphaned phantom charges. Deleting a Category now gracefully sets associated bills to "Uncategorized".
+
+### Changed
+- **CSS Architecture:** Extracted 170+ static inline CSS styles across the codebase into a dedicated `inline.css` file (`mod-style-[hash]`) for better Separation of Concerns and Content Security Policy (CSP) compliance.
+- Bumped PWA service worker cache version to `v20`.
+
+## [1.1.1] - 2026-07-22
+
+### Fixed
+- **Settings UI Layout:** Fixed a bug where hallucinated CSS classes broke the layout of the Biometric App Lock toggle and the Danger Zone block.
+
 ## [1.1.0] - 2026-07-22
 
 ### Added

@@ -93,10 +93,11 @@ export async function saveCategory(category) {
 export async function deleteCategory(id) {
   const db = getDB();
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction(['categories', 'transactions', 'budgets'], 'readwrite');
+    const transaction = db.transaction(['categories', 'transactions', 'budgets', 'bills'], 'readwrite');
     const catStore = transaction.objectStore('categories');
     const txnStore = transaction.objectStore('transactions');
     const budgetStore = transaction.objectStore('budgets');
+    const billStore = transaction.objectStore('bills');
     
     catStore.delete(Number(id));
     
@@ -121,6 +122,20 @@ export async function deleteCategory(id) {
       if (cursor) {
         if (cursor.value.categoryId === Number(id)) {
           cursor.delete();
+        }
+        cursor.continue();
+      }
+    };
+    
+    // Un-categorize associated bills
+    const billReq = billStore.openCursor();
+    billReq.onsuccess = (e) => {
+      const cursor = e.target.result;
+      if (cursor) {
+        const bill = cursor.value;
+        if (bill.categoryId === Number(id)) {
+          bill.categoryId = null;
+          cursor.update(bill);
         }
         cursor.continue();
       }

@@ -66,9 +66,9 @@ export async function render(container, params = {}) {
               ].map(opt => `<option value="${opt.v}" ${opt.v === guessedCurrency ? 'selected' : ''}>${opt.l}</option>`).join('')}
             </select>
           </div>
-          <div class="d-flex" style="gap:12px;">
+          <div class="d-flex mod-style-26b82d">
             <button class="btn btn--secondary" type="button" id="ob-btn-back-2">Back</button>
-            <button class="btn mod-style-77eabe" style="flex:1;" type="submit">Next</button>
+            <button class="btn mod-style-77eabe mod-style-d5e8c5" type="submit">Next</button>
           </div>
         </form>
       `;
@@ -98,10 +98,10 @@ export async function render(container, params = {}) {
                   <div class="color-swatch color-swatch-lg" style="background: ${c.hex};"></div>
                 </label>
               `).join('')}
-              <label class="mod-style-1034c1" title="Custom Color" style="position:relative;">
+              <label class="mod-style-1034c1 mod-style-4cb8ce" title="Custom Color">
                 <input class="mod-style-628c86" type="radio" name="accent" value="custom">
-                <div class="color-swatch color-swatch-lg custom-swatch-btn mod-style-2bf4ef" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);"></div>
-                <input class="mod-style-2a85bc" type="color" id="ob-custom-color-input" style="opacity:0; position:absolute; inset:0; width:100%; height:100%; cursor:pointer;">
+                <div class="color-swatch color-swatch-lg custom-swatch-btn mod-style-2bf4ef mod-style-e91f89"></div>
+                <input class="mod-style-2a85bc mod-style-4fd600" type="color" id="ob-custom-color-input">
               </label>
             </div>
           </div>
@@ -115,9 +115,9 @@ export async function render(container, params = {}) {
               <span class="slider mod-style-2bc522"></span>
             </label>
           </div>
-          <div class="d-flex" style="gap:12px;">
+          <div class="d-flex mod-style-26b82d">
             <button class="btn btn--secondary" type="button" id="ob-btn-back-3">Back</button>
-            <button class="btn mod-style-77eabe" style="flex:1;" type="submit" id="ob-btn-finish">Finish Setup</button>
+            <button class="btn mod-style-77eabe mod-style-d5e8c5" type="submit" id="ob-btn-finish">Finish Setup</button>
           </div>
         </form>
       `;
@@ -246,7 +246,11 @@ export async function render(container, params = {}) {
                   rp: { name: "WealthDeck" },
                   user: { id: userId, name: "user@wealthdeck.local", displayName: "WealthDeck User" },
                   pubKeyCredParams: [{type: "public-key", alg: -7}, {type: "public-key", alg: -257}],
-                  authenticatorSelection: { userVerification: "required" },
+                  authenticatorSelection: { 
+                    authenticatorAttachment: "platform", 
+                    residentKey: "required", 
+                    userVerification: "required" 
+                  },
                   timeout: 60000,
                   attestation: "none"
                 }

@@ -101,10 +101,10 @@ export async function render(container, params = {}) {
                     <div class="acc-color-swatch color-swatch-sm" style="background: ${c.hex};"></div>
                   </label>
                 `).join('')}
-                <label class="mod-style-1034c1" title="Custom Color" style="position:relative;">
+                <label class="mod-style-1034c1 mod-style-4cb8ce" title="Custom Color">
                   <input class="mod-style-628c86" type="radio" name="acc-color" value="custom">
-                  <div class="acc-color-swatch color-swatch-sm custom-swatch-btn mod-style-e93ae7" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);"></div>
-                  <input class="mod-style-2a85bc" type="color" id="acc-custom-color-input" style="opacity:0; position:absolute; inset:0; width:100%; height:100%; cursor:pointer;">
+                  <div class="acc-color-swatch color-swatch-sm custom-swatch-btn mod-style-e93ae7 mod-style-e91f89"></div>
+                  <input class="mod-style-2a85bc mod-style-4fd600" type="color" id="acc-custom-color-input">
                 </label>
               </div>
             </div>

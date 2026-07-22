@@ -45,13 +45,13 @@ export async function render(container) {
           ${accentColors.map(c => `
             <label class="cursor-pointer relative">
               <input class="sr-only" type="radio" name="accent" value="${c.hex}" ${currentAccent === c.hex ? 'checked' : ''}>
-              <div class="color-swatch ${currentAccent === c.hex ? 'active' : ''}" style="background: ${c.hex};"></div>
+              <div class="color-swatch ${currentAccent === c.hex ?" active' : ''}" style="background: ${c.hex};"></div>
             </label>
           `).join('')}
-          <label class="cursor-pointer relative" title="Custom Color" style="position:relative;">
+          <label class="cursor-pointer relative mod-style-4cb8ce" title="Custom Color">
             <input class="sr-only" type="radio" name="accent" value="custom" ${!accentColors.some(c => c.hex === currentAccent) ? 'checked' : ''}>
             <div class="color-swatch custom-swatch-btn ${!accentColors.some(c => c.hex === currentAccent) ? 'active' : ''}" style="background: ${!accentColors.some(c => c.hex === currentAccent) ? currentAccent : 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)'};"></div>
-            <input class="sr-only" type="color" id="settings-custom-color-input" style="opacity:0; position:absolute; inset:0; width:100%; height:100%; cursor:pointer;">
+            <input class="sr-only mod-style-4fd600" type="color" id="settings-custom-color-input">
           </label>
         </div>
       </div>
@@ -75,26 +75,36 @@ export async function render(container) {
     
     <div class="card mt-16">
       <div class="section-title">Security</div>
-      <div class="field mod-style-948e6d">
+      <div class="field mod-style-668074">
         <div>
-          <label class="mod-style-e3b1f7">Biometric App Lock</label>
-          <div class="mod-style-d464c9">Use FaceID, TouchID, or device PIN to open app</div>
+          <label class="mod-style-8f2f77">Biometric App Lock</label>
+          <div class="mod-style-c0485e">Use FaceID, TouchID, or device PIN to open app</div>
         </div>
-        <label class="switch mod-style-2b10cb">
-          <input class="mod-style-5e19e2" type="checkbox" id="biometric-toggle"  ${bioEnabled === 'true' ? 'checked' : ''}>
-          <span class="slider mod-style-2bc522"></span>
+        <label class="switch">
+          <input type="checkbox" id="biometric-toggle"  ${bioEnabled === 'true' ? 'checked' : ''}>
+          <span class="slider"></span>
         </label>
       </div>
     </div>
     
-    <div class="card mt-16 mod-style-8bcdab">
-      <div class="section-title text-danger">Danger Zone</div>
-      <div class="field mod-style-948e6d">
+    <div class="card mt-16">
+      <div class="section-title">Storage & Data</div>
+      <div class="field mod-style-668074">
         <div>
-          <label class="mod-style-e3b1f7 text-danger">Clear All Data</label>
-          <div class="mod-style-d464c9">Permanently delete all your local accounts, transactions, and settings</div>
+          <label class="mod-style-8f2f77">Local Data Usage</label>
+          <div class="mod-style-c0485e" id="storage-usage-text">Calculating...</div>
         </div>
-        <button class="btn btn--secondary mod-style-c61a87" id="clear-data-btn">Reset App</button>
+      </div>
+    </div>
+    
+    <div class="card mt-16">
+      <div class="section-title text-danger">Danger Zone</div>
+      <div class="field">
+        <div class="mod-style-53463d">
+          <label class="text-danger mod-style-8f2f77">Clear All Data</label>
+          <div class="mod-style-c0485e">Permanently delete all your local accounts, transactions, and settings</div>
+        </div>
+        <button class="btn btn--secondary mod-style-73e64d" id="clear-data-btn">Reset App</button>
       </div>
     </div>
   `;
@@ -193,7 +203,11 @@ export async function render(container) {
                   displayName: "WealthDeck User"
                 },
                 pubKeyCredParams: [{type: "public-key", alg: -7}, {type: "public-key", alg: -257}],
-                authenticatorSelection: { userVerification: "required" },
+                authenticatorSelection: { 
+                  authenticatorAttachment: "platform", 
+                  residentKey: "required", 
+                  userVerification: "required" 
+                },
                 timeout: 60000,
                 attestation: "none"
               }
@@ -245,6 +259,27 @@ export async function render(container) {
       }
     }
   });
+  
+  // Calculate Storage
+  if (navigator.storage && navigator.storage.estimate) {
+    navigator.storage.estimate().then(estimate => {
+      const usageKB = (estimate.usage / 1024).toFixed(2);
+      const quotaMB = (estimate.quota / (1024 * 1024)).toFixed(2);
+      const usageMB = (estimate.usage / (1024 * 1024)).toFixed(2);
+      
+      const displayStr = estimate.usage > 1024 * 1024 
+        ? `${usageMB} MB / ${quotaMB} MB used`
+        : `${usageKB} KB / ${quotaMB} MB used`;
+        
+      const storageEl = document.getElementById('storage-usage-text');
+      if (storageEl) storageEl.textContent = displayStr;
+    }).catch(err => {
+      const storageEl = document.getElementById('storage-usage-text');
+      if (storageEl) storageEl.textContent = 'Storage API unavailable';
+    });
+  } else {
+    document.getElementById('storage-usage-text').textContent = 'Storage API unsupported';
+  }
 }
 
 export function destroy() {

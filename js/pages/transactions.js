@@ -208,14 +208,14 @@ export async function render(container, params = {}) {
             const isIncome = t.type === 'income';
             html += `
               <div class="tx-row" data-id="${t.id}">
-                <div class="tx-icon ${isIncome ? 'income' : (t.type === 'transfer' ? 'transfer' : 'expense')}">
+                <div class="tx-icon ${isIncome ?" income' : (t.type === 'transfer' ? 'transfer' : 'expense')}">
                   ${t.categoryId ? (categories.find(c => c.id === t.categoryId)?.icon || '💰') : '💰'}
                 </div>
                 <div class="tx-info">
                   <div class="m">${escapeHTML(t.merchant) || 'Transaction'}</div>
                   <div class="c">${t.categoryId ? (categories.find(c => c.id === t.categoryId)?.name || 'Uncategorized') : 'Uncategorized'}</div>
                 </div>
-                <div class="tx-amt ${isIncome ? 'income' : (t.type === 'transfer' ? 'transfer' : 'expense')}">
+                <div class="tx-amt ${isIncome ?" income' : (t.type === 'transfer' ? 'transfer' : 'expense')}">
                   ${isIncome ? '+' : (t.type === 'transfer' ? '' : '-')}${formatCurrency(t.amount)}
                 </div>
               </div>
@@ -225,7 +225,7 @@ export async function render(container, params = {}) {
         });
         
         if (filtered.length > currentLimit) {
-          html += `<div style="text-align:center; padding:16px;"><button class="btn btn--secondary" id="load-more-btn">Load More</button></div>`;
+          html += `<div class="mod-style-cdfe95"><button class="btn btn--secondary" id="load-more-btn">Load More</button></div>`;
         }
       }
       document.getElementById('tx-list').innerHTML = html;
