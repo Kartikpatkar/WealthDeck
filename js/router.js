@@ -6,7 +6,6 @@ import * as Budgets from './pages/budgets.js';
 import * as Bills from './pages/bills.js';
 import * as Goals from './pages/goals.js';
 import * as Reports from './pages/reports.js';
-import * as ImportExport from './pages/importExport.js';
 import * as Import from './pages/import.js';
 import * as SmartFeatures from './pages/smartFeatures.js';
 import * as Settings from './pages/settings.js';
@@ -28,7 +27,6 @@ const routes = [
   { path: /^\/bills$/, module: Bills },
   { path: /^\/goals$/, module: Goals },
   { path: /^\/reports$/, module: Reports },
-  { path: /^\/import-export$/, module: ImportExport },
   { path: /^\/import$/, module: Import },
   { path: /^\/timeline$/, module: { render: SmartFeatures.renderTimeline, destroy: () => {} } },
   { path: /^\/replay$/, module: { render: SmartFeatures.renderMonthlyReplay, destroy: () => {} } },
@@ -74,9 +72,6 @@ export function renderMoreMenu(container) {
       <h3 class="mod-style-009c24">Data</h3>
       <a class="card mod-style-10fd1c" href="#/import">
         <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg> Smart CSV Import
-      </a>
-      <a class="card mod-style-10fd1c" href="#/import-export">
-        <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Backup & Restore
       </a>
       
       <h3 class="mod-style-009c24">Preferences</h3>

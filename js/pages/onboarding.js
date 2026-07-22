@@ -66,9 +66,9 @@ export async function render(container, params = {}) {
               ].map(opt => `<option value="${opt.v}" ${opt.v === guessedCurrency ? 'selected' : ''}>${opt.l}</option>`).join('')}
             </select>
           </div>
-          <div class="d-flex mod-style-26b82d">
-            <button class="btn btn--secondary" type="button" id="ob-btn-back-2">Back</button>
-            <button class="btn mod-style-77eabe mod-style-d5e8c5" type="submit">Next</button>
+          <div class="btn-row mod-style-26b82d">
+            <button class="btn btn-ghost" type="button" id="ob-btn-back-2">Back</button>
+            <button class="btn btn-primary" style="flex:1" type="button" id="ob-btn-next-2">Continue</button>
           </div>
         </form>
       `;
@@ -115,9 +115,9 @@ export async function render(container, params = {}) {
               <span class="slider mod-style-2bc522"></span>
             </label>
           </div>
-          <div class="d-flex mod-style-26b82d">
-            <button class="btn btn--secondary" type="button" id="ob-btn-back-3">Back</button>
-            <button class="btn mod-style-77eabe mod-style-d5e8c5" type="submit" id="ob-btn-finish">Finish Setup</button>
+          <div class="btn-row mod-style-26b82d">
+            <button class="btn btn-ghost" type="button" id="ob-btn-back-3">Back</button>
+            <button class="btn btn-primary" style="flex:1" type="submit" id="ob-btn-finish">Finish Setup</button>
           </div>
         </form>
       `;
