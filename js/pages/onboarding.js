@@ -246,7 +246,11 @@ export async function render(container, params = {}) {
                   rp: { name: "WealthDeck" },
                   user: { id: userId, name: "user@wealthdeck.local", displayName: "WealthDeck User" },
                   pubKeyCredParams: [{type: "public-key", alg: -7}, {type: "public-key", alg: -257}],
-                  authenticatorSelection: { userVerification: "required" },
+                  authenticatorSelection: { 
+                    authenticatorAttachment: "platform", 
+                    residentKey: "required", 
+                    userVerification: "required" 
+                  },
                   timeout: 60000,
                   attestation: "none"
                 }

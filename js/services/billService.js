@@ -41,7 +41,8 @@ export async function processAutoPayBills() {
   const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
   
   for (const bill of bills) {
-    if (bill.autoPay && bill.nextDueDate <= todayStr) {
+    let billUpdated = false;
+    while (bill.autoPay && bill.nextDueDate <= todayStr) {
       // 1. Create Transaction
       const txn = {
         amount: bill.amount / 100, // saveTransaction expects dollars and converts to cents
@@ -65,9 +66,12 @@ export async function processAutoPayBills() {
       }
       
       bill.nextDueDate = d.toISOString().split('T')[0];
+      billUpdated = true;
+    }
+    
+    // 3. Save updated bill if it was changed
+    if (billUpdated) {
       bill.amount = bill.amount / 100; // Because saveBill converts to cents again
-      
-      // 3. Save updated bill
       await saveBill(bill);
     }
   }

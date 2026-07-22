@@ -86,9 +86,10 @@ export async function saveAccount(account) {
 export async function deleteAccount(id) {
   const db = getDB();
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction(['accounts', 'transactions'], 'readwrite');
+    const transaction = db.transaction(['accounts', 'transactions', 'bills'], 'readwrite');
     const accStore = transaction.objectStore('accounts');
     const txnStore = transaction.objectStore('transactions');
+    const billStore = transaction.objectStore('bills');
     
     accStore.delete(Number(id));
     
@@ -99,6 +100,18 @@ export async function deleteAccount(id) {
       if (cursor) {
         const txn = cursor.value;
         if (txn.accountId === Number(id) || txn.toAccountId === Number(id)) {
+          cursor.delete();
+        }
+        cursor.continue();
+      }
+    };
+    
+    // Delete associated bills
+    const billReq = billStore.openCursor();
+    billReq.onsuccess = (e) => {
+      const cursor = e.target.result;
+      if (cursor) {
+        if (cursor.value.accountId === Number(id)) {
           cursor.delete();
         }
         cursor.continue();
