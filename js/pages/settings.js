@@ -287,7 +287,6 @@ export async function render(container) {
       backupBtn.disabled = true;
       try {
         await backupToDrive();
-        showToast('Backup successful!', 'success');
         render(container); // re-render to update timestamp
       } catch (e) {
         showToast('Backup failed: ' + e.message, 'error');
@@ -306,8 +305,6 @@ export async function render(container) {
         restoreBtn.disabled = true;
         try {
           await restoreFromDrive();
-          showToast('Restore successful! Reloading...', 'success');
-          setTimeout(() => window.location.reload(), 1500);
         } catch (e) {
           showToast('Restore failed: ' + e.message, 'error');
           restoreBtn.textContent = 'Restore from Drive';
