@@ -205,7 +205,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
   if (!lastPrompt || (now - parseInt(lastPrompt)) > 7 * 24 * 60 * 60 * 1000) {
     import('./components/toast.js').then(m => {
       m.showToast(
-        '<div class="mod-style-1a655c"><span>Install WealthDeck for offline access!</span> <button class="btn mod-style-c68664" id="install-pwa-btn">Install</button></div>',
+        '<div class="toast-install-content" style="gap: 16px; text-align: left;"><span style="flex: 1; line-height: 1.4;">Install WealthDeck for offline access!</span> <button class="btn" id="install-pwa-btn" style="width: auto; padding: 8px 16px; font-size: 13px; border-radius: 10px; flex-shrink: 0; min-height: 0;">Install</button></div>',
         'info',
         15000 // Show for 15 seconds
       );

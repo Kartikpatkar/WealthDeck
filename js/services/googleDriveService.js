@@ -65,13 +65,17 @@ function checkInit(resolve) {
   }
 }
 
-async function requireAuth() {
+export async function signInToDrive() {
+  await initGoogleDrive();
+  await requireAuth(true);
+}
+
+async function requireAuth(interactive = true) {
   return new Promise((resolve, reject) => {
     if (accessToken && tokenExpiry && Date.now() < tokenExpiry) return resolve(true);
 
     if (!tokenClient) return reject(new Error('Google Auth not initialized'));
 
-    // Override callback temporarily to catch the resolve
     const originalCallback = tokenClient.callback;
     tokenClient.callback = (tokenResponse) => {
       if (tokenResponse.error !== undefined) {
@@ -80,10 +84,18 @@ async function requireAuth() {
       accessToken = tokenResponse.access_token;
       tokenExpiry = Date.now() + (tokenResponse.expires_in * 1000) - 60000;
       originalCallback(tokenResponse);
+      localStorage.setItem('wealthdeck_drive_active', '1');
       resolve(true);
     };
 
-    tokenClient.requestAccessToken({ prompt: 'consent' });
+    const hasActiveSession = localStorage.getItem('wealthdeck_drive_active');
+    
+    // If they already authorized us before, try silently without prompting consent again
+    if (hasActiveSession && !interactive) {
+      tokenClient.requestAccessToken({ prompt: '' });
+    } else {
+      tokenClient.requestAccessToken({ prompt: hasActiveSession ? '' : 'consent' });
+    }
   });
 }
 

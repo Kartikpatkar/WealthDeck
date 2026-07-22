@@ -5,6 +5,20 @@ All notable changes to WealthDeck will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2026-07-22
+
+### Added
+- **Documentation:** Added `TERMS_OF_SERVICE.md`, `SECURITY.md`, and `DISCLAIMER.md`.
+
+### Fixed
+- **Google Drive Authentication:** Fixed an issue in Settings where clicking "Sign in with Google" would fail to prompt for authorization, preventing Backup/Restore functions from enabling.
+- **PWA Install Prompt UI:** Fixed a visual layout bug in the PWA install toast where the "Install" button would squish the text into a narrow, unreadable column on the side.
+- **Reports Layout:** Corrected the UI in the Reports page so the "Period" dropdown and "Export CSV" button no longer overlap awkwardly with the page title.
+- **Currency Auto-Detection:** Made automatic timezone-based currency detection more robust (specifically fixing `Asia/Calcutta` users defaulting to USD in onboarding).
+
+### Changed
+- **Service Worker:** Bumped PWA service worker cache version to `v22` to ensure users receive the latest layout and bug fixes instantly.
+
 ## [1.1.3] - 2026-07-22
 
 ### Fixed

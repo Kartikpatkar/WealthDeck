@@ -53,21 +53,31 @@ export async function render(container, params = {}) {
       const data = Object.values(summary).map(v => v / 100);
 
       container.innerHTML = `
-        <div class="page-head mod-style-b785d2">
-          <div class="mod-style-948e6d">
-            <h2 class="mod-style-e2b74b">Reports</h2>
-            <select class="input mod-style-5d9ae9" id="report-filter">
+        <div class="page-head">
+          <h2>Reports</h2>
+        </div>
+        
+        <div style="display: flex; gap: 12px; align-items: flex-end; margin-bottom: 24px; flex-wrap: wrap;">
+          <div class="field" style="flex: 1; min-width: 150px; margin: 0;">
+            <label>Period</label>
+            <select class="input" id="report-filter" style="width: 100%; border-radius: 12px; -webkit-appearance: none; background-color: var(--bg-surface-elevated);">
               <option value="this-month" ${currentFilter === 'this-month' ? 'selected' : ''}>This Month</option>
               <option value="last-month" ${currentFilter === 'last-month' ? 'selected' : ''}>Last Month</option>
               <option value="all-time" ${currentFilter === 'all-time' ? 'selected' : ''}>All Time</option>
               <option value="custom" ${currentFilter === 'custom' ? 'selected' : ''}>Custom Date...</option>
             </select>
-            <button class="btn" id="export-csv-btn">Export CSV</button>
           </div>
+          
+          <button class="btn btn-ghost" id="export-csv-btn" style="width: auto; height: 46px; padding: 0 16px; border-radius: 12px; font-size: 13px; flex-shrink: 0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px; height:16px; margin-right:6px; display:inline-block; vertical-align:middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Export CSV
+          </button>
+        </div>
+          
           ${currentFilter === 'custom' ? `
-            <div class="mod-style-92c164">
-              <div class="field mod-style-55f1d3"><label class="mod-style-9bd93d">From</label><input class="input mod-style-f91e21" type="date"  id="custom-start" value="${customStartDate}"></div>
-              <div class="field mod-style-55f1d3"><label class="mod-style-9bd93d">To</label><input class="input mod-style-f91e21" type="date"  id="custom-end" value="${customEndDate}"></div>
+            <div style="display: flex; gap: 12px; margin-top: 12px; width: 100%;">
+              <div class="field" style="flex: 1; margin: 0;"><label>From</label><input class="input" type="date" id="custom-start" value="${customStartDate}" style="border-radius: 12px; background-color: var(--bg-surface-elevated);"></div>
+              <div class="field" style="flex: 1; margin: 0;"><label>To</label><input class="input" type="date" id="custom-end" value="${customEndDate}" style="border-radius: 12px; background-color: var(--bg-surface-elevated);"></div>
             </div>
           ` : ''}
         </div>

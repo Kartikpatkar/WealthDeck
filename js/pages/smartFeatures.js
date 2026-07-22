@@ -10,7 +10,7 @@ export async function renderTimeline(container, params = {}) {
     let html = '';
     if (sorted.length > 0) {
       const firstTxn = sorted[0];
-      const largestTxn = [...sorted].sort((a,b) => b.amount - a.amount)[0];
+      const largeTxns = sorted.filter(t => t.amount > 1000000); // > 10,000 base units (100.00 if usd)
       
       html += `
         <div class="mod-style-504b4d">
@@ -18,12 +18,27 @@ export async function renderTimeline(container, params = {}) {
           <h3>WealthDeck Journey Began</h3>
           <p class="mod-style-83ba7c">${formatDate(firstTxn.date)}</p>
         </div>
-        <div class="mod-style-504b4d">
-          <div class="mod-style-a9a858"></div>
-          <h3>Largest Transaction</h3>
-          <p class="mod-style-83ba7c">${formatCurrency(largestTxn.amount)} at ${largestTxn.merchant} on ${formatDate(largestTxn.date)}</p>
-        </div>
       `;
+      
+      largeTxns.forEach(txn => {
+        html += `
+          <div class="mod-style-504b4d">
+            <div class="mod-style-a9a858"></div>
+            <h3>Large Transaction</h3>
+            <p class="mod-style-83ba7c">${formatCurrency(txn.amount)} at ${txn.merchant || 'Unknown'} on ${formatDate(txn.date)}</p>
+          </div>
+        `;
+      });
+      
+      if (largeTxns.length === 0 && sorted.length > 0) {
+        html += `
+          <div class="mod-style-504b4d">
+            <div class="mod-style-a9a858"></div>
+            <h3>Steady Savers</h3>
+            <p class="mod-style-83ba7c">No unusually large transactions yet. Keep it up!</p>
+          </div>
+        `;
+      }
     } else {
       html = '<p>No data to build timeline yet.</p>';
     }

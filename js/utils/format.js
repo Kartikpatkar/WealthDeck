@@ -1,5 +1,5 @@
 export function getLocale() {
-  const currency = localStorage.getItem('wealthdeck_currency') || 'USD';
+  const currency = getCurrency();
   let locale = 'en-US';
   if (currency === 'EUR') locale = 'en-IE';
   if (currency === 'GBP') locale = 'en-GB';
@@ -10,14 +10,29 @@ export function getLocale() {
   return locale;
 }
 
+export function getCurrency() {
+  const saved = localStorage.getItem('wealthdeck_currency');
+  if (saved) return saved;
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    if (tz.includes('Kolkata') || tz.includes('Calcutta') || tz.includes('India') || tz.includes('Colombo') || tz.includes('Dhaka')) return 'INR';
+    if (tz.includes('Europe/London') || tz.includes('Belfast')) return 'GBP';
+    if (tz.includes('Europe/')) return 'EUR';
+    if (tz.includes('Australia/')) return 'AUD';
+    if (tz.includes('Canada/')) return 'CAD';
+    if (tz.includes('Tokyo')) return 'JPY';
+  } catch(e) {}
+  return 'USD';
+}
+
 export function formatCurrency(val) {
-  const currency = localStorage.getItem('wealthdeck_currency') || 'USD';
+  const currency = getCurrency();
   const locale = getLocale();
   return new Intl.NumberFormat(locale, { style: 'currency', currency: currency }).format((val || 0) / 100);
 }
 
 export function getCurrencySymbol() {
-  const currency = localStorage.getItem('wealthdeck_currency') || 'USD';
+  const currency = getCurrency();
   const symbols = {
     'USD': '$',
     'EUR': '€',
