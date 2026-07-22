@@ -14,11 +14,13 @@ export function getCurrency() {
   const saved = localStorage.getItem('wealthdeck_currency');
   if (saved) return saved;
   try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if (tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta') return 'INR';
-    if (tz === 'Europe/London') return 'GBP';
-    if (tz && tz.startsWith('Europe/')) return 'EUR';
-    if (tz === 'Australia/Sydney' || tz === 'Australia/Melbourne') return 'AUD';
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    if (tz.includes('Kolkata') || tz.includes('Calcutta') || tz.includes('India') || tz.includes('Colombo') || tz.includes('Dhaka')) return 'INR';
+    if (tz.includes('Europe/London') || tz.includes('Belfast')) return 'GBP';
+    if (tz.includes('Europe/')) return 'EUR';
+    if (tz.includes('Australia/')) return 'AUD';
+    if (tz.includes('Canada/')) return 'CAD';
+    if (tz.includes('Tokyo')) return 'JPY';
   } catch(e) {}
   return 'USD';
 }
